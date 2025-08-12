@@ -369,8 +369,8 @@ const [selectedAgent, setSelectedAgent] = useState(/.*/ );
 <div style={{display:"flex", justifyContent: "space-between", width: "100%", alignItems: "center"}}>
 
   <div style={{display:"flex",flexDirection:"column",justifyContent:"flex-start",alignItems:"flex-start"}}>
-    <h1 style={{fontWeight:"700",marginBottom:"0rem", fontSize: "18px", borderBottom: "2px solid #DC2B8C", marginBottom: "2px"}}>SONGS</h1>
-    <div style={{ minWidth: "400px" }}>View and manage all songs</div>
+    <h1 style={{fontWeight:"700",marginBottom:"0rem", fontSize: "18px", borderBottom: "2px solid #DC2B8C", marginBottom: "2px"}}>NEWSLETTERS</h1>
+    <div style={{ minWidth: "400px" }}>View and manage all newsletters</div>
   </div>
 
     <Grid container spacing={2} alignItems="center" justifyContent="flex-end" style={{display:"flex",alignItems:"flex-end",justifyContent:"flex-end",paddingRight:"0rem"}}> 
@@ -378,7 +378,7 @@ const [selectedAgent, setSelectedAgent] = useState(/.*/ );
           <Grid item  style={{width:"max-content",display: 'flex',justifyContent:"flex-start", alignItems: 'flex-start', marginTop: "1.5rem", marginBottom: "2rem",borderRadius:"2rem",padding:"0.5rem" }}>
          
               <Box sx={{ width: '100%', marginTop: '0%'}}>
-                <SmallCustomSearchBar   title={"Search Songs"} functionality={"farmers"} />
+                <SmallCustomSearchBar   title={"Search Newsletters"} functionality={"farmers"} />
               </Box>
            </Grid>
 
@@ -455,7 +455,7 @@ const [selectedAgent, setSelectedAgent] = useState(/.*/ );
           <SongsTable jobs={ allSongs && allSongs } />
           :
           <center style={{marginTop:"6rem"}}>
-           No Songs To Display
+           No Newsletters To Display
           </center>
           }
            </div>
@@ -470,7 +470,7 @@ const [selectedAgent, setSelectedAgent] = useState(/.*/ );
                 {/**here 2 */}
                   <Grid container spacing={2} sx={{ padding: '10px'}}>
                   {<Grid item xs={3} sx={{mb: 0}}>
-                  <h1 style={{fontWeight:"700",marginBottom:"0rem",  fontFamily: "inter", fontWeight: "bold", fontSize: "18px", display: "inline-block", borderBottom: "2px solid #DC2B8C", marginBottom: "2px"}}>PLAYLISTS</h1>
+                  <h1 style={{fontWeight:"700",marginBottom:"0rem",  fontFamily: "inter", fontWeight: "bold", fontSize: "18px", display: "inline-block", borderBottom: "2px solid #DC2B8C", marginBottom: "2px"}}>NEWSLETTERS</h1>
                  </Grid>}
 
 
@@ -488,7 +488,7 @@ const [selectedAgent, setSelectedAgent] = useState(/.*/ );
           <PlaylistTable jobs={ playlists } />
           :
           <center style={{marginTop:"6rem"}}>
-          No Albums To Display
+          No Newsletters To Display
           </center>
           }
           </div>
@@ -522,7 +522,7 @@ const [selectedAgent, setSelectedAgent] = useState(/.*/ );
         <SongsTable jobs={ songs } />
         :
         <center style={{marginTop:"6rem"}}>
-         No Songs To Display
+         No Newsletters To Display
         </center>
         }
          </div>

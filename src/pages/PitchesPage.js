@@ -370,8 +370,8 @@ useEffect(()=>{
 <div style={{display:"flex", justifyContent: "space-between", width: "100%", alignItems: "center"}}>
 
 <div style={{display:"flex",flexDirection:"column",justifyContent:"flex-start",alignItems:"flex-start"}}>
-  <h1 style={{fontWeight:"700",marginBottom:"0rem",  fontFamily: "inter", fontWeight: "bold", fontSize: "18px", display: "inline-block", borderBottom: "2px solid #DC2B8C", marginBottom: "2px"}}>ARTISTS</h1>
-  <div style={{ minWidth: "400px" }}>View and manage all Artists</div>
+  <h1 style={{fontWeight:"700",marginBottom:"0rem",  fontFamily: "inter", fontWeight: "bold", fontSize: "18px", display: "inline-block", borderBottom: "2px solid #DC2B8C", marginBottom: "2px"}}>Cards</h1>
+  <div style={{ minWidth: "400px" }}>View and manage all Cards</div>
 </div>
 
 <Grid container spacing={2} alignItems="center" justifyContent="flex-end" style={{display:"flex",alignItems:"flex-end",justifyContent:"flex-end",paddingRight:"0rem"}}> 
@@ -460,7 +460,7 @@ useEffect(()=>{
           <ArrangeArtists jobs={artistList} /> 
           :
           <center style={{marginTop:"6rem"}}>
-           No Artists To Display
+           No Cards To Display
           </center>
           }
            </div>
@@ -477,7 +477,7 @@ useEffect(()=>{
                 {/**here 2 */}
                   <Grid container spacing={2} sx={{ padding: '10px'}}>
                   {<Grid item xs={3} sx={{mb: 0}}>
-                  <h1 style={{fontWeight:"700",marginBottom:"0rem",  fontFamily: "inter", fontWeight: "bold", fontSize: "18px", display: "inline-block", borderBottom: "2px solid #DC2B8C", marginBottom: "2px"}}>SUPERVISORS</h1>
+                  <h1 style={{fontWeight:"700",marginBottom:"0rem",  fontFamily: "inter", fontWeight: "bold", fontSize: "18px", display: "inline-block", borderBottom: "2px solid #DC2B8C", marginBottom: "2px"}}>CARDS</h1>
                  </Grid>}
 
 
@@ -495,7 +495,7 @@ useEffect(()=>{
           <ArrangeArtists jobs={artistList} /> 
           :
           <center style={{marginTop:"6rem"}}>
-           No Supervisors To Display
+           No Cards To Display
           </center>
           }
            </div>

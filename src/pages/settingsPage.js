@@ -1,85 +1,101 @@
 import React, { useState } from "react";
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TextField } from "@mui/material";
-import { styled } from "@mui/styles";
-
-const StyledTableCell = styled(TableCell)(({ theme }) => ({
-  [`&.MuiTableCell-head`]: {
-    backgroundColor: '#000000',
-    color: '#fff',
-    width: '20%',
-    textAlign: 'center',
-  },
-  [`&.MuiTableCell-body`]: {
-    fontSize: 14,
-    width: '20%',
-    textAlign: 'center',
-  },
-}));
+import { Box, Typography } from "@mui/material";
 
 export default function SettingsPage() {
-  // Example random data
-  const rows = [
-    {
-      email: 'john.doe@example.com',
-      event: 'Conference',
-      birthday: '1990-05-12',
-      holiday: 'Christmas',
-      frequency: 7,
-    },
-    {
-      email: 'jane.smith@example.com',
-      event: 'Webinar',
-      birthday: '1985-11-23',
-      holiday: 'Easter',
-      frequency: 14,
-    },
-    {
-      email: 'alice.wang@example.com',
-      event: 'Workshop',
-      birthday: '1992-03-08',
-      holiday: 'Thanksgiving',
-      frequency: 30,
-    },
-    {
-      email: 'bob.jones@example.com',
-      event: 'Seminar',
-      birthday: '1988-07-19',
-      holiday: 'New Year',
-      frequency: 7,
-    },
-    {
-      email: 'lucy.lee@example.com',
-      event: 'Meetup',
-      birthday: '1995-09-15',
-      holiday: 'Independence Day',
-      frequency: 21,
-    },
-  ];
+  const [emailQuery, setEmailQuery] = useState('');
+  const [eventQuery, setEventQuery] = useState('');
+  const [birthdayQuery, setBirthdayQuery] = useState('');
+  const [holidayQuery, setHolidayQuery] = useState('');
+  const [frequency, setFrequency] = useState('7');
+  const [loading, setLoading] = useState(false);
 
   return (
-    <TableContainer component={Paper} style={{ maxWidth: 900, margin: '2rem auto' }}>
-      <Table sx={{ tableLayout: 'fixed' }} aria-label="settings table">
-        <TableHead>
-          <TableRow>
-            <StyledTableCell>Email</StyledTableCell>
-            <StyledTableCell>Event</StyledTableCell>
-            <StyledTableCell>Birthday</StyledTableCell>
-            <StyledTableCell>Holiday</StyledTableCell>
-            <StyledTableCell>Frequency (days)</StyledTableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {rows.map((row, idx) => (
-            <TableRow key={idx}>
-              <StyledTableCell>{row.email}</StyledTableCell>
-              <StyledTableCell>{row.event}</StyledTableCell>
-              <StyledTableCell>{row.birthday}</StyledTableCell>
-              <StyledTableCell>{row.holiday}</StyledTableCell>
-              <StyledTableCell>{row.frequency}</StyledTableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
+    <>
+      <Box mx={2} pr={4} mt={0.5}>
+        <Box sx={{ width: "70%", margin: "2px auto" }}>
+          <Typography
+            sx={{ 
+              fontFamily: "inter", 
+              fontWeight: "bold", 
+              fontSize: "18px", 
+              display: "inline-block", 
+              borderBottom: "2px solid #DC2B8C" 
+            }}
+            mb={3}
+            px={0.5}
+          >SETTINGS</Typography>
+
+          <Box>
+            <input 
+              value={emailQuery}
+              onChange={(e) => setEmailQuery(e.target.value)}
+              placeholder="Email Query" 
+              type="text" 
+              style={{ outline: "none", width: "100%", border: "1px solid #000000", padding: "7px 8px", fontSize: "14px", marginBottom: "21px" }}
+            />
+
+            <input 
+              value={eventQuery}
+              onChange={(e) => setEventQuery(e.target.value)}
+              placeholder="Event Query" 
+              type="text" 
+              style={{ outline: "none", width: "100%", border: "1px solid #000000", padding: "7px 8px", fontSize: "14px", marginBottom: "21px" }}
+            />
+
+            <input 
+              value={birthdayQuery}
+              onChange={(e) => setBirthdayQuery(e.target.value)}
+              placeholder="Birthday Query" 
+              type="text" 
+              style={{ outline: "none", width: "100%", border: "1px solid #000000", padding: "7px 8px", fontSize: "14px", marginBottom: "21px" }}
+            />
+
+            <input 
+              value={holidayQuery}
+              onChange={(e) => setHolidayQuery(e.target.value)}
+              placeholder="Holiday Query" 
+              type="text" 
+              style={{ outline: "none", width: "100%", border: "1px solid #000000", padding: "7px 8px", fontSize: "14px", marginBottom: "21px" }}
+            />
+
+            <input 
+              value={frequency}
+              onChange={(e) => setFrequency(e.target.value)}
+              placeholder="Frequency (Default 7 days)" 
+              type="number" 
+              style={{ outline: "none", width: "100%", border: "1px solid #000000", padding: "7px 8px", fontSize: "14px", marginBottom: "21px" }}
+            />
+
+            <Box sx={{ width: "100%" }}>
+              <Box
+                sx={{ 
+                  background: "linear-gradient(to right, #E61484, #3E256E)", 
+                  width: "128px", 
+                  margin: "21px auto", 
+                  borderRadius: "12px", 
+                  cursor: "pointer", 
+                  marginTop: "42px", 
+                  marginBottom: "42px" 
+                }}
+                p={1}
+              >
+                <Typography 
+                  sx={{ 
+                    textAlign: "center", 
+                    color: "white", 
+                    fontWeight: "bold", 
+                    marginTop: "2px", 
+                    fontSize: "14px", 
+                    fontFamily: "inter" 
+                  }}
+                >
+                  {loading ? "Loading..." : "SAVE"}
+                </Typography>
+              </Box>
+            </Box>
+          </Box>
+        </Box>
+      </Box>
+    </>
   );
 }
