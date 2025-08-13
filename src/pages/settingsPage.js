@@ -26,45 +26,60 @@ export default function SettingsPage() {
           >SETTINGS</Typography>
 
           <Box>
-            <input 
-              value={emailQuery}
-              onChange={(e) => setEmailQuery(e.target.value)}
-              placeholder="Email Query" 
-              type="text" 
-              style={{ outline: "none", width: "100%", border: "1px solid #000000", padding: "7px 8px", fontSize: "14px", marginBottom: "21px" }}
-            />
+            <Box sx={{ display: 'flex', alignItems: 'center', marginBottom: '21px' }}>
+              <Typography sx={{ minWidth: 120, fontSize: '15px', fontWeight: 500 }}>Email Query:</Typography>
+              <input 
+                value={emailQuery}
+                onChange={(e) => setEmailQuery(e.target.value)}
+                placeholder="Email Query" 
+                type="text" 
+                style={{ outline: "none", width: "100%", border: "1px solid #000000", padding: "7px 8px", fontSize: "14px" }}
+              />
+            </Box>
 
-            <input 
-              value={eventQuery}
-              onChange={(e) => setEventQuery(e.target.value)}
-              placeholder="Event Query" 
-              type="text" 
-              style={{ outline: "none", width: "100%", border: "1px solid #000000", padding: "7px 8px", fontSize: "14px", marginBottom: "21px" }}
-            />
+            <Box sx={{ display: 'flex', alignItems: 'center', marginBottom: '21px' }}>
+              <Typography sx={{ minWidth: 120, fontSize: '15px', fontWeight: 500 }}>Event Query:</Typography>
+              <input 
+                value={eventQuery}
+                onChange={(e) => setEventQuery(e.target.value)}
+                placeholder="Event Query" 
+                type="text" 
+                style={{ outline: "none", width: "100%", border: "1px solid #000000", padding: "7px 8px", fontSize: "14px" }}
+              />
+            </Box>
 
-            <input 
-              value={birthdayQuery}
-              onChange={(e) => setBirthdayQuery(e.target.value)}
-              placeholder="Birthday Query" 
-              type="text" 
-              style={{ outline: "none", width: "100%", border: "1px solid #000000", padding: "7px 8px", fontSize: "14px", marginBottom: "21px" }}
-            />
+            <Box sx={{ display: 'flex', alignItems: 'center', marginBottom: '21px' }}>
+              <Typography sx={{ minWidth: 120, fontSize: '15px', fontWeight: 500 }}>Birthday Query:</Typography>
+              <input 
+                value={birthdayQuery}
+                onChange={(e) => setBirthdayQuery(e.target.value)}
+                placeholder="Birthday Query" 
+                type="text" 
+                style={{ outline: "none", width: "100%", border: "1px solid #000000", padding: "7px 8px", fontSize: "14px" }}
+              />
+            </Box>
 
-            <input 
-              value={holidayQuery}
-              onChange={(e) => setHolidayQuery(e.target.value)}
-              placeholder="Holiday Query" 
-              type="text" 
-              style={{ outline: "none", width: "100%", border: "1px solid #000000", padding: "7px 8px", fontSize: "14px", marginBottom: "21px" }}
-            />
+            <Box sx={{ display: 'flex', alignItems: 'center', marginBottom: '21px' }}>
+              <Typography sx={{ minWidth: 120, fontSize: '15px', fontWeight: 500 }}>Holiday Query:</Typography>
+              <input 
+                value={holidayQuery}
+                onChange={(e) => setHolidayQuery(e.target.value)}
+                placeholder="Holiday Query" 
+                type="text" 
+                style={{ outline: "none", width: "100%", border: "1px solid #000000", padding: "7px 8px", fontSize: "14px" }}
+              />
+            </Box>
 
-            <input 
-              value={frequency}
-              onChange={(e) => setFrequency(e.target.value)}
-              placeholder="Frequency (Default 7 days)" 
-              type="number" 
-              style={{ outline: "none", width: "100%", border: "1px solid #000000", padding: "7px 8px", fontSize: "14px", marginBottom: "21px" }}
-            />
+            <Box sx={{ display: 'flex', alignItems: 'center', marginBottom: '21px' }}>
+              <Typography sx={{ minWidth: 120, fontSize: '15px', fontWeight: 500 }}>Frequency:</Typography>
+              <input 
+                value={frequency}
+                onChange={(e) => setFrequency(e.target.value)}
+                placeholder="Frequency (Default 7 days)" 
+                type="number" 
+                style={{ outline: "none", width: "100%", border: "1px solid #000000", padding: "7px 8px", fontSize: "14px" }}
+              />
+            </Box>
 
             <Box sx={{ width: "100%" }}>
               <Box
