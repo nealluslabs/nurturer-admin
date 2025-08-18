@@ -1,20 +1,13 @@
 import PropTypes from 'prop-types';
+import { useState } from 'react';
 // @mui
 import { styled } from '@mui/material/styles';
-import { Box, Stack, AppBar, Toolbar, IconButton } from '@mui/material';
-// utils
-import { bgBlur } from '../../../utils/cssStyles';
+import { Box, AppBar, Toolbar, IconButton, InputBase } from '@mui/material';
+import SearchIcon from '@mui/icons-material/Search';
+import CancelIcon from '@mui/icons-material/Cancel';
 // components
 import Iconify from '../../../components/iconify';
-//
-import Searchbar from './Searchbar2';
 import AccountPopover from './AccountPopover';
-import NotificationsPopover from './NotificationsPopover';
-import Searchbar2 from './Searchbar2';
-
-// React Icons
-import { CiBellOn } from "react-icons/ci";
-import { AiOutlineMessage } from "react-icons/ai";
 
 // ----------------------------------------------------------------------
 
@@ -25,10 +18,14 @@ const HEADER_MOBILE = 64;
 const HEADER_DESKTOP = 92;
 
 const StyledRoot = styled(AppBar)(({ theme }) => ({
-  ...bgBlur({ color: theme.palette.background.default }),
-  boxShadow: 'none',
-  [theme.breakpoints.up('lg')]: {
-    width: `calc(100% - ${NAV_WIDTH + 1}px)`,
+  background: '#fff',
+  boxShadow: '0 2px 8px 0 rgba(0,0,0,0.08)',
+  width: `calc(100% - ${NAV_WIDTH}px)`,
+  marginLeft: `${NAV_WIDTH}px`,
+  zIndex: theme.zIndex.appBar,
+  [theme.breakpoints.down('lg')]: {
+    width: '100%',
+    marginLeft: 0,
   },
 }));
 
@@ -47,6 +44,8 @@ Header.propTypes = {
 };
 
 export default function Header({ onOpenNav }) {
+  const [searchMode, setSearchMode] = useState(false);
+  const [searchValue, setSearchValue] = useState('');
   return (
     <StyledRoot>
       <StyledToolbar>
@@ -61,32 +60,46 @@ export default function Header({ onOpenNav }) {
           <Iconify icon="eva:menu-2-fill" />
         </IconButton>
 
-        <Searchbar />
-        {/* <Searchbar2 /> */}
-
-        <Box sx={{ flexGrow: 1 }} />
-
-        <Box sx={{ display: "flex", cursor: "pointer" }} mr={1}>
-          <Box sx={{ border: "1px solid gray", background: "#fdfffc", borderRadius: "50%" }} mr={2} p={1}>
-            <CiBellOn style={{ fontSize: "20px", color: 'black' }} />
+        {!searchMode ? (
+          <Box sx={{ display: 'flex', alignItems: 'center', width: '100%', minHeight: '48px' }}>
+            <Box sx={{ flexGrow: 1 }} />
+            <IconButton 
+              onClick={() => setSearchMode(true)} 
+              sx={{ 
+                mr: 4, 
+                display: 'flex !important',
+                visibility: 'visible !important',
+                opacity: 1,
+                zIndex: 1000,
+              }}
+            >
+              <SearchIcon sx={{ fontSize: '24px', color: '#333' }} />
+            </IconButton>
+            <AccountPopover />
           </Box>
-
-          <Box sx={{ border: "1px solid gray", background: "#fdfffc", borderRadius: "50%" }} mr={7} p={1}>
-            <AiOutlineMessage style={{ fontSize: "20px", color: 'black' }} />
+        ) : (
+          <Box sx={{ display: 'flex', alignItems: 'center', width: '100%', minHeight: '48px' }}>
+            <InputBase
+              autoFocus
+              value={searchValue}
+              onChange={e => setSearchValue(e.target.value)}
+              placeholder="Search..."
+              sx={{ flex: 1, ml: 2, fontSize: '1rem', background: '#f5f5f5', borderRadius: 2, px: 2, py: 1 }}
+            />
+            <IconButton 
+              onClick={() => setSearchMode(false)} 
+              sx={{ 
+                ml: 2, 
+                display: 'flex !important',
+                visibility: 'visible !important',
+                opacity: 1,
+                zIndex: 1000,
+              }}
+            >
+              <CancelIcon sx={{ fontSize: '24px', color: '#333' }} />
+            </IconButton>
           </Box>
-        </Box>
-
-        <Stack
-          direction="row"
-          alignItems="center"
-          spacing={{
-            xs: 0.5,
-            sm: 1,
-          }}
-        >
-          {/* <NotificationsPopover /> */}
-          <AccountPopover />
-        </Stack>
+        )}
       </StyledToolbar>
     </StyledRoot>
   );

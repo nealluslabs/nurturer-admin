@@ -26,47 +26,83 @@ export default function SettingsPage() {
           >SETTINGS</Typography>
 
           <Box>
-            <Box sx={{ display: 'flex', alignItems: 'center', marginBottom: '21px' }}>
-              <Typography sx={{ minWidth: 120, fontSize: '15px', fontWeight: 500 }}>Email Query:</Typography>
-              <input 
+            <Box sx={{ display: 'flex', alignItems: 'flex-start', marginBottom: '21px' }}>
+              <Typography sx={{ minWidth: 120, fontSize: '15px', fontWeight: 500, mt: 1 }}>Email Query:</Typography>
+              <textarea 
                 value={emailQuery}
                 onChange={(e) => setEmailQuery(e.target.value)}
                 placeholder="Email Query" 
-                type="text" 
-                style={{ outline: "none", width: "100%", border: "1px solid #000000", padding: "7px 8px", fontSize: "14px" }}
+                rows="5"
+                style={{ 
+                  outline: "none", 
+                  width: "100%", 
+                  border: "1px solid #000000", 
+                  padding: "7px 8px", 
+                  fontSize: "14px",
+                  resize: "vertical",
+                  minHeight: "120px",
+                  fontFamily: "inherit"
+                }}
               />
             </Box>
 
-            <Box sx={{ display: 'flex', alignItems: 'center', marginBottom: '21px' }}>
-              <Typography sx={{ minWidth: 120, fontSize: '15px', fontWeight: 500 }}>Event Query:</Typography>
-              <input 
+            <Box sx={{ display: 'flex', alignItems: 'flex-start', marginBottom: '21px' }}>
+              <Typography sx={{ minWidth: 120, fontSize: '15px', fontWeight: 500, mt: 1 }}>Event Query:</Typography>
+              <textarea 
                 value={eventQuery}
                 onChange={(e) => setEventQuery(e.target.value)}
                 placeholder="Event Query" 
-                type="text" 
-                style={{ outline: "none", width: "100%", border: "1px solid #000000", padding: "7px 8px", fontSize: "14px" }}
+                rows="5"
+                style={{ 
+                  outline: "none", 
+                  width: "100%", 
+                  border: "1px solid #000000", 
+                  padding: "7px 8px", 
+                  fontSize: "14px",
+                  resize: "vertical",
+                  minHeight: "120px",
+                  fontFamily: "inherit"
+                }}
               />
             </Box>
 
-            <Box sx={{ display: 'flex', alignItems: 'center', marginBottom: '21px' }}>
-              <Typography sx={{ minWidth: 120, fontSize: '15px', fontWeight: 500 }}>Birthday Query:</Typography>
-              <input 
+            <Box sx={{ display: 'flex', alignItems: 'flex-start', marginBottom: '21px' }}>
+              <Typography sx={{ minWidth: 120, fontSize: '15px', fontWeight: 500, mt: 1 }}>Birthday Query:</Typography>
+              <textarea 
                 value={birthdayQuery}
                 onChange={(e) => setBirthdayQuery(e.target.value)}
                 placeholder="Birthday Query" 
-                type="text" 
-                style={{ outline: "none", width: "100%", border: "1px solid #000000", padding: "7px 8px", fontSize: "14px" }}
+                rows="5"
+                style={{ 
+                  outline: "none", 
+                  width: "100%", 
+                  border: "1px solid #000000", 
+                  padding: "7px 8px", 
+                  fontSize: "14px",
+                  resize: "vertical",
+                  minHeight: "120px",
+                  fontFamily: "inherit"
+                }}
               />
             </Box>
 
-            <Box sx={{ display: 'flex', alignItems: 'center', marginBottom: '21px' }}>
-              <Typography sx={{ minWidth: 120, fontSize: '15px', fontWeight: 500 }}>Holiday Query:</Typography>
-              <input 
+            <Box sx={{ display: 'flex', alignItems: 'flex-start', marginBottom: '21px' }}>
+              <Typography sx={{ minWidth: 120, fontSize: '15px', fontWeight: 500, mt: 1 }}>Holiday Query:</Typography>
+              <textarea 
                 value={holidayQuery}
                 onChange={(e) => setHolidayQuery(e.target.value)}
                 placeholder="Holiday Query" 
-                type="text" 
-                style={{ outline: "none", width: "100%", border: "1px solid #000000", padding: "7px 8px", fontSize: "14px" }}
+                rows="5"
+                style={{ 
+                  outline: "none", 
+                  width: "100%", 
+                  border: "1px solid #000000", 
+                  padding: "7px 8px", 
+                  fontSize: "14px",
+                  resize: "vertical",
+                  minHeight: "120px",
+                  fontFamily: "inherit"
+                }}
               />
             </Box>
 

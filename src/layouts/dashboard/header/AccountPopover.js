@@ -2,9 +2,10 @@ import { useState } from 'react';
 // @mui
 import { alpha } from '@mui/material/styles';
 import { Box, Divider, Typography, Stack, MenuItem, Avatar, IconButton, Popover, Grid } from '@mui/material';
+// components
+import Iconify from '../../../components/iconify';
 // mocks_
 import account from '../../../_mock/account';
-import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import { useDispatch, useSelector } from 'react-redux';
 import { logout } from 'src/redux/actions/auth.action';
 import { useNavigate } from 'react-router-dom';
@@ -38,6 +39,11 @@ export default function AccountPopover() {
         onClick={handleOpen}
         sx={{
           p: 0,
+          zIndex: 1000,
+          position: 'relative',
+          '&:hover': {
+            backgroundColor: 'transparent',
+          },
           ...(open && {
             '&:before': {
               zIndex: 1,
@@ -53,7 +59,6 @@ export default function AccountPopover() {
       >
         <Avatar src={user?user.imageUrl:randomGuy} alt="photoURL" />
       </IconButton>
-      <ArrowDropDownIcon sx={{color: 'black'}} onClick={handleOpen}/>
       <Popover
         open={Boolean(open)}
         anchorEl={open}
@@ -65,53 +70,44 @@ export default function AccountPopover() {
             p: 0,
             mt: 1.5,
             ml: 0.75,
-            // width: 180,
             width: 200,
+            zIndex: 9999,
+            boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.15)',
+            border: '1px solid rgba(0, 0, 0, 0.1)',
+            display: 'flex',
+            flexDirection: 'column',
             '& .MuiMenuItem-root': {
               typography: 'body2',
               borderRadius: 0.75,
+              display: 'block',
+              width: '100%',
+              '&:hover': {
+                backgroundColor: 'rgba(0, 0, 0, 0.04)',
+              },
             },
           },
         }}
+        sx={{
+          zIndex: 9999,
+        }}
       >
-        <Grid
-          container
-          direction="row"
-          justifyContent="flex-start"
-          alignItems="flex-start"
-        >
-          <Grid sx={{mt: 1, ml: 1}}>
-          <Avatar src={user?user.imageUrl:randomGuy} alt="photoURL" />
-          </Grid>
-          <Box sx={{ my: 1.5, px: 1 }}>
-          <Typography variant="subtitle2" noWrap>
-            {user?user.firstName + " " + user.lastName:"Globus Contractors"}
-          </Typography>
-          <Typography variant="body2" sx={{ color: 'text.secondary' }} noWrap>
-            {user?user.email:'ut1@bc.com'}
-          </Typography>
-        </Box>
-        </Grid>
-
-
-        <Divider sx={{ borderStyle: 'dashed' }} />
-
-        {/* <MenuItem sx={{ pt: 1 }}>
-          Accounts
+        <MenuItem onClick={handleClose} sx={{ m: 1, display: 'block', width: '100%' }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', width: '100%' }}>
+            <Iconify icon="eva:person-fill" sx={{ mr: 1 }} />
+            My Profile
+          </Box>
         </MenuItem>
-        <Divider />
-        <Stack sx={{color: '#828D9F' }}>
-          {MENU_OPTIONS.map((option) => (
-            <MenuItem key={option.label} onClick={handleClose}>
-              {option.label}
-            </MenuItem>
-          ))}
-        </Stack> */}
-
-        <Divider sx={{ borderStyle: 'dashed' }} />
-
-        <MenuItem onClick={() => dispatch(logout(navigate))} sx={{ m: 1 }} >
-          Logout
+        <MenuItem onClick={handleClose} sx={{ m: 1, display: 'block', width: '100%' }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', width: '100%' }}>
+            <Iconify icon="eva:email-fill" sx={{ mr: 1 }} />
+            Inbox
+          </Box>
+        </MenuItem>
+        <MenuItem onClick={() => dispatch(logout(navigate))} sx={{ m: 1, display: 'block', width: '100%' }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', width: '100%' }}>
+            <Iconify icon="eva:log-out-fill" sx={{ mr: 1 }} />
+            Logout
+          </Box>
         </MenuItem>
       </Popover>
     </>

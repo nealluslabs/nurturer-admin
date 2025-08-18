@@ -56,38 +56,44 @@ function NavItem({ item }) {
       component={RouterLink}
       to={path}
       sx={{
+        fontSize: '12px',
+        width: '100%',
+        '& .MuiListItemIcon-root, & .MuiSvgIcon-root': {
+          fontSize: '12px',
+        },
+        '&:hover': {
+          backgroundColor: 'rgba(255,255,255,0.5)',
+          width: '100%',
+        },
         '&.active': {
-          color: 'black',
-          // bgcolor: '#66000000',
-          backgroundColor: path != '#' && 'black',
+          backgroundColor: 'rgba(255,255,255,0.3)',
           fontWeight: 'fontWeightBold',
-          width:"100%",
-          borderBottom: path == location.pathname && "2px solid #DC2B8C",
-          color: path == location.pathname ? "#DC2B8C" : '#FFFFFF', fontSize: '18px',
+          width: '100%',
+          // borderBottom: path == location.pathname && '2px solid #DC2B8C',
+          color: path == location.pathname ? '#DC2B8C' : '#FFFFFF',
         },
       }}
     >
-      {iconLabel != 'msg' && iconLabel != 'settings' && <StyledNavItemIcon sx={{color: 'white', fontSize: '20px' ,
-       '&.active': { color: 'black', backgroundColor: 'white',fontWeight: 'fontWeightBold' },}}>
-    {icon && icon}</StyledNavItemIcon>}
-      {iconLabel === 'msg' && <StyledNavItemIcon sx={{color: 'black', fontSize: '20px'}}><MessageIcon /></StyledNavItemIcon>}
-      {iconLabel === 'settings' && <StyledNavItemIcon sx={{color: 'black', fontSize: '20px'}}><SettingsIcon /></StyledNavItemIcon>}
-     
-      {/* {iconLabel != 'msg' && iconLabel != 'settings' && <StyledNavItemIcon sx={{color: '#FFFFFF', fontSize: '20px'}}>{icon && icon}</StyledNavItemIcon>}
-      {iconLabel === 'msg' && <StyledNavItemIcon sx={{color: '#FFFFFF', fontSize: '20px'}}><MessageIcon /></StyledNavItemIcon>}
-      {iconLabel === 'settings' && <StyledNavItemIcon sx={{color: '#FFFFFF', fontSize: '20px'}}><SettingsIcon /></StyledNavItemIcon>} */}
+      {iconLabel != 'msg' && iconLabel != 'settings' && (
+        <StyledNavItemIcon sx={{ color: 'white', fontSize: '14px', '&.active': { color: 'black', backgroundColor: 'white', fontWeight: 'fontWeightBold' } }}>
+          {icon && icon}
+        </StyledNavItemIcon>
+      )}
+      {iconLabel === 'msg' && <StyledNavItemIcon sx={{ color: 'black', fontSize: '14px' }}><MessageIcon /></StyledNavItemIcon>}
+      {iconLabel === 'settings' && <StyledNavItemIcon sx={{ color: 'black', fontSize: '14px' }}><SettingsIcon /></StyledNavItemIcon>}
 
-      <ListItemText 
-        disableTypography primary={title} 
+      <ListItemText
+        disableTypography
+        primary={title}
         sx={{
-          color: '#FFFFFF', fontSize: '18px', 
-          paddingY: path == location.pathname && "2px", 
-          paddingX: item.title == "MEDIA" && "8px",
-          // borderBottom: path == location.pathname && "2px solid #DC2B8C" 
+          color: '#FFFFFF',
+          fontSize: '12px',
+          paddingY: path == location.pathname && '2px',
+          paddingX: item.title == 'MEDIA' && '8px',
         }}
       />
-
-      {info && info}
+      {/* Removed version text from button */}
+      {/* {info && info} */}
     </StyledNavItem>
   );
 }
@@ -97,28 +103,33 @@ function SubNavItem({ item }) {
   const location = useLocation();
 
   return (
-      <StyledNavItem
+    <StyledNavItem
       component={RouterLink}
       to={path}
       sx={{
+        fontSize: '12px',
+        width: '100%',
+        '& .MuiListItemIcon-root, & .MuiSvgIcon-root': {
+          fontSize: '12px',
+        },
+        '&:hover': {
+          backgroundColor: 'rgba(255,255,255,0.5)',
+          width: '100%',
+        },
         '&.active': {
-          color: 'black',
-          // bgcolor: '#66000000',
-          backgroundColor: path != '#' && 'black',
+          backgroundColor: 'rgba(255,255,255,0.5)',
           fontWeight: 'fontWeightBold',
+          width: '100%',
         },
       }}
     >
-      {/* <StyledNavItemIcon sx={{color: '#FFFFFF', fontSize: '20px'}}>{icon && icon}</StyledNavItemIcon> */}
-      <StyledNavItemIcon sx={{color: '#FFFFFF', fontSize: '18px', ml: 5}}>
-        {/* {icon === 'LockIcon' && <LockIcon />}
-        {icon === 'LockOpen' && <LockOpenIcon />}
-        {icon === 'Savings' && <SavingsIcon />} */}
+      <StyledNavItemIcon sx={{ color: '#FFFFFF', fontSize: '12px', ml: 5 }}>
+        {/* icon rendering if needed */}
       </StyledNavItemIcon>
 
-      <ListItemText disableTypography primary={title} sx={{color: '#FFFFFF', fontSize: '15px'}}/>
-
-      {info && info}
+      <ListItemText disableTypography primary={title} sx={{ color: '#FFFFFF', fontSize: '12px' }} />
+      {/* Removed version text from button */}
+      {/* {info && info} */}
     </StyledNavItem>
   );
 }

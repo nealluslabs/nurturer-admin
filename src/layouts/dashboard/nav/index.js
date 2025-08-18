@@ -12,6 +12,7 @@ import Scrollbar from '../../../components/scrollbar';
 import NavSection from '../../../components/nav-section';
 //
 import navConfig from './config';
+import Image from "../../../assets/bridgetechlogo.png";
 import CMCLOGO from '../../../assets/images/CMCNetwork-logo.png';
 import { fontFamily } from '@mui/system';
 
@@ -57,11 +58,11 @@ export default function Nav({ openNav, onCloseNav }) {
         '& .simplebar-content': { height: 1, display: 'flex', flexDirection: 'column' },
       }}
     >
-      <Box sx={{ px: 2.5, py: 3, display: 'inline-flex' }}>
-        {/* <Logo /> */}
+      <Box sx={{ px: 2.5, pt: 3, pb: 0, display: 'flex', justifyContent: 'center' }}>
+        <img src={Image} alt="Bridgetech Logo" style={{ maxWidth: '110px', marginTop: '8px' }} />
       </Box>
 
-      <Box sx={{ mb: 5, mx: 2.5,display:'flex',justifyContent:"center" }}>
+      <Box sx={{ mb: 5, mt: -3, mx: 2.5,display:'flex',justifyContent:"center" }}>
         <Link underline="none">
           {/* <StyledAccount>
             <Avatar src={account.photoURL} alt="photoURL" />
@@ -80,7 +81,23 @@ export default function Nav({ openNav, onCloseNav }) {
         </Link>
       </Box>
 
-      <NavSection data={navConfig} />
+      <NavSection
+        data={navConfig}
+        sx={{
+          '& .MuiListItem-root': {
+            fontSize: '0.5rem',
+            padding: '7px 14px',
+            marginBottom: 0,
+            borderBottom: 'none',
+            transition: 'background 0.2s, color 0.2s',
+            color: '#b0b0b0',
+          },
+          '& .Mui-selected, & .Mui-selected:hover': {
+            background: 'rgba(128,128,128,0.6)',
+            color: '#fff',
+          },
+        }}
+      />
       {/*<span style={{color:"white", 
                     fontSize:"1.2rem",
                    position:'relative',
@@ -120,12 +137,7 @@ export default function Nav({ openNav, onCloseNav }) {
           }}
         >
           {renderContent}
-          <div style={{color:"white",
-                      backgroundColor:"black",
-                     margin:"0 auto",
-                     marginBottom:"1rem",
-                     fontWeight:"bold"
-                     }}> Version 1.0.12</div>
+
         </Drawer>,
         
         </>

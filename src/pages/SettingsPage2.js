@@ -145,6 +145,9 @@ export default function SettingsPage() {
                     name="paymentLink"
                     value={state.paymentLink}
                     onChange={handleChange}
+                    multiline
+                    minRows={5}
+                    maxRows={10}
                     />
                   </div>
                   <br/><br/>
@@ -155,6 +158,9 @@ export default function SettingsPage() {
                     name="password"
                     value={state.password}
                     onChange={handleChange}
+                    multiline
+                    minRows={5}
+                    maxRows={10}
                     />
                   </div>
                   <br/>
