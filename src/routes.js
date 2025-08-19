@@ -65,7 +65,9 @@ import PitchesPage from './pages/PitchesPage';
 // Custom Screen
 import MediaPage from './pages/MediaPage';
 import AnnouncementPage from './pages/AnnouncementPage';
-import SettingsPage from "./pages/settingsPage"
+import SettingsPage from './pages/settingsPage';
+import CardTemplatesPage from './pages/CardTemplatesPage';
+import NewslettersPage from './pages/NewslettersPage';
 import MusicBriefPage from './pages/MusicBriefPage';
 import OneOnOneSessionPage from './pages/OneOnOneSessionPage';
 
@@ -81,10 +83,10 @@ export default function Router() {
       children: [
         { element: <Navigate to="/login" />, index: true },
         {path: 'home', element:<UserListPage/>},
-        { path: 'artists', element:<PitchesPage/>/*<HomePage1 />*/ },
+        { path: 'artists', element:<CardTemplatesPage/>/*<HomePage1 />*/ },
         { path: 'feed', element: <FeedPage /> },
         { path: 'courses-stats', element: <CoursesStatsPage /> },
-        { path: 'media', element: <MediaPage /> }, // <StudentListPage />
+        { path: 'media', element: <NewslettersPage /> }, // <StudentListPage />
         { path: "announcement", element: <AnnouncementPage /> },
         { path: "settings", element: <SettingsPage /> },
         { path: "music-brief", element: <MusicBriefPage /> },

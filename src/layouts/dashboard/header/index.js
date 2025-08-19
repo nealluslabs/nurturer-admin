@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import { useState } from 'react';
 // @mui
 import { styled } from '@mui/material/styles';
-import { Box, AppBar, Toolbar, IconButton, InputBase } from '@mui/material';
+import { Box, AppBar, Toolbar, IconButton, InputBase, Typography } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import CancelIcon from '@mui/icons-material/Cancel';
 // components
@@ -11,7 +11,7 @@ import AccountPopover from './AccountPopover';
 
 // ----------------------------------------------------------------------
 
-const NAV_WIDTH = 280;
+const NAV_WIDTH = '20%';
 
 const HEADER_MOBILE = 64;
 
@@ -20,8 +20,8 @@ const HEADER_DESKTOP = 92;
 const StyledRoot = styled(AppBar)(({ theme }) => ({
   background: '#fff',
   boxShadow: '0 2px 8px 0 rgba(0,0,0,0.08)',
-  width: `calc(100% - ${NAV_WIDTH}px)`,
-  marginLeft: `${NAV_WIDTH}px`,
+  width: '80%',
+  marginLeft: NAV_WIDTH,
   zIndex: theme.zIndex.appBar,
   [theme.breakpoints.down('lg')]: {
     width: '100%',
@@ -75,7 +75,17 @@ export default function Header({ onOpenNav }) {
             >
               <SearchIcon sx={{ fontSize: '24px', color: '#333' }} />
             </IconButton>
-            <AccountPopover />
+            <Box sx={{ display: 'flex', alignItems: 'center', mr: 2 }}>
+              <Box sx={{ textAlign: 'right', mr: 2 }}>
+                <Typography sx={{ fontSize: '14px', fontWeight: 600, color: '#333', lineHeight: 1.2 }}>
+                  Demo User
+                </Typography>
+                <Typography sx={{ fontSize: '12px', color: '#666', lineHeight: 1.2 }}>
+                  User
+                </Typography>
+              </Box>
+              <AccountPopover />
+            </Box>
           </Box>
         ) : (
           <Box sx={{ display: 'flex', alignItems: 'center', width: '100%', minHeight: '48px' }}>

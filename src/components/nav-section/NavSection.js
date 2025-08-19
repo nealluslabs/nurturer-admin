@@ -56,10 +56,10 @@ function NavItem({ item }) {
       component={RouterLink}
       to={path}
       sx={{
-        fontSize: '12px',
+        fontSize: '15px',
         width: '100%',
         '& .MuiListItemIcon-root, & .MuiSvgIcon-root': {
-          fontSize: '12px',
+          fontSize: '15px',
         },
         '&:hover': {
           backgroundColor: 'rgba(255,255,255,0.5)',
@@ -87,7 +87,8 @@ function NavItem({ item }) {
         primary={title}
         sx={{
           color: '#FFFFFF',
-          fontSize: '12px',
+          fontSize: '15px',
+          fontWeight: 600,
           paddingY: path == location.pathname && '2px',
           paddingX: item.title == 'MEDIA' && '8px',
         }}

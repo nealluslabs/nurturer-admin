@@ -1,31 +1,31 @@
 import SvgColor from '../../../components/svg-color';
- import { FaUser } from "react-icons/fa";
- import { FaRegAddressCard } from "react-icons/fa";
-import { FaRegNewspaper } from "react-icons/fa6";
- import { IoIosSettings } from "react-icons/io";
+import { FaUser } from "react-icons/fa";
+import { MdDashboard } from "react-icons/md";
+import { MdEmail } from "react-icons/md";
+import { IoIosSettings } from "react-icons/io";
 
 const icon = (name) => <SvgColor src={`/assets/icons/navbar/${name}.svg`} sx={{ width: 1, height: 1 }} />;
 
 const navConfig = [
   {
-    title: 'USERS',
+    title: 'Users',
     path: '/dashboard/home',
-    icon: <FaUser />
+    icon: <FaUser style={{ fontSize: '14px' }} />
   },
   {
-    title: 'CARDS',
+    title: 'Cards',
     path: '/dashboard/artists',
-    icon: <FaRegAddressCard/>
+    icon: <MdDashboard style={{ fontSize: '14px' }} />
   },
   {
-    title: `NEWSLETTERS`,
+    title: `Newsletters`,
     path: '/dashboard/media',
-    icon: <FaRegNewspaper />,
+    icon: <MdEmail style={{ fontSize: '14px' }} />,
   },
   {
-    title: `SETTINGS`,
+    title: `Settings`,
     path: '/dashboard/settings',
-    icon: <IoIosSettings/>,
+    icon: <IoIosSettings style={{ fontSize: '14px' }} />,
   },
 //   {
 //     title: 'MUSIC BRIEFS',

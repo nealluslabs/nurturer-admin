@@ -12,14 +12,14 @@ export default function SettingsPage() {
   return (
     <>
       <Box mx={2} pr={4} mt={0.5}>
-        <Box sx={{ width: "70%", margin: "2px auto" }}>
+        <Box sx={{ width: "100%", margin: "2px 0" }}>
           <Typography
             sx={{ 
               fontFamily: "inter", 
               fontWeight: "bold", 
               fontSize: "18px", 
               display: "inline-block", 
-              borderBottom: "2px solid #DC2B8C" 
+              borderBottom: "2px solid #000000" 
             }}
             mb={3}
             px={0.5}
@@ -120,7 +120,7 @@ export default function SettingsPage() {
             <Box sx={{ width: "100%" }}>
               <Box
                 sx={{ 
-                  background: "linear-gradient(to right, #E61484, #3E256E)", 
+                  background: "linear-gradient(to right, #000000, #333333)", 
                   width: "128px", 
                   margin: "21px auto", 
                   borderRadius: "12px", 

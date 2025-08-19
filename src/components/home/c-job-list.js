@@ -229,11 +229,9 @@ export default function CJobList({ jobs }) {
         // fullWidth
         variant="contained"
         style={{
-          //backgroundColor: '#000000' ,
-          background: "linear-gradient(to right, #E61484, #3E256E)",
+          background: "linear-gradient(to right, #000000, #333333)",
           color: "white",
           width: "17%",
-
           fontSize: "15px",
         }}
         sx={{ mt: 7, mb: 2 }}
