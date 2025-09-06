@@ -26,7 +26,7 @@ export default function DashboardAppPage() {
   return (
     <>
       <Helmet>
-        <title> Dashboard | BONECOLE </title>
+        <title> Dashboard | Nurturer Admin </title>
       </Helmet>
 
       <Container maxWidth="xl">

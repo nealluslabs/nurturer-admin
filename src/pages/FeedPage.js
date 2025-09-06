@@ -7,7 +7,7 @@ export default function FeedPage() {
   return (
     <>
       <Helmet>
-        <title> CMC | FEED </title>
+        <title> Nurturer Admin | FEED </title>
       </Helmet>
     
       <Container maxWidth="xl">

@@ -148,18 +148,7 @@ export default function CJobs() {
        {/* <h1 style={{position:"relative",fontWeight:"bold",left:"0px",marginBottom:"40px",fontSize:"30px"}}>DASHBOARD</h1> */}
       
 
-       {jobArr.length ?
-           
-           <CJobList jobs={jobs} />
-           :
-           <center>
-           <Box sx={{ width: 300 }}>
-           <Skeleton />
-           <Skeleton animation="wave" />
-           <Skeleton animation={false} />
-         </Box>
-         </center>
-      }
+       <CJobList />
         </Container>
      
   );

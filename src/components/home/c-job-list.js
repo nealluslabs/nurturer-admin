@@ -17,21 +17,13 @@ import KeyboardArrowLeft from "@mui/icons-material/KeyboardArrowLeft";
 import KeyboardArrowRight from "@mui/icons-material/KeyboardArrowRight";
 import LastPageIcon from "@mui/icons-material/LastPage";
 import { styled } from "@mui/styles";
-import { Button, Grid, makeStyles } from "@material-ui/core";
-import { Link, NavLink, useNavigate} from "react-router-dom";
-//import SearchBar from "material-ui-search-bar";
-//import useRequest from "../../hooks/use-request";
-import { fetchJobs, getSingleStudent } from "../../redux/actions/job.action";
-import { fetchAllUsers } from "../../redux/actions/user.action";
+import { Button } from "@material-ui/core";
+import { useNavigate} from "react-router-dom";
 import Skeleton from '@mui/material/Skeleton';
-import {Typography,CardMedia,} from '@material-ui/core';
-//import CoolerBoxIMG from '../../assets/images/save-money.png';
 
-import { notifyErrorFxn, notifySuccessFxn } from 'src/utils/toast-fxn';
+import { notifyErrorFxn } from 'src/utils/toast-fxn';
 
-import { useDispatch, useSelector } from "react-redux";
-
-import { deleteSingleJob } from "../../redux/actions/job.action";
+import { useDispatch } from "react-redux";
 
 // Firestore DB
 import { db } from "src/config/firebase";
@@ -102,12 +94,12 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
     backgroundColor: '#000000',
     color: theme.palette.common.white,
-    width: '33.33%',
+    width: 'auto',
     textAlign: 'center',
   },
   [`&.${tableCellClasses.body}`]: {
     fontSize: 14,
-    width: '33.33%',
+    width: 'auto',
     textAlign: 'center',
   },
 }));
@@ -125,22 +117,14 @@ const originalJobList = [
   { id: 3, title: "Flutter Developer", fulldate: "01/01/2022"},
 ].sort((a, b) => (a.title < b.title ? -1 : 1));
 
-const useStyles = makeStyles({
-  table: {
-    minWidth: 650,
-  },
-});
-
-export default function CJobList({ jobs }) {
+export default function CJobList() {
   //search function
   const dispatch = useDispatch();
-  const [jobList, setJobList] = useState(jobs);
   const [loading, setLoading] = useState(false);
-  const [users, setUsers] = useState([]);
   
-  // Company/Contacts state
-  const [contactsData, setContactsData] = useState([]);
-  const [contactsLoading, setContactsLoading] = useState(true);
+  // Company state
+  const [companiesData, setCompaniesData] = useState([]);
+  const [companiesLoading, setCompaniesLoading] = useState(true);
   
   // Pagination for companies table
   const [companyPage, setCompanyPage] = React.useState(0);
@@ -148,74 +132,31 @@ export default function CJobList({ jobs }) {
 
 
   useEffect(() => {
-    // Fetch users from firebase using redux action (pattern used in codebase)
-    const fetchData = async () => {
+    // Fetch companies data from Firestore
+    const fetchCompaniesData = async () => {
       try {
-        // You may need to pass the current user's uid if required by fetchAllUsers
-        const res = await dispatch(fetchAllUsers());
-        if (res && res.payload) {
-          setUsers(res.payload);
-        }
-      } catch (err) {
-        // Optionally handle error
-      }
-    };
-    fetchData();
-  }, [dispatch]);
-
-  // Fetch contacts data from Firestore
-  useEffect(() => {
-    const fetchContactsData = async () => {
-      try {
-        setContactsLoading(true);
-        const snapshot = await db.collection("contacts").get();
-        const contacts = snapshot.docs.map((doc) => ({
+        setCompaniesLoading(true);
+        const snapshot = await db.collection("companies").get();
+        const companies = snapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),
         }));
-        console.log("Contacts data fetched successfully:", contacts);
-        setContactsData(contacts);
+        console.log("Companies data fetched successfully:", companies);
+        setCompaniesData(companies);
       } catch (error) {
-        console.error("Error fetching contacts data: ", error);
+        console.error("Error fetching companies data: ", error);
         notifyErrorFxn("Failed to fetch company data");
       } finally {
-        setContactsLoading(false);
+        setCompaniesLoading(false);
       }
     };
 
-    fetchContactsData();
+    fetchCompaniesData();
   }, []);
 
-  const [searched, setSearched] = useState("");
-  const classes = useStyles();
-  const requestSearch = (searchedVal) => {
-    const filteredRows = jobs?.filter((row) => {
-      return row.title.toLowerCase().includes(searchedVal.toLowerCase());
-    });
-    setJobList(filteredRows);
-  };
-
-  const cancelSearch = () => {
-    setSearched("");
-    requestSearch(searched);
-  };
   //search function end
 
   const navigate = useNavigate();
-  const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(5);
-
-  const emptyRows =
-    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - jobList.length) : 0;
-
-  const handleChangePage = (event, newPage) => {
-    setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
 
   // Company table pagination handlers
   const handleCompanyChangePage = (event, newPage) => {
@@ -227,41 +168,37 @@ export default function CJobList({ jobs }) {
     setCompanyPage(0);
   };
 
-  const viewContactFxn = (id) => {
-    console.log("View contact:", id);
-    // Add navigation logic for viewing contact details
+  const viewContactFxn = (company) => {
+    console.log("View company users:", company);
+    
+    // Use ONLY the companyID field from the company record (not the document ID)
+    const companyIdForMatching = company.companyID;
+    
+    if (!companyIdForMatching) {
+      notifyErrorFxn("Company ID not found in company record");
+      return;
+    }
+    
+    console.log("Using company ID field for user filtering:", companyIdForMatching);
+    
+    // Navigate to company users page with company data
+    navigate('/dashboard/company-users', { 
+      state: { 
+        companyId: companyIdForMatching,
+        companyName: company.companyName || company.name
+      } 
+    });
   };
-  const viewStudentFxn = (id) => {
 
-    setLoading(true)
-    dispatch(getSingleStudent(id))
-
-   setTimeout(() =>{navigate(`/dashboard/student-stats/`,{ state: { id:id } })},2500);
+  const handleAddCompany = () => {
+    navigate('/dashboard/add-company');
   };
-
-  const deleteJobFxn = (id) => {
-   const preserveId = id
-    
-  if(window.confirm("are you sure you want to delete this user?")){
-   
-    //dispatch(deleteSingleJob(id)); 
-    
-    notifySuccessFxn("Employee Successfully Deleted!");
-    
-   setTimeout(function(){window.location.reload()},3000);
-     
-  }
-}
   
 
 
 
   return (
     <>
-        {
-          jobs ? 
-          <>
-      
       {/* COMPANY TABLE */}
       <br/>
       <p 
@@ -281,12 +218,13 @@ export default function CJobList({ jobs }) {
           fontSize: "15px",
         }}
         sx={{ mt: 7, mb: 2 }}
+        onClick={handleAddCompany}
       >
-        FILTER
+        ADD COMPANY
       </Button></p><br/>
       <hr />
       
-      {contactsLoading ? (
+      {companiesLoading ? (
         <center>
           <Box sx={{ width: 300 }}>
             <Skeleton />
@@ -299,40 +237,44 @@ export default function CJobList({ jobs }) {
           <Table sx={{ maxWidth: 1500,tableLayout:"fixed" }} aria-label="companies pagination table">
             <TableHead>
               <TableRow>
-                <StyledTableCell>Name</StyledTableCell>
+                <StyledTableCell>Company Name</StyledTableCell>
                 <StyledTableCell align="right">Email</StyledTableCell>
+                <StyledTableCell align="right">Company ID</StyledTableCell>
                 <StyledTableCell align="right">Date</StyledTableCell>
                 <StyledTableCell align="right">View</StyledTableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {(companyRowsPerPage > 0
-                ? contactsData.slice(
+                ? companiesData.slice(
                     companyPage * companyRowsPerPage,
                     companyPage * companyRowsPerPage + companyRowsPerPage
                   )
-                : contactsData
-              ).map((contact) => (
-                <TableRow key={contact.id || Math.random()}>
+                : companiesData
+              ).map((company) => (
+                <TableRow key={company.id || Math.random()}>
                   <StyledTableCell component="th" scope="row">
-                    {contact.name 
-                      || contact.companyName 
-                      || contact.firstName && contact.lastName && `${contact.firstName} ${contact.lastName}`
-                      || contact.fullName
-                      || contact.displayName
-                      || contact.email
+                    {company.companyName 
+                      || company.name 
+                      || company.firstName && company.lastName && `${company.firstName} ${company.lastName}`
+                      || company.fullName
+                      || company.displayName
+                      || company.email
                       || "-"}
                   </StyledTableCell>
                   <StyledTableCell>
-                    {contact.email || "-"}
+                    {company.email || company.emailAddress || "-"}
                   </StyledTableCell>
                   <StyledTableCell>
-                    {contact.createdAt && typeof contact.createdAt !== "string"
-                      ? new Date(contact.createdAt.seconds * 1000).toDateString()
-                      : (contact.dateCreated && typeof contact.dateCreated !== "string"
-                          ? new Date(contact.dateCreated.seconds * 1000).toDateString()
-                          : (typeof contact.dateCreated === "string" && contact.dateCreated)
-                        ) || contact.date || "-"}
+                    {company.companyId || "-"}
+                  </StyledTableCell>
+                  <StyledTableCell>
+                    {company.createdAt && typeof company.createdAt !== "string"
+                      ? new Date(company.createdAt.seconds * 1000).toDateString()
+                      : (company.dateCreated && typeof company.dateCreated !== "string"
+                          ? new Date(company.dateCreated.seconds * 1000).toDateString()
+                          : (typeof company.dateCreated === "string" && company.dateCreated)
+                        ) || company.date || "-"}
                   </StyledTableCell>
                   <StyledTableCell>
                     <Button
@@ -343,7 +285,7 @@ export default function CJobList({ jobs }) {
                         color: "white",
                         fontSize: "12px",
                       }}
-                      onClick={() => viewContactFxn(contact.id)}
+                      onClick={() => viewContactFxn(company)}
                     >
                       VIEW
                     </Button>
@@ -355,8 +297,8 @@ export default function CJobList({ jobs }) {
               <TableRow>
                 <TablePagination
                   rowsPerPageOptions={[5, 10, 25, { label: "All", value: -1 }]}
-                  colSpan={4}
-                  count={contactsData.length}
+                  colSpan={5}
+                  count={companiesData.length}
                   rowsPerPage={companyRowsPerPage}
                   page={companyPage}
                   SelectProps={{
@@ -374,117 +316,6 @@ export default function CJobList({ jobs }) {
           </Table>
         </TableContainer>
       )}
-
-      {/* USERS TABLE */}      
-      <br/><br/>
-      <p 
-        style={{
-          fontSize: '26px', marginLeft: '5px',marginBottom:"1rem", color: 'black',display:"flex",justifyContent:"space-between"
-        }}
-      >
-        <b>ALL USERS</b>   
-      
-      <Button
-                   
-        type="button"
-        // fullWidth
-        variant="contained"
-        style={{
-          background: "linear-gradient(to right, #000000, #333333)",
-          color: "white",
-          width: "17%",
-          fontSize: "15px",
-        }}
-        sx={{ mt: 7, mb: 2 }}
-        
-      >
-        FILTER
-      </Button></p><br/>
-      <hr />
-      <TableContainer component={Paper}>
-        <Table sx={{ maxWidth: 1500,tableLayout:"fixed" }} aria-label="custom pagination table">
-          <TableHead>
-            <TableRow>
-              <StyledTableCell>Name</StyledTableCell>
-              <StyledTableCell align="right">Email</StyledTableCell>
-              <StyledTableCell align="right">Date</StyledTableCell>
-              {/*<StyledTableCell align="right">Industry</StyledTableCell>
-              <StyledTableCell align="center">State</StyledTableCell>*/}
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {(rowsPerPage > 0
-              ? jobs.slice(
-                  page * rowsPerPage,
-                  page * rowsPerPage + rowsPerPage
-                )
-              : jobs
-            ).map((job) => (
-              <TableRow key={job.id || Math.random()}>
-                <StyledTableCell component="th" scope="row">
-                  {job.fullName
-                    || (job.firstName && job.lastName && `${job.firstName} ${job.lastName}`)
-                    || job.displayName
-                    || job.name
-                    || job.username
-                    || job.title
-                    || job.email
-                    || "-"}
-                </StyledTableCell>
-                <StyledTableCell>
-                  {job.email || "-"}
-                </StyledTableCell>
-                <StyledTableCell>
-                  {job.registeredOn && typeof job.registeredOn !== "string"
-                    ? new Date(job.registeredOn.seconds * 1000).toDateString()
-                    : (job.accountCreated && typeof job.accountCreated !== "string"
-                        ? new Date(job.accountCreated.seconds * 1000).toDateString()
-                        : (typeof job.accountCreated === "string" && job.accountCreated)
-                      ) || job.fulldate || "-"}
-                </StyledTableCell>
-              </TableRow>
-            ))}
-
-            {/*emptyRows > 0 && (
-              <TableRow style={{ height: 53 * emptyRows }}>
-                <TableCell colSpan={6} />
-              </TableRow>
-            )*/}
-          </TableBody>
-          <TableFooter>
-            <TableRow>
-              <TablePagination
-                rowsPerPageOptions={[5, 10, 25, { label: "All", value: -1 }]}
-                colSpan={3}
-                count={jobList.length}
-                rowsPerPage={rowsPerPage}
-                page={page}
-                SelectProps={{
-                  inputProps: {
-                    "aria-label": "rows per page",
-                  },
-                  native: true,
-                }}
-                onPageChange={handleChangePage}
-                onRowsPerPageChange={handleChangeRowsPerPage}
-               ActionsComponent={TablePaginationActions}
-              />
-            </TableRow>
-          </TableFooter>
-        </Table>
-      </TableContainer>
-     
-          </>
-          :
-          <center>
-          <Box sx={{ width: 300 }}>
-          <Skeleton />
-          <Skeleton animation="wave" />
-          <Skeleton animation={false} />
-        </Box>
-        </center>
-        }
-
     </>
   );
 }

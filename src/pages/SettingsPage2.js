@@ -93,7 +93,7 @@ export default function SettingsPage() {
   return (
     <>
       <Helmet>
-        <title> Cooler | Settings </title>
+        <title> Nurturer Admin | Settings </title>
       </Helmet>
 
       <Container maxWidth="xl">

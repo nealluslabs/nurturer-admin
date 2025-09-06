@@ -47,7 +47,7 @@ export default function LoginPage() {
   return (
     <>
       <Helmet>
-        <title> Login | CMC Network </title>
+        <title> Login | Nurturer Admin </title>
       </Helmet>
 
       <StyledRoot>

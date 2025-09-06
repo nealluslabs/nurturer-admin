@@ -149,7 +149,7 @@ export default function UserPage() {
   return (
     <>
       <Helmet>
-        <title> CMC | 404 </title>
+        <title> Nurturer Admin | 404 </title>
       </Helmet>
 
       <Container>

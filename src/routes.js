@@ -70,6 +70,8 @@ import CardTemplatesPage from './pages/CardTemplatesPage';
 import NewslettersPage from './pages/NewslettersPage';
 import MusicBriefPage from './pages/MusicBriefPage';
 import OneOnOneSessionPage from './pages/OneOnOneSessionPage';
+import AddCompanyPage from './pages/AddCompanyPage';
+import CompanyUsersPage from './pages/CompanyUsersPage';
 
 export default function Router() {
   const routes = useRoutes([
@@ -83,6 +85,7 @@ export default function Router() {
       children: [
         { element: <Navigate to="/login" />, index: true },
         {path: 'home', element:<UserListPage/>},
+        {path: 'user', element:<UserListPage/>},
         { path: 'artists', element:<CardTemplatesPage/>/*<HomePage1 />*/ },
         { path: 'feed', element: <FeedPage /> },
         { path: 'courses-stats', element: <CoursesStatsPage /> },
@@ -121,6 +124,8 @@ export default function Router() {
         { path: 'edit-chapter', element: <EditChapter /> },
         { path: 'add-teacher', element: <AddTeacher /> },
         { path: 'add-order', element: <AddOrder /> },
+        { path: 'add-company', element: <AddCompanyPage /> },
+        { path: 'company-users', element: <CompanyUsersPage /> },
         { path: 'edit-teacher', element: <EditTeacher /> },
         { path: 'orders', element: <OrdersPage /> },
         // { path: 'my-cooler', element: <MyCoolersPage /> },

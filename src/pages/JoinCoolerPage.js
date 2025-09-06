@@ -78,7 +78,7 @@ useEffect(() => {
   return (
     <>
       <Helmet>
-        <title> CMC | CMC</title>
+        <title> Nurturer Admin | Nurturer Admin</title>
       </Helmet>
 
       <Container maxWidth="xl">

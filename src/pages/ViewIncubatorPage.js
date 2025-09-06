@@ -72,7 +72,7 @@ export default function ViewIncubatorPage() {
   return (
     <>
       <Helmet>
-        <title> View | Incubator </title>
+        <title> View | Nurturer Admin </title>
       </Helmet>
 
       <Container maxWidth="xl">
