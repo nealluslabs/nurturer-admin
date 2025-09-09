@@ -263,10 +263,10 @@ export default function CJobList() {
                       || "-"}
                   </StyledTableCell>
                   <StyledTableCell>
-                    {company.email || company.emailAddress || "-"}
+                    {company.email || company.companyContact || "-"}
                   </StyledTableCell>
                   <StyledTableCell>
-                    {company.companyId || "-"}
+                    {company.companyID || "-"}
                   </StyledTableCell>
                   <StyledTableCell>
                     {company.createdAt && typeof company.createdAt !== "string"

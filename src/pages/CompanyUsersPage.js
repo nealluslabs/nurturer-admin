@@ -270,7 +270,7 @@ export default function CompanyUsersPage() {
                     {user.email || "-"}
                   </StyledTableCell>
                   <StyledTableCell>
-                    {user.companyId || "-"}
+                    {user.companyID || "-"}
                   </StyledTableCell>
                   <StyledTableCell>
                     {user.registeredOn && typeof user.registeredOn !== "string"
