@@ -92,7 +92,7 @@ function TablePaginationActions(props) {
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
-    backgroundColor: '#000000',
+    backgroundColor: "#20dbe4",
     color: theme.palette.common.white,
     width: 'auto',
     textAlign: 'center',
@@ -212,7 +212,7 @@ export default function CJobList() {
         type="button"
         variant="contained"
         style={{
-          background: "linear-gradient(to right, #000000, #333333)",
+          background: "#20dbe4",
           color: "white",
           width: "17%",
           fontSize: "15px",
@@ -236,7 +236,7 @@ export default function CJobList() {
         <TableContainer component={Paper}>
           <Table sx={{ maxWidth: 1500,tableLayout:"fixed" }} aria-label="companies pagination table">
             <TableHead>
-              <TableRow>
+              <TableRow style={{ backgroundColor: "#20dbe4" }}>
                 <StyledTableCell>Company Name</StyledTableCell>
                 <StyledTableCell align="right">Email</StyledTableCell>
                 <StyledTableCell align="right">Company ID</StyledTableCell>
@@ -281,7 +281,7 @@ export default function CJobList() {
                       variant="contained"
                       size="small"
                       style={{
-                        background: "linear-gradient(to right, #000000, #333333)",
+                        background: "#20dbe4",
                         color: "white",
                         fontSize: "12px",
                       }}

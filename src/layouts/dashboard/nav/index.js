@@ -12,7 +12,7 @@ import Scrollbar from '../../../components/scrollbar';
 import NavSection from '../../../components/nav-section';
 //
 import navConfig from './config';
-import Image from "../../../assets/bridgetechlogo.png";
+import Image from "../../../assets/Group-2.png";
 import CMCLOGO from '../../../assets/images/CMCNetwork-logo.png';
 import { fontFamily } from '@mui/system';
 
@@ -131,7 +131,7 @@ export default function Nav({ openNav, onCloseNav }) {
               width: NAV_WIDTH,
               // bgcolor: 'background.default',
               // bgcolor: '#60A1EC',
-              bgcolor: 'black',
+              bgcolor: '#20dbe4',
               borderRightStyle: 'dashed',
             },
           }}

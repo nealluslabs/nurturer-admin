@@ -120,7 +120,7 @@ export default function SettingsPage() {
             <Box sx={{ width: "100%" }}>
               <Box
                 sx={{ 
-                  background: "linear-gradient(to right, #000000, #333333)", 
+                  background: "#20dbe4", 
                   width: "128px", 
                   margin: "21px auto", 
                   borderRadius: "12px", 
