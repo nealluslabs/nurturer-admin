@@ -25,7 +25,6 @@ import { notifyErrorFxn } from 'src/utils/toast-fxn';
 
 import { useDispatch } from "react-redux";
 
-// Firestore DB
 import { db } from "src/config/firebase";
 
 function TablePaginationActions(props) {
@@ -118,21 +117,17 @@ const originalJobList = [
 ].sort((a, b) => (a.title < b.title ? -1 : 1));
 
 export default function CJobList() {
-  //search function
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
   
-  // Company state
   const [companiesData, setCompaniesData] = useState([]);
   const [companiesLoading, setCompaniesLoading] = useState(true);
   
-  // Pagination for companies table
   const [companyPage, setCompanyPage] = React.useState(0);
   const [companyRowsPerPage, setCompanyRowsPerPage] = React.useState(5);
 
 
   useEffect(() => {
-    // Fetch companies data from Firestore
     const fetchCompaniesData = async () => {
       try {
         setCompaniesLoading(true);
@@ -141,7 +136,6 @@ export default function CJobList() {
           id: doc.id,
           ...doc.data(),
         }));
-        console.log("Companies data fetched successfully:", companies);
         setCompaniesData(companies);
       } catch (error) {
         console.error("Error fetching companies data: ", error);
@@ -154,11 +148,8 @@ export default function CJobList() {
     fetchCompaniesData();
   }, []);
 
-  //search function end
-
   const navigate = useNavigate();
 
-  // Company table pagination handlers
   const handleCompanyChangePage = (event, newPage) => {
     setCompanyPage(newPage);
   };
@@ -169,9 +160,6 @@ export default function CJobList() {
   };
 
   const viewContactFxn = (company) => {
-    console.log("View company users:", company);
-    
-    // Use ONLY the companyID field from the company record (not the document ID)
     const companyIdForMatching = company.companyID;
     
     if (!companyIdForMatching) {
@@ -179,9 +167,6 @@ export default function CJobList() {
       return;
     }
     
-    console.log("Using company ID field for user filtering:", companyIdForMatching);
-    
-    // Navigate to company users page with company data
     navigate('/dashboard/company-users', { 
       state: { 
         companyId: companyIdForMatching,
@@ -199,7 +184,6 @@ export default function CJobList() {
 
   return (
     <>
-      {/* COMPANY TABLE */}
       <br/>
       <p 
         style={{

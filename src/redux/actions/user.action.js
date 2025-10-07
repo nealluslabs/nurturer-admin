@@ -1,13 +1,11 @@
 import {fetchUsersPending, fetchUsersSuccess, fetchUsersFailed, fetchRealTimeUsersSuccess, fetchConnectedUserSuccess,
     initiatePending, initiateSuccess, initiateSuccess2, initiateFailed, clearUser, resetConnects} from '../reducers/user.slice';
+import { fetchEmployeeContactsStart, fetchEmployeeContactsSuccess, fetchEmployeeContactsError } from '../reducers/contacts.slice';
 // import { updateUsedConnection } from '../reducers/auth2.slice';
     import { db, fb, auth, storage } from '../../config/firebase';
 import { sendChat } from './chat.action';
 import { result } from 'lodash';
-import { clearChat } from '../reducers/chat.slice';
-  
-
-export const fetchAllUsers = (uid) => async (dispatch) => {
+import { clearChat } from '../reducers/chat.slice';export const fetchAllUsers = (uid) => async (dispatch) => {
     dispatch(fetchUsersPending());
     // db.collection('users').where("uid", "!=", fb.auth().currentUser.uid)
     var fetchUsers = db.collection('users')
@@ -454,4 +452,21 @@ export const fetchRealTimeConnections2 = (uid) => async (dispatch) => {
         
         //     return unsubscribe;
         //     };
+
+export const fetchEmployeeContacts = (contacterId) => async (dispatch) => {
+  dispatch(fetchEmployeeContactsStart());
+  
+  try {
+    const snapshot = await db.collection("contacts").get();
+    const allContacts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    const employeeContacts = allContacts.filter(contact => contact.contacterId === contacterId);
+    
+    dispatch(fetchEmployeeContactsSuccess({ 
+      contacts: employeeContacts, 
+      contacterId 
+    }));
+  } catch (error) {
+    dispatch(fetchEmployeeContactsError(error.message));
+  }
+};
         
