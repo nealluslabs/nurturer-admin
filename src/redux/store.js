@@ -9,6 +9,7 @@ import groupReducer from './reducers/group.slice';
 import inboxReducer from './reducers/chat.slice';
 import candidateReducer from './reducers/candidate.slice';
 import transactionReducer from './reducers/transactions.slice';
+import contactsReducer from './reducers/contacts.slice';
 // import chatReducer from '../chat-src/redux/slices/chat';
 
 
@@ -21,6 +22,7 @@ const reducers = combineReducers({
   inbox: inboxReducer,
   transaction: transactionReducer,
   candidates:candidateReducer,
+  contacts: contactsReducer,
 });
 
 const persistConfig = {

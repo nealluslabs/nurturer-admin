@@ -1,4 +1,4 @@
-import React, { use, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from 'react-router-dom';
 import PropTypes from "prop-types";
 import { useTheme } from "@mui/material/styles";
@@ -22,8 +22,8 @@ import { Button, Container, Typography } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import Skeleton from '@mui/material/Skeleton';
 import { notifyErrorFxn } from 'src/utils/toast-fxn';
-
-import { db } from "src/config/firebase";
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchEmployeeContacts } from 'src/redux/actions/user.action';
 
 function TablePaginationActions(props) {
   const theme = useTheme();
@@ -108,48 +108,23 @@ TablePaginationActions.propTypes = {
   rowsPerPage: PropTypes.number.isRequired,
 };
 
-export default function CompanyUsersPage() {
+export default function EmployeeContactsPage() {
   const location = useLocation();
   const navigate = useNavigate();
-  
-  const { companyId, companyName } = location.state || {};
-  
-  const [users, setUsers] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const dispatch = useDispatch();
+
+  const { contacterId, userName } = location.state || {};
+
+  const { employeeContacts, loading, error } = useSelector(state => state.contacts);
+
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
   useEffect(() => {
-    const fetchCompanyUsers = async () => {
-      if (!companyId) {
-        notifyErrorFxn("No company selected");
-        navigate('/dashboard/user');
-        return;
-      }
-
-      try {
-        setLoading(true);
-        
-        const snapshot = await db.collection("users").get();
-        
-        const allUsers = snapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-
-        const companyUsers = allUsers.filter(user => user.companyID === companyId);
-        
-        setUsers(companyUsers);
-      } catch (error) {
-        console.error("Error fetching company users: ", error);
-        notifyErrorFxn("Failed to fetch company users");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchCompanyUsers();
-  }, [companyId, navigate]);
+    if (contacterId) {
+      dispatch(fetchEmployeeContacts(contacterId));
+    }
+  }, [contacterId, dispatch]);
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -160,31 +135,22 @@ export default function CompanyUsersPage() {
     setPage(0);
   };
 
-  const handleBackToCompanies = () => {
-    navigate('/dashboard/user');
+  const handleBackToUsers = () => {
+    navigate('/dashboard/company-users');
   };
 
-  const handleViewUser = (user) => {
-    navigate('/dashboard/employee-contacts', { 
-      state: { 
-        contacterId: user.id,
-        userName: user.fullName || user.email || user.id
-      } 
-    });
-  };
-
-  if (!companyId) {
+  if (!contacterId) {
     return (
       <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
         <Typography variant="h6" color="error">
-          No company selected. Please go back and select a company.
+          No user selected. Please go back and select a user.
         </Typography>
-        <Button 
-          variant="contained" 
-          onClick={handleBackToCompanies}
+        <Button
+          variant="contained"
+          onClick={handleBackToUsers}
           sx={{ mt: 2 }}
         >
-          Back to Companies
+          Back to Users
         </Button>
       </Container>
     );
@@ -193,24 +159,24 @@ export default function CompanyUsersPage() {
   return (
     <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
       <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-        <IconButton 
-          onClick={handleBackToCompanies}
+        <IconButton
+          onClick={handleBackToUsers}
           sx={{ mr: 2 }}
         >
           <ArrowBackIcon />
         </IconButton>
         <Box>
           <Typography
-            sx={{ 
-              fontFamily: "inter", 
-              fontWeight: "bold", 
-              fontSize: "24px", 
-              display: "inline-block", 
-              borderBottom: "2px solid #000000" 
+            sx={{
+              fontFamily: "inter",
+              fontWeight: "bold",
+              fontSize: "24px",
+              display: "inline-block",
+              borderBottom: "2px solid #000000"
             }}
             px={0.5}
           >
-            {companyName || companyId} (Employees)
+            {userName || contacterId} (Contacts)
           </Typography>
         </Box>
       </Box>
@@ -223,73 +189,60 @@ export default function CompanyUsersPage() {
             <Skeleton animation={false} />
           </Box>
         </center>
-      ) : users.length === 0 ? (
+      ) : employeeContacts.length === 0 ? (
         <Paper sx={{ p: 4, textAlign: 'center' }}>
           <Typography variant="h6" color="text.secondary">
-            No users found for {companyName || `Company ID: ${companyId}`}
+            No contacts found for {userName || `User ID: ${contacterId}`}
           </Typography>
           <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-            Company ID: {companyId}
+            Contacter ID: {contacterId}
           </Typography>
         </Paper>
       ) : (
         <TableContainer component={Paper}>
-          <Table sx={{ maxWidth: 1500, tableLayout: "fixed" }} aria-label="company users table">
+          <Table sx={{ maxWidth: 1500, tableLayout: "fixed" }} aria-label="employee contacts table">
             <TableHead>
               <TableRow style={{ backgroundColor: "#20dbe4" }}>
-                <StyledTableCell>Name</StyledTableCell>
+                <StyledTableCell>Contact Name</StyledTableCell>
                 <StyledTableCell align="right">Email</StyledTableCell>
-                <StyledTableCell align="right">Company ID</StyledTableCell>
-                <StyledTableCell align="right">Date Registered</StyledTableCell>
-                <StyledTableCell align="right">View</StyledTableCell>
+                <StyledTableCell align="right">Phone</StyledTableCell>
+                <StyledTableCell align="right">Company</StyledTableCell>
+                <StyledTableCell align="right">Date Added</StyledTableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {(rowsPerPage > 0
-                ? users.slice(
+                ? employeeContacts.slice(
                     page * rowsPerPage,
                     page * rowsPerPage + rowsPerPage
                   )
-                : users
-              ).map((user) => (
-                <TableRow key={user.id || Math.random()}>
+                : employeeContacts
+              ).map((contact) => (
+                <TableRow key={contact.id || Math.random()}>
                   <StyledTableCell component="th" scope="row">
-                    {user.fullName
-                      || (user.firstName && user.lastName && `${user.firstName} ${user.lastName}`)
-                      || user.displayName
-                      || user.name
-                      || user.username
-                      || user.email
+                    {contact.fullName
+                      || (contact.firstName && contact.lastName && `${contact.firstName} ${contact.lastName}`)
+                      || contact.displayName
+                      || contact.name
+                      || contact.email
                       || "-"}
                   </StyledTableCell>
                   <StyledTableCell>
-                    {user.email || "-"}
+                    {contact.email || "-"}
                   </StyledTableCell>
                   <StyledTableCell>
-                    {user.companyID || "-"}
+                    {contact.phone || contact.phoneNumber || "-"}
                   </StyledTableCell>
                   <StyledTableCell>
-                    {user.registeredOn && typeof user.registeredOn !== "string"
-                      ? new Date(user.registeredOn.seconds * 1000).toDateString()
-                      : (user.accountCreated && typeof user.accountCreated !== "string"
-                          ? new Date(user.accountCreated.seconds * 1000).toDateString()
-                          : (typeof user.accountCreated === "string" && user.accountCreated)
-                        ) || user.fulldate || "-"}
+                    {contact.company || contact.companyName || "-"}
                   </StyledTableCell>
                   <StyledTableCell>
-                    <Button
-                      variant="contained"
-                      size="small"
-                      style={{
-                        background: "#20dbe4",
-                        color: "white",
-                        fontSize: "12px",
-                        boxShadow: 'none',
-                      }}
-                      onClick={() => handleViewUser(user)}
-                    >
-                      VIEW
-                    </Button>
+                    {contact.createdAt && typeof contact.createdAt !== "string"
+                      ? new Date(contact.createdAt.seconds * 1000).toDateString()
+                      : (contact.dateAdded && typeof contact.dateAdded !== "string"
+                          ? new Date(contact.dateAdded.seconds * 1000).toDateString()
+                          : (typeof contact.dateAdded === "string" && contact.dateAdded)
+                        ) || contact.date || "-"}
                   </StyledTableCell>
                 </TableRow>
               ))}
@@ -299,7 +252,7 @@ export default function CompanyUsersPage() {
                 <TablePagination
                   rowsPerPageOptions={[5, 10, 25, { label: "All", value: -1 }]}
                   colSpan={5}
-                  count={users.length}
+                  count={employeeContacts.length}
                   rowsPerPage={rowsPerPage}
                   page={page}
                   SelectProps={{
