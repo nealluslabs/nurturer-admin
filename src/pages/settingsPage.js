@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Box, Typography } from "@mui/material";
 
 export default function SettingsPage() {
-  const [emailQuery, setEmailQuery] = useState(`Generate an email subject of 5 words maximum, and 3 really short paragraphs of text and 5 articles to refer to, and fill in this object and return it as your answer(keep the object in valid JSON).For the id in each object of the bulletPoints array, please keep the id in the object below,do not delete them when generating your own object.Finally for the subject, make sure to put an emoji at the end of the generated subject:
+  const [emailQuery, setEmailQuery] = useState(`Generate an email subject of 5 words maximum, and 3 really short paragraphs of text and 5 articles to refer to, and fill in this object and return it as your answer(keep the object in valid JSON)Articles should be not be older than {$Frequency},and links for the articles should from these sites only - PWC, Deloitte, McKinsey, Visitage, Gallup, Josh Bersin, Harvard Business Review and Forbes..For the id in each object of the bulletPoints array, please keep the id in the object below,do not delete them when generating your own object.Finally for the subject, make sure to put an emoji at the end of the generated subject:
   {"subject":" ",
   messageType:"Email",
   "messageStatus":"Pending"
@@ -47,7 +47,7 @@ export default function SettingsPage() {
 
   make each paragraph relevant to the user's job: {$JobTitle},company:{$Company},industry:{$Industry}  and interests:{$Interests}.Please make sure each article fetched is from this year. Please go through the javascript object {$JSON.stringify(previousMessage)}, and try to adapt to my writing style,so you can sound like me,when providing your answer`
  );
-  const [eventQuery, setEventQuery] = useState(`Generate an email subject of 5 words maximum, and 3 really short paragraphs of text and 5 articles to refer to, and fill in this object and return it as your answer(keep the object in valid JSON).For the id in each object of the bulletPoints array, please keep the id in the object below,do not delete them when generating your own object.Finally for the subject, make sure to put an emoji at the end of the generated subject:
+  const [eventQuery, setEventQuery] = useState(`Generate an email subject of 5 words maximum, and 3 really short paragraphs of text and 5 articles to refer to, and fill in this object and return it as your answer(keep the object in valid JSON)Articles should be not be older than {$Frequency},and links for the articles should from these sites only - PWC, Deloitte, McKinsey, Visitage, Gallup, Josh Bersin, Harvard Business Review and Forbes..For the id in each object of the bulletPoints array, please keep the id in the object below,do not delete them when generating your own object.Finally for the subject, make sure to put an emoji at the end of the generated subject:
   {"subject":" ",
   messageType:"Email",
   "messageStatus":"Pending"
@@ -286,7 +286,7 @@ export default function SettingsPage() {
             </Box>
 
             <Box sx={{ display: 'flex', alignItems: 'center', marginBottom: '21px' }}>
-              <Typography sx={{ minWidth: 120, fontSize: '15px', fontWeight: 500 }}>Frequency:</Typography>
+              <Typography sx={{ minWidth: 120, fontSize: '15px', fontWeight: 500 }}>Send Date:</Typography>
               <input 
                 value={frequency}
                 onChange={(e) => setFrequency(e.target.value)}
