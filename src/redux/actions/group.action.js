@@ -14,6 +14,16 @@ import { isItLoading, saveAllGroup ,saveEmployeer,
 import firebase from "firebase/app";
 
 import { getTeachers } from './job.action';
+import { SESClient, SendEmailCommand } from "@aws-sdk/client-ses";
+
+const sesClient = new SESClient({
+  region: "eu-north-1", // e.g. "us-east-1" - come and remove these environemt variables before pushing o !
+  credentials: {
+    accessKeyId:process.env.REACT_APP_ACCESSKEYID_NURTURER,
+    secretAccessKey:process.env.REACT_APP_SECRETACCESSKEY_NURTURER,
+  },
+});
+
 
 export const createGroup = (groupData, user, file, navigate, setLoading, url) => async (dispatch) => {
   var options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
@@ -104,6 +114,1042 @@ export const createAnnouncement = (groupData) => async (dispatch) => {
     })
   })
 } 
+
+
+export const updateTriggerDaysForAllContacts = (newTriggerDays) => async (dispatch) => {
+  try {
+    const snapshot = await db.collection("contacts").get();
+
+    const batch = db.batch(); // batch updates are faster and atomic
+
+    snapshot.forEach((doc) => {
+      const docRef = db.collection("contacts").doc(doc.id);
+      batch.update(docRef, { triggerDays: newTriggerDays });
+    });
+
+    await batch.commit();
+
+    notifySuccessFxn("Trigger days updated for all contacts ✅");
+  } catch (error) {
+    console.error("Error updating triggerDays for all contacts:", error);
+    notifyErrorFxn("Failed to update trigger days ❌");
+  }
+};
+
+
+
+
+export const updateSettingsForAdminSettings = (updateObject) => async (dispatch) => {
+
+  
+
+
+  const docRef = db.collection("adminSettings").doc("KjE2Xz7avxs3Y5w4eXXF");
+     docRef.update(
+      {
+        triggerDays: updateObject.frequency ,
+        emailQuery:updateObject.emailQuery,
+        eventQuery:updateObject.eventQuery,
+        birthdayQuery:updateObject.birthdayQuery,
+        holidayQuery:updateObject.holidayQuery
+      }
+    ).then(()=>{
+      notifySuccessFxn("Settings Updated!")
+    })
+
+//dispatch(updateTriggerDaysForAllContacts(e.target.value)) //YOU STOPPED HERE DAGOGO - OCT 20
+
+
+
+
+}
+
+
+
+
+
+export const simulateCronJob =   () => async (dispatch) => {
+  try {
+    console.log(" SIMULATED Cron job triggered at:", new Date().toISOString());
+
+    let adminSettings
+
+    await db.collection("adminSettings").doc("KjE2Xz7avxs3Y5w4eXXF").get().then((doc)=>{
+     if(doc.exists){
+      adminSettings = doc.data()
+     }
+    });
+
+   
+
+  
+    const snapshot = await db.collection("contacts").get();
+  
+    if (snapshot.empty) {
+     notifyErrorFxn("No Contacts in database to update!")
+      return 
+    }
+  
+    let batch = db.batch();
+    let writeCount = 0;
+    let committedBatches = 0;
+  
+    for (const doc of snapshot.docs) {
+      const data = doc.data();
+      const contacterId = data.contacterId;
+  
+      const userDoc = await db.collection("users").doc(contacterId).get();
+      if (!userDoc.exists) {
+        console.log(`No user found for contacterId: ${contacterId}`);
+        continue;
+      }
+
+
+      if (!adminSettings) {
+        notifyErrorFxn("There was an issue fetching prompts, please try again")
+        return;
+      }
+
+      //MY SETUP VARIABLES FOR BIRTHDAY
+      const birthdayParts = data && data.birthday.split('/'); // Split the date string (DD/MM/YYYY)
+      const birthday = new Date(birthdayParts[2], birthdayParts[1] - 1, birthdayParts[0]); // Create a Date object
+      const currentDate = new Date(); // Today's date
+
+    // Calculate the difference in time (in milliseconds)
+    const timeDifferenceBirthday = birthday - currentDate;
+
+  // Convert the difference from milliseconds to a number (e.g., days, hours, etc.)
+  const currentBirthdaySendDateNum = timeDifferenceBirthday; // In milliseconds
+
+  const currentBirthdaySendDateNumInDays = Math.floor(timeDifferenceBirthday / (1000 * 60 * 60 * 24));
+
+ //MY SETUP VARIABLES FOR BIRTHDAY - END
+
+
+// MY SETUP VARIABLES FOR HOLIDAYS
+
+// Define the holiday dates for the current year
+const currentYear = currentDate.getFullYear();
+
+// Christmas: December 25
+const christmas = new Date(currentYear, 11, 25); // Month is 0-indexed, so 11 = December
+
+// New Year's Day: January 1
+const newYearsDay = new Date(currentYear+1, 0, 1);
+
+// Independence Day: July 4
+const independenceDay = new Date(currentYear, 6, 4); // 6 = July
+
+// Function to get the difference in days (positive number)
+const getDaysDifference = (holiday) => {
+  const timeDifference = holiday - currentDate;
+  return Math.floor(timeDifference / (1000 * 60 * 60 * 24)); // Convert milliseconds to days
+};
+
+// Calculate the difference in days for each holiday
+const christmasDays = getDaysDifference(christmas);
+const newYearsDays = getDaysDifference(newYearsDay);
+const independenceDays = getDaysDifference(independenceDay);
+
+
+// MY SETUP VARIABLES FOR HOLIDAY END
+  
+      if (data.sendDate && data.frequency && data.frequency !=="None") {
+        const currentSendDateNum = Number(data.sendDate);
+        // currentBirthdaySendDateNum = Number(data.birthdaySendDate && data.birthdaySendDate); //not using this
+       // const currentHolidaySendDateNum = Number(data.holidaySendDate && data.holidaySendDate);
+  
+        let updatedSendDate = data.sendDate;
+        let updatedBirthdaySendDate =data.birthdaySendDate && data.birthdaySendDate; //dont need this anymore - i am using the contacts birthday
+        let updatedHolidaySendDate =data.holidaySendDate && data.holidaySendDate; //dont need this anymore - i am using hardcoded days of july 4, christmans, new years
+        let aiGeneratedMessage;
+  
+        if (currentSendDateNum === adminSettings.triggerDays) {
+          aiGeneratedMessage = await generateAiMessage(
+            "Email",
+            data.frequencyInDays,
+            data.name,
+            data.jobTitle,
+            data.company,
+            data.industry,
+            data.interests,
+            userDoc.data().queryMsg?.find((item) => item.messageType === "Email"),
+            
+          );
+        }
+  
+        if (currentBirthdaySendDateNumInDays === adminSettings.triggerDays) {
+          aiGeneratedMessage = await generateAiMessage(
+            "Birthday",
+            data.birthdayFrequencyInDays,
+            data.name,
+            data.jobTitle,
+            data.company,
+            data.industry,
+            data.interests,
+            userDoc.data().queryMsg?.find((item) => item.messageType === "Birthday"),
+           
+          );
+        }
+  
+        if (christmasDays === adminSettings.triggerDays   ) {
+          aiGeneratedMessage = await generateAiMessage(
+            "Christmas",
+            data.holidayFrequencyInDays,
+            data.name,
+            data.jobTitle,
+            data.company,
+            data.industry,
+            data.interests,
+            userDoc.data().queryMsg?.find((item) => item.messageType === "Holiday"),
+           
+          );
+        }
+        if (newYearsDays === adminSettings.triggerDays  ) {
+          aiGeneratedMessage = await generateAiMessage(
+            "New Years",
+            data.holidayFrequencyInDays,
+            data.name,
+            data.jobTitle,
+            data.company,
+            data.industry,
+            data.interests,
+            userDoc.data().queryMsg?.find((item) => item.messageType === "Holiday"),
+            
+          );
+        }
+        if ( independenceDays === adminSettings.triggerDays  ) {
+          aiGeneratedMessage = await generateAiMessage(
+            "Independence",
+            data.holidayFrequencyInDays,
+            data.name,
+            data.jobTitle,
+            data.company,
+            data.industry,
+            data.interests,
+            userDoc.data().queryMsg?.find((item) => item.messageType === "Holiday"),
+            
+          );
+        }
+        
+        /*else {
+          updatedSendDate = String(currentSendDateNum - 1);
+         
+        }*/
+  
+        console.log("RAW MESSAGE THAT WAS JUST GENERATED BY AI -->", aiGeneratedMessage);
+        //may need to shorten this ai prompt so it will work on this free tier CRON
+  
+        //we are updating the sendDate EVERYDAY, WHETHER AN AI MESSAGE IS GENERATED OR NOT
+        updatedSendDate = String(currentSendDateNum - 1);
+
+        const updatedMessage = {
+          firstParagraph: aiGeneratedMessage?.firstParagraph,
+          secondParagraph: aiGeneratedMessage?.secondParagraph,
+          thirdParagraph: aiGeneratedMessage?.thirdParagraph,
+          bulletPoints: aiGeneratedMessage?.bulletPoints,
+          subject: aiGeneratedMessage?.subject,
+          messageType: aiGeneratedMessage?.messageType || "Email",
+        };
+  
+        console.log("UPDATED UPDATED MESSAGE IS -->", updatedMessage);
+  
+
+
+        //RELEASING EMAILS WHEN SEND DATE BECOMES ZERO
+
+
+        if( currentSendDateNum === 0 ){
+          //RELEASE EMAIL HERE - THE MOST RECENT ONE IN THE ARRAY THAT HAS TYPE EMAIL
+
+
+          try {
+            const params = {
+              Destination: {
+                ToAddresses: [data.email], // recipient email
+              },
+              Message: {
+                Body: {
+                  Text: {
+                    Data: data.messageQueue && data.messageQueue[data.messageQueue.length-1] && data.messageQueue.length[data.messageQueue.length-1].subject,
+                  },
+                  Html: {
+                    Data: ` <h2>Nurturer - ${data.messageQueue && data.messageQueue[data.messageQueue.length-1] && data.messageQueue.length[data.messageQueue.length-1].subject}</h2>
+                           <p>Dear <strong>${data.name && data.name}</strong>,</p>
+                           <br/>
+                           <br/>
+    
+                           
+                           <p>${data.messageQueue && data.messageQueue[data.messageQueue.length-1] && data.messageQueue.length[data.messageQueue.length-1].firstParagraph}.</p>
+                           <br/>
+    
+    
+                            <p>${data.messageQueue && data.messageQueue[data.messageQueue.length-1] && data.messageQueue.length[data.messageQueue.length-1].secondParagraph}</p>
+                            <br/>
+                            <p>${data.messageQueue && data.messageQueue[data.messageQueue.length-1] && data.messageQueue.length[data.messageQueue.length-1].thirdParagraph}</p>
+                            <br/>
+        
+                           
+        
+                            <p>Warm Regards</p>,
+                            <p>– The Nurturer Team</p>`
+                  },
+                },
+                Subject: {
+                  Data: data.messageQueue && data.messageQueue[data.messageQueue.length-1] && data.messageQueue.length[data.messageQueue.length-1].subject,
+                },
+              }, 
+              Source: 'info@nurturer.ai'//process.env.SES_FROM_EMAIL, // must be a verified SES sender
+            };
+        
+            const command = new SendEmailCommand(params);
+            const response = await sesClient.send(command);
+        
+            console.log("✅ Email sent successfully:", response.MessageId);
+           // return response;
+          } catch (error) {
+            console.error("❌ Error sending email:", error);
+            throw error;
+          }
+
+          //SEND EMAIL END
+    
+
+          const updatedMessageQueue = [...data.messageQueue];
+
+          // Find the index of the most recent email (assuming array is in chronological order)
+          // If not, we’ll sort it before finding
+          const emailMessages = updatedMessageQueue
+            .map((msg, index) => ({ ...msg, index }))
+            .filter(msg => msg.messageType === "Email");
+        
+          if (emailMessages.length > 0) {
+            // Get the last (most recent) email
+            const mostRecentEmail = emailMessages[emailMessages.length - 1];
+            const msgIndex = mostRecentEmail.index;
+        
+            // Update the messageStatus
+            updatedMessageQueue[msgIndex] = {
+              ...updatedMessageQueue[msgIndex],
+              messageStatus: "Sent",
+            };
+
+          batch.update(doc.ref, {
+           
+            messageQueue: updatedMessageQueue,
+          });
+        }
+
+
+        if( currentBirthdaySendDateNum === 0 ){
+         //RELEASE EMAIL HERE - THE MOST RECENT ONE IN THE ARRAY THAT HAS TYPE BIRTHDAY
+
+         try {
+          const params = {
+            Destination: {
+              ToAddresses: [data.email], // recipient email
+            },
+            Message: {
+              Body: {
+                Text: {
+                  Data: data.messageQueue && data.messageQueue[data.messageQueue.length-1] && data.messageQueue.length[data.messageQueue.length-1].subject,
+                },
+                Html: {
+                  Data: ` <h2>Nurturer - ${data.messageQueue && data.messageQueue[data.messageQueue.length-1] && data.messageQueue.length[data.messageQueue.length-1].subject}</h2>
+                         <p>Dear <strong>${data.name && data.name}</strong>,</p>
+                         <br/>
+                         <br/>
+  
+                         
+                         <p>${data.messageQueue && data.messageQueue[data.messageQueue.length-1] && data.messageQueue.length[data.messageQueue.length-1].firstParagraph}.</p>
+                         <br/>
+  
+  
+                          <p>${data.messageQueue && data.messageQueue[data.messageQueue.length-1] && data.messageQueue.length[data.messageQueue.length-1].firstParagraph}</p>
+                          <br/>
+                          <p>${data.messageQueue && data.messageQueue[data.messageQueue.length-1] && data.messageQueue.length[data.messageQueue.length-1].firstParagraph}</p>
+                          <br/>
+      
+                         
+      
+                          <p>Warm Regards</p>,
+                          <p>– The Nurturer Team</p>`
+                },
+              },
+              Subject: {
+                Data: data.messageQueue && data.messageQueue[data.messageQueue.length-1] && data.messageQueue.length[data.messageQueue.length-1].subject,
+              },
+            }, 
+            Source: 'info@nurturer.ai'//process.env.SES_FROM_EMAIL, // must be a verified SES sender
+          };
+      
+          const command = new SendEmailCommand(params);
+          const response = await sesClient.send(command);
+      
+          console.log("✅ Email sent successfully:", response.MessageId);
+         // return response;
+        } catch (error) {
+          console.error("❌ Error sending email:", error);
+          throw error;
+        }
+  
+        //SEND EMAIL END
+
+         const updatedMessageQueue = [...data.messageQueue];
+
+          // Find the index of the most recent email (assuming array is in chronological order)
+          // If not, we’ll sort it before finding
+          const emailMessages = updatedMessageQueue
+            .map((msg, index) => ({ ...msg, index }))
+            .filter(msg => msg.messageType === "Birthday");
+        
+          if (emailMessages.length > 0) {
+            // Get the last (most recent) email
+            const mostRecentEmail = emailMessages[emailMessages.length - 1];
+            const msgIndex = mostRecentEmail.index;
+        
+            // Update the messageStatus
+            updatedMessageQueue[msgIndex] = {
+              ...updatedMessageQueue[msgIndex],
+              messageStatus: "Sent",
+            };
+
+          batch.update(doc.ref, {
+           
+            messageQueue: updatedMessageQueue,
+          });
+        }
+
+        }
+        if(  christmasDays === 0  ){
+           //RELEASE EMAIL HERE - THE MOST RECENT ONE IN THE ARRAY THAT HAS TYPE BIRTHDAY
+
+         try {
+          const params = {
+            Destination: {
+              ToAddresses: [data.email], // recipient email
+            },
+            Message: {
+              Body: {
+                Text: {
+                  Data: data.messageQueue && data.messageQueue[data.messageQueue.length-1] && data.messageQueue.length[data.messageQueue.length-1].subject,
+                },
+                Html: {
+                  Data: ` <h2>Nurturer - ${data.messageQueue && data.messageQueue[data.messageQueue.length-1] && data.messageQueue.length[data.messageQueue.length-1].subject}</h2>
+                         <p>Dear <strong>${data.name && data.name}</strong>,</p>
+                         <br/>
+                         <br/>
+  
+                         
+                         <p>${data.messageQueue && data.messageQueue[data.messageQueue.length-1] && data.messageQueue.length[data.messageQueue.length-1].firstParagraph}.</p>
+                         <br/>
+  
+  
+                          <p>${data.messageQueue && data.messageQueue[data.messageQueue.length-1] && data.messageQueue.length[data.messageQueue.length-1].firstParagraph}</p>
+                          <br/>
+                          <p>${data.messageQueue && data.messageQueue[data.messageQueue.length-1] && data.messageQueue.length[data.messageQueue.length-1].firstParagraph}</p>
+                          <br/>
+      
+                         
+      
+                          <p>Warm Regards</p>,
+                          <p>– The Nurturer Team</p>`
+                },
+              },
+              Subject: {
+                Data: data.messageQueue && data.messageQueue[data.messageQueue.length-1] && data.messageQueue.length[data.messageQueue.length-1].subject,
+              },
+            }, 
+            Source: 'info@nurturer.ai'//process.env.SES_FROM_EMAIL, // must be a verified SES sender
+          };
+      
+          const command = new SendEmailCommand(params);
+          const response = await sesClient.send(command);
+      
+          console.log("✅ Email sent successfully:", response.MessageId);
+         // return response;
+        } catch (error) {
+          console.error("❌ Error sending email:", error);
+          throw error;
+        }
+  
+        //SEND EMAIL END
+
+
+          const updatedMessageQueue = [...data.messageQueue];
+
+          // Find the index of the most recent email (assuming array is in chronological order)
+          // If not, we’ll sort it before finding
+          const emailMessages = updatedMessageQueue
+            .map((msg, index) => ({ ...msg, index }))
+            .filter(msg => msg.messageType === "Holiday");
+        
+          if (emailMessages.length > 0) {
+            // Get the last (most recent) email
+            const mostRecentEmail = emailMessages[emailMessages.length - 1];
+            const msgIndex = mostRecentEmail.index;
+        
+            // Update the messageStatus
+            updatedMessageQueue[msgIndex] = {
+              ...updatedMessageQueue[msgIndex],
+              messageStatus: "Sent",
+            };
+
+          batch.update(doc.ref, {
+           
+           
+            messageQueue: updatedMessageQueue,
+          });
+        }
+
+      }
+        if( independenceDays===0  ){
+           //RELEASE EMAIL HERE - THE MOST RECENT ONE IN THE ARRAY THAT HAS TYPE BIRTHDAY
+
+         try {
+          const params = {
+            Destination: {
+              ToAddresses: [data.email], // recipient email
+            },
+            Message: {
+              Body: {
+                Text: {
+                  Data: data.messageQueue && data.messageQueue[data.messageQueue.length-1] && data.messageQueue.length[data.messageQueue.length-1].subject,
+                },
+                Html: {
+                  Data: ` <h2>Nurturer - ${data.messageQueue && data.messageQueue[data.messageQueue.length-1] && data.messageQueue.length[data.messageQueue.length-1].subject}</h2>
+                         <p>Dear <strong>${data.name && data.name}</strong>,</p>
+                         <br/>
+                         <br/>
+  
+                         
+                         <p>${data.messageQueue && data.messageQueue[data.messageQueue.length-1] && data.messageQueue.length[data.messageQueue.length-1].firstParagraph}.</p>
+                         <br/>
+  
+  
+                          <p>${data.messageQueue && data.messageQueue[data.messageQueue.length-1] && data.messageQueue.length[data.messageQueue.length-1].firstParagraph}</p>
+                          <br/>
+                          <p>${data.messageQueue && data.messageQueue[data.messageQueue.length-1] && data.messageQueue.length[data.messageQueue.length-1].firstParagraph}</p>
+                          <br/>
+      
+                         
+      
+                          <p>Warm Regards</p>,
+                          <p>– The Nurturer Team</p>`
+                },
+              },
+              Subject: {
+                Data: data.messageQueue && data.messageQueue[data.messageQueue.length-1] && data.messageQueue.length[data.messageQueue.length-1].subject,
+              },
+            }, 
+            Source: 'info@nurturer.ai'//process.env.SES_FROM_EMAIL, // must be a verified SES sender
+          };
+      
+          const command = new SendEmailCommand(params);
+          const response = await sesClient.send(command);
+      
+          console.log("✅ Email sent successfully:", response.MessageId);
+         // return response;
+        } catch (error) {
+          console.error("❌ Error sending email:", error);
+          throw error;
+        }
+  
+        //SEND EMAIL END
+
+          const updatedMessageQueue = [...data.messageQueue];
+
+          // Find the index of the most recent email (assuming array is in chronological order)
+          // If not, we’ll sort it before finding
+          const emailMessages = updatedMessageQueue
+            .map((msg, index) => ({ ...msg, index }))
+            .filter(msg => msg.messageType === "Holiday");
+        
+          if (emailMessages.length > 0) {
+            // Get the last (most recent) email
+            const mostRecentEmail = emailMessages[emailMessages.length - 1];
+            const msgIndex = mostRecentEmail.index;
+        
+            // Update the messageStatus
+            updatedMessageQueue[msgIndex] = {
+              ...updatedMessageQueue[msgIndex],
+              messageStatus: "Sent",
+            };
+
+
+
+          batch.update(doc.ref, {
+            
+            
+            messageQueue: updatedMessageQueue,
+          });
+        }
+      }
+
+        if( newYearsDays===0  ){
+          //RELEASE EMAIL HERE - THE MOST RECENT ONE IN THE ARRAY THAT HAS TYPE BIRTHDAY
+
+          try {
+            const params = {
+              Destination: {
+                ToAddresses: [data.email], // recipient email
+              },
+              Message: {
+                Body: {
+                  Text: {
+                    Data: data.messageQueue && data.messageQueue[data.messageQueue.length-1] && data.messageQueue.length[data.messageQueue.length-1].subject,
+                  },
+                  Html: {
+                    Data: ` <h2>Nurturer - ${data.messageQueue && data.messageQueue[data.messageQueue.length-1] && data.messageQueue.length[data.messageQueue.length-1].subject}</h2>
+                    
+                           <p>Dear <strong>${data.name && data.name}</strong>,</p>
+                           <br/>
+                           <br/>
+    
+                           
+                           <p>${data.messageQueue && data.messageQueue[data.messageQueue.length-1] && data.messageQueue.length[data.messageQueue.length-1].firstParagraph}.</p>
+                           <br/>
+    
+    
+                            <p>${data.messageQueue && data.messageQueue[data.messageQueue.length-1] && data.messageQueue.length[data.messageQueue.length-1].secondParagraph}</p>
+                            <br/>
+                            <p>${data.messageQueue && data.messageQueue[data.messageQueue.length-1] && data.messageQueue.length[data.messageQueue.length-1].thirdParagraph}</p>
+                            <br/>
+        
+                           
+        
+                            <p>Warm Regards</p>,
+                            <p>– The Nurturer Team</p>`
+                  },
+                },
+                Subject: {
+                  Data: data.messageQueue && data.messageQueue[data.messageQueue.length-1] && data.messageQueue.length[data.messageQueue.length-1].subject,
+                },
+              }, 
+              Source: 'info@nurturer.ai'//process.env.SES_FROM_EMAIL, // must be a verified SES sender
+            };
+        
+            const command = new SendEmailCommand(params);
+            const response = await sesClient.send(command);
+        
+            console.log("✅ Email sent successfully:", response.MessageId);
+           // return response;
+          } catch (error) {
+            console.error("❌ Error sending email:", error);
+            throw error;
+          }
+    
+          //SEND EMAIL END
+
+          const updatedMessageQueue = [...data.messageQueue];
+
+          // Find the index of the most recent email (assuming array is in chronological order)
+          // If not, we’ll sort it before finding
+          const emailMessages = updatedMessageQueue
+            .map((msg, index) => ({ ...msg, index })) //CAPTURE THE INDEX B4 FILTERING - GENIUS!
+            .filter(msg => msg.messageType === "Holiday");
+        
+          if (emailMessages.length > 0) {
+            // Get the last (most recent) email
+            const mostRecentEmail = emailMessages[emailMessages.length - 1];
+            const msgIndex = mostRecentEmail.index;
+        
+            // Update the messageStatus
+            updatedMessageQueue[msgIndex] = {
+              ...updatedMessageQueue[msgIndex],
+              messageStatus: "Sent",
+            };
+
+
+
+          batch.update(doc.ref, {
+            
+            
+            messageQueue: updatedMessageQueue,
+          });
+        }
+        }
+      }
+
+        //RELEASING EMAIL WHEN SEND DATE BECOMES ZERO - END
+
+
+    if( currentSendDateNum === adminSettings.triggerDays||currentBirthdaySendDateNum === adminSettings.triggerDays|| christmasDays === adminSettings.triggerDays || independenceDays===adminSettings.triggerDays ||newYearsDays ===adminSettings.triggerDays ){
+      //WHEN ONE OF THESE DATE IS adminSettings.triggerDays, AN AI MESSAGE WILL BE GENERATED FOR SURE
+      batch.update(doc.ref, {
+        sendDate: updatedSendDate,
+        //birthdaySendDate: updatedBirthdaySendDate,
+        //holidaySendDate: updatedHolidaySendDate,
+        messageQueue: admin.firestore.FieldValue.arrayUnion(updatedMessage),
+      });
+    }
+    
+    else{
+      //OTHERWISE , WHEN NONE OF THESE DATES ARE adminSettings.triggerDays, WE ARE NOT UPDATING THE MESSAGE QUEUE, JUST REDUCING THE COUNTDOWN
+       batch.update(doc.ref, {
+          sendDate: updatedSendDate,
+          //birthdaySendDate: updatedBirthdaySendDate,
+         // holidaySendDate: updatedHolidaySendDate,
+        
+        });
+      }
+        writeCount++;
+  
+        // 🔑 If batch reaches 500 writes, commit and start a new one
+        if (writeCount === 500) {
+          await batch.commit();
+          committedBatches++;
+          console.log(`Committed batch #${committedBatches} with 500 writes`); 
+          batch = db.batch();
+          writeCount = 0;
+        }
+      }
+    }
+  
+    // Commit any remaining writes
+    if (writeCount > 0) {
+      await batch.commit();
+      committedBatches++;
+      console.log(`Committed final batch #${committedBatches} with ${writeCount} writes`);
+    }
+  
+
+    //return res.status(200).json({ message: `Contacts updated successfully. Total batches: ${committedBatches}` });
+  
+    return notifySuccessFxn("Contacts Updated Successfully, emails have been sent out!")
+  } catch (error) {
+    console.error(error);
+    //return res.status(500).json({ error: error.message });
+
+   return notifyErrorFxn("Error Updating contacts, please try again!")
+  }
+  
+}
+
+
+
+ export const generateAiMessage = async(messageType,Frequency,Name,JobTitle,Company,Industry,Interests,previousMessage) =>  {
+            
+ 
+
+
+  //AUG 29TH 2025 - USUALLY PROMPTS WILL BE EMAILS, BUT OCCASSIONALLY IF IT'S THE CONTACTS BIRTHDAY, OR A HOLIDAY, THEN A HOLIDAY PROMPT WILL BE SENT OUT
+  //FOR NOW THOUGH WE WILL CHANGE THE PROMPT BASED ON THE MESSAGE TYPE BEING PASSED IN
+
+ //const apiEndpoint =`https://nurturer-helper-api.vercel.app/api/om/chatgpt`
+const apiEndpoint =`https://pmserver.vercel.app/api/om/chatgpt`
+
+//console.log("USER BEING PASSED INTO GENERATE AI MESSAGE--->",user)
+ const prompt = 
+   messageType === "Independence"?
+
+    
+   adminSettings.holidayQuery.replace(/\{\$/g, '${')
+
+ /*` Generate an email subject of 5 words maximum,wishing the user a Happy Fourth of July, and 3 really short paragraphs of text, and fill in this object and return it as your answer(keep the object in valid JSON).For the id in each object of the bulletPoints array, please keep the id in the object below,do not delete them when generating your own object.Finally for the subject, make sure to put an emoji at the end of the generated subject:
+ {"subject":"Happy Fourth ofJuly",
+ messageType:"Holiday",
+ "messageStatus":"Pending"
+  "firstParagraph":" ",
+  "secondParagraph":" ",
+  "thirdParagraph":" ",
+  "bulletPoints":[
+    {
+     "bulletPointBold":" ",
+     "bulletPointRest":" ",
+     "link":" ",
+     "id":"0",
+    },{
+      "bulletPointBold":" ",
+      "bulletPointRest":" ",
+      "link":" ",
+      "id":"1",
+    },{
+      "bulletPointBold":" ",
+      "bulletPointRest":" ",
+      "link":" ",
+      "id":"2",
+    },{
+      "bulletPointBold":" ",
+      "bulletPointRest":" ",
+      "link":" ",
+      "id":"3",
+    },{
+      "bulletPointBold":" ",
+      "bulletPointRest":" ",
+      "link":" ",
+      "id":"4",
+    },
+  ]
+ } .The first paragraph should be about how you wish the receiver and everyone at their company,:${Company} a happy fourth of July.
+     Don't start the paragraph with Dear ${Name}, just jump into the writing.
+    second parargaph should be about how you are grateful for all the work they do in their industry: ${Industry}. Add a sentimental touch at this point.
+    Also mention how you hope they can get a well deserved break today, and maybe even dabble in their interests: ${Interests}.
+    The third Paragraph should be thanking them once again for the difference they make and wishing them  happy holidays.
+    The Subject should be composed from the content of the paragraphs above and should have some sort of "Happy Fourth of July" phrase in it.
+   in the JSON object you generate, there is no need to fill out the bulletPoints array, return the bulletPoints array as it is in the text above.
+
+Please go through the javascript object ${JSON.stringify(previousMessage)}, and try to adapt to my writing style,so you can sound like me,when providing your answer`*/
+
+
+
+
+   :
+
+   messageType === "Christmas"?
+
+   adminSettings.holidayQuery.replace(/\{\$/g, '${')
+
+/*
+   ` Generate an email subject of 5 words maximum,wishing the user a Merry Christmas, and 3 really short paragraphs of text, and fill in this object and return it as your answer(keep the object in valid JSON).For the id in each object of the bulletPoints array, please keep the id in the object below,do not delete them when generating your own object.Finally for the subject, make sure to put an emoji at the end of the generated subject:
+   {"subject":"Merry Christmas",
+   messageType:"Holiday",
+   "messageStatus":"Pending"
+    "firstParagraph":" ",
+    "secondParagraph":" ",
+    "thirdParagraph":" ",
+    "bulletPoints":[
+      {
+       "bulletPointBold":" ",
+       "bulletPointRest":" ",
+       "link":" ",
+       "id":"0",
+      },{
+        "bulletPointBold":" ",
+        "bulletPointRest":" ",
+        "link":" ",
+        "id":"1",
+      },{
+        "bulletPointBold":" ",
+        "bulletPointRest":" ",
+        "link":" ",
+        "id":"2",
+      },{
+        "bulletPointBold":" ",
+        "bulletPointRest":" ",
+        "link":" ",
+        "id":"3",
+      },{
+        "bulletPointBold":" ",
+        "bulletPointRest":" ",
+        "link":" ",
+        "id":"4",
+      },
+    ]
+   } .The first paragraph should be about how you wish the receiver and everyone at their company,:${Company} a Merry Christmas!.
+       Don't start the paragraph with Dear ${Name}, just jump into the writing.
+      second parargaph should be about how you are grateful for all the work they do in their industry: ${Industry}. Add a sentimental touch at this point.
+      Also mention how you hope they can get a well deserved break today, and maybe even dabble in their interests: ${Interests}.
+      The third Paragraph should be thanking them once again for the difference they make and wishing them  happy holidays.
+      The Subject should be composed from the content of the paragraphs above and should have some sort of "Merry Christmas" phrase in it.
+     in the JSON object you generate, there is no need to fill out the bulletPoints array, return the bulletPoints array as it is in the text above.
+  
+  Please go through the javascript object ${JSON.stringify(previousMessage)}, and try to adapt to my writing style,so you can sound like me,when providing your answer`
+  */
+  
+  
+  
+     :
+
+
+     messageType === "New Years"?
+
+    
+     adminSettings.holidayQuery.replace(/\{\$/g, '${')
+
+    /* ` Generate an email subject of 5 words maximum,wishing the user a Happy New Year, and 3 really short paragraphs of text, and fill in this object and return it as your answer(keep the object in valid JSON).For the id in each object of the bulletPoints array, please keep the id in the object below,do not delete them when generating your own object.Finally for the subject, make sure to put an emoji at the end of the generated subject:
+     {"subject":"Happy New Year",
+     messageType:"Holiday",
+     "messageStatus":"Pending"
+      "firstParagraph":" ",
+      "secondParagraph":" ",
+      "thirdParagraph":" ",
+      "bulletPoints":[
+        {
+         "bulletPointBold":" ",
+         "bulletPointRest":" ",
+         "link":" ",
+         "id":"0",
+        },{
+          "bulletPointBold":" ",
+          "bulletPointRest":" ",
+          "link":" ",
+          "id":"1",
+        },{
+          "bulletPointBold":" ",
+          "bulletPointRest":" ",
+          "link":" ",
+          "id":"2",
+        },{
+          "bulletPointBold":" ",
+          "bulletPointRest":" ",
+          "link":" ",
+          "id":"3",
+        },{
+          "bulletPointBold":" ",
+          "bulletPointRest":" ",
+          "link":" ",
+          "id":"4",
+        },
+      ]
+     } .The first paragraph should be about how you wish the receiver and everyone at their company,:${Company} a happy new year.
+         Don't start the paragraph with Dear ${Name}, just jump into the writing.
+        second parargaph should be about how you are grateful for all the work they do in their industry: ${Industry}. Add a sentimental touch at this point.
+        Also mention how you hope they can get a well deserved break today, and maybe even dabble in their interests: ${Interests}.
+        The third Paragraph should be thanking them once again for the difference they make and wishing them  happy holidays.
+        The Subject should be composed from the content of the paragraphs above and should have some sort of "Happy Fourth of July" phrase in it.
+       in the JSON object you generate, there is no need to fill out the bulletPoints array, return the bulletPoints array as it is in the text above.
+    
+    Please go through the javascript object ${JSON.stringify(previousMessage)}, and try to adapt to my writing style,so you can sound like me,when providing your answer`*/
+    
+    
+    
+    
+       :
+   messageType === "Birthday"?
+
+
+   adminSettings.birthdayQuery.replace(/\{\$/g, '${')
+  /* ` Generate an email subject of 5 words maximum,wishing the user a Happy Birthday, and 3 really short paragraphs of text, and fill in this object and return it as your answer(keep the object in valid JSON).For the id in each object of the bulletPoints array, please keep the id in the object below,do not delete them when generating your own object.Finally for the subject, make sure to put an emoji at the end of the generated subject:
+   {"subject":"Happy Fourth ofJuly",
+   messageType:"Event",
+   "messageStatus":"Pending"
+    "firstParagraph":" ",
+    "secondParagraph":" ",
+    "thirdParagraph":" ",
+    "bulletPoints":[
+      {
+       "bulletPointBold":" ",
+       "bulletPointRest":" ",
+       "link":" ",
+       "id":"0",
+      },{
+        "bulletPointBold":" ",
+        "bulletPointRest":" ",
+        "link":" ",
+        "id":"1",
+      },{
+        "bulletPointBold":" ",
+        "bulletPointRest":" ",
+        "link":" ",
+        "id":"2",
+      },{
+        "bulletPointBold":" ",
+        "bulletPointRest":" ",
+        "link":" ",
+        "id":"3",
+      },{
+        "bulletPointBold":" ",
+        "bulletPointRest":" ",
+        "link":" ",
+        "id":"4",
+      },
+    ]
+   } .The first paragraph should be about how you wish the receiver a happy birthday and a year ahead filled with great moments,not just in relation to their job:${JobTitle},but in life as well.
+       Don't start the paragraph with Dear ${Name}, just jump into the writing.
+      second parargaph should be about how you are grateful for all the work they do in their industry: ${Industry}. Add a sentimental touch at this point.
+      Also mention how you hope they can get a well deserved break today, and maybe even dabble in their interests: ${Interests}.
+      The Subject should be composed from the content of the paragraphs above and should have some sort of "Happy Birthday" phrase in it.
+      The third Paragraph should be wishing them future success at their company:${Company},and then say something witty about their hobby:${Interests},before finally wishing them success at it.
+     in the JSON object you generate, there is no need to fill out the bulletPoints array, return the bulletPoints array as it is in the text above.
+ 
+  Please go through the javascript object ${JSON.stringify(previousMessage)}, and try to adapt to my writing style,so you can sound like me,when providing your answer`*/
+
+   :
+   adminSettings.emailQuery.replace(/\{\$/g, '${')
+
+ /*` Generate an email subject of 5 words maximum, and 3 really short paragraphs of text and 5 articles to refer to, and fill in this object and return it as your answer(keep the object in valid JSON).Articles should be not be older than ${Frequency}, should be from the year 2025, and links for the articles should from these sites only - PWC, Deloitte, McKinsey, Visitage, Gallup, Josh Bersin, Harvard Business Review and Forbes. For the id in each object of the bulletPoints array, please keep the id in the object below,do not delete them when generating your own object.Finally for the subject, make sure to put an emoji at the end of the generated subject:
+    {"subject":" ",
+    messageType:"Email",
+    "messageStatus":"Pending"
+     "firstParagraph":" ",
+     "secondParagraph":" ",
+     "thirdParagraph":" ",
+     "bulletPoints":[
+       {
+        "bulletPointBold":" ",
+        "bulletPointRest":" ",
+        "link":" ",
+        "id":"0",
+       },{
+         "bulletPointBold":" ",
+         "bulletPointRest":" ",
+         "link":" ",
+         "id":"1",
+       },{
+         "bulletPointBold":" ",
+         "bulletPointRest":" ",
+         "link":" ",
+         "id":"2",
+       },{
+         "bulletPointBold":" ",
+         "bulletPointRest":" ",
+         "link":" ",
+         "id":"3",
+       },{
+         "bulletPointBold":" ",
+         "bulletPointRest":" ",
+         "link":" ",
+         "id":"4",
+       },
+     ]
+    } . The first paragraph should be a professional paragraph about how you are checking in with them and about their role..
+        Don't start the paragraph with Dear ${Name}, just jump into the writing.
+       second parargaph should be about how you have found some articles that relate to their industry ${Industry}.
+       The third paragraph should be about how you'd love to hear from them and you wish them luck in their future endeavors and hobbies: ${Interests}.
+       The Subject should be composed from the content of the paragraphs above and should have some sort of "catch up" phrase in it.
+
+    for each article, put in it's title into "bulletPointBold", it's source into "bulletPointRest" and a link to the article into "link"
+
+    make each paragraph relevant to the user's job: ${JobTitle},company:${Company},industry:${Industry}  and interests:${Interests}.Confirm the articles from the sites are written in 2025 and the links are free to the public and assessible. Please go through the javascript object ${JSON.stringify(previousMessage)}, and try to adapt to my writing style,so you can sound like me,when providing your answer`*/
+
+
+ //const jobResponse = await axios.post(apiEndpoint,{prompt:prompt})
+
+
+    try {
+      const jobResponse = await axios.post(apiEndpoint, { prompt });
+    
+      console.log("✅ OpenAI API call succeeded:", jobResponse.status, jobResponse.statusText);
+
+      console.log("OUR RESPONSE FROM OUR BACKEND, WHICH CALLS CHAT GPT-->",jobResponse.data)
+
+    const fullJobDetailsResponse = /*JSON.parse(jobResponse.data)*/jobResponse.data
+
+    if(fullJobDetailsResponse){
+
+
+      return {...fullJobDetailsResponse,createdAt:new Date()}
+
+    }
+      
+      
+    } catch (error) {
+      // This block runs if the request fails
+      if (error.response) {
+        // The server responded but returned an error status code (e.g. 429, 500)
+        console.error("❌ OpenAI API call failed:", error.response.status, error.response.statusText);
+        console.error("Response data:", error.response.data);
+      } else if (error.request) {
+        // The request was made but no response was received
+        console.error("⚠️ No response received from OpenAI API:", error.request);
+      } else {
+        // Something happened while setting up the request
+        console.error("🚨 Error setting up request:", error.message);
+      }
+    
+      // Optionally: you can also log the timestamp
+      console.error("🕒 Error occurred at:", new Date().toISOString());
+    }
+    
+
+
+
+}
+
+
+
+
 
 export const createMusicBriefs = (groupData) => async (dispatch) => {
    
