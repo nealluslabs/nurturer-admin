@@ -366,41 +366,57 @@ const independenceDays = getDaysDifference(independenceDay);
           try {
             const params = {
               Destination: {
-                ToAddresses: [data.email], // recipient email
+                ToAddresses: [data.email],
               },
               Message: {
                 Body: {
-                  Text: {
-                    Data: data.messageQueue && data.messageQueue[data.messageQueue.length-1] && data.messageQueue.length[data.messageQueue.length-1].subject,
-                  },
                   Html: {
-                    Data: ` <h2>Nurturer - ${data.messageQueue && data.messageQueue[data.messageQueue.length-1] && data.messageQueue.length[data.messageQueue.length-1].subject}</h2>
-                           <p>Dear <strong>${data.name && data.name}</strong>,</p>
-                           <br/>
-                           <br/>
-    
-                           
-                           <p>${data.messageQueue && data.messageQueue[data.messageQueue.length-1] && data.messageQueue.length[data.messageQueue.length-1].firstParagraph}.</p>
-                           <br/>
-    
-    
-                            <p>${data.messageQueue && data.messageQueue[data.messageQueue.length-1] && data.messageQueue.length[data.messageQueue.length-1].secondParagraph}</p>
-                            <br/>
-                            <p>${data.messageQueue && data.messageQueue[data.messageQueue.length-1] && data.messageQueue.length[data.messageQueue.length-1].thirdParagraph}</p>
-                            <br/>
-        
-                           
-        
-                            <p>Warm Regards</p>,
-                            <p>– The Nurturer Team</p>`
+                    Data: `
+                      <h2>Nurturer - ${data.messageQueue && data.messageQueue[data.messageQueue.length - 1] && data.messageQueue[data.messageQueue.length - 1].subject}</h2>
+                      <p>Dear <strong>${data.name || ''}</strong>,</p>
+                      <br/>
+            
+                      <p>${data.messageQueue && data.messageQueue[data.messageQueue.length - 1] && data.messageQueue[data.messageQueue.length - 1].firstParagraph || ''}</p>
+                      <br/>
+            
+                      <p>${data.messageQueue && data.messageQueue[data.messageQueue.length - 1] && data.messageQueue[data.messageQueue.length - 1].secondParagraph || ''}</p>
+                      <br/>
+            
+                      <ul>
+                        ${
+                          (data.messageQueue &&
+                           data.messageQueue[data.messageQueue.length - 1] &&
+                           data.messageQueue[data.messageQueue.length - 1].bulletPoints)
+                            ? data.messageQueue[data.messageQueue.length - 1].bulletPoints.map(
+                                bp => `
+                                  <li>
+                                    <strong>${bp.bulletPointBold || ''}</strong> — ${bp.bulletPointRest || ''} 
+                                    <a href="${bp.link || '#'}" target="_blank">${bp.link || ''}</a>
+                                  </li>`
+                              ).join('')
+                            : ''
+                        }
+                      </ul>
+                      <br/>
+            
+                      <p>${data.messageQueue && data.messageQueue[data.messageQueue.length - 1] && data.messageQueue[data.messageQueue.length - 1].thirdParagraph || ''}</p>
+                      <br/>
+            
+                      <p>Warm Regards,</p>
+                      <p>– The Nurturer Team</p>
+                    `,
+                  },
+                  Text: {
+                    Data: data.messageQueue && data.messageQueue[data.messageQueue.length - 1] && data.messageQueue[data.messageQueue.length - 1].subject || '',
                   },
                 },
                 Subject: {
-                  Data: data.messageQueue && data.messageQueue[data.messageQueue.length-1] && data.messageQueue.length[data.messageQueue.length-1].subject,
+                  Data: data.messageQueue && data.messageQueue[data.messageQueue.length - 1] && data.messageQueue[data.messageQueue.length - 1].subject || '',
                 },
-              }, 
-              Source: 'info@nurturer.ai'//process.env.SES_FROM_EMAIL, // must be a verified SES sender
+              },
+              Source: 'info@nurturer.ai', // must be verified in SES
             };
+            
         
             const command = new SendEmailCommand(params);
             const response = await sesClient.send(command);
@@ -447,41 +463,57 @@ const independenceDays = getDaysDifference(independenceDay);
          try {
           const params = {
             Destination: {
-              ToAddresses: [data.email], // recipient email
+              ToAddresses: [data.email],
             },
             Message: {
               Body: {
-                Text: {
-                  Data: data.messageQueue && data.messageQueue[data.messageQueue.length-1] && data.messageQueue.length[data.messageQueue.length-1].subject,
-                },
                 Html: {
-                  Data: ` <h2>Nurturer - ${data.messageQueue && data.messageQueue[data.messageQueue.length-1] && data.messageQueue.length[data.messageQueue.length-1].subject}</h2>
-                         <p>Dear <strong>${data.name && data.name}</strong>,</p>
-                         <br/>
-                         <br/>
-  
-                         
-                         <p>${data.messageQueue && data.messageQueue[data.messageQueue.length-1] && data.messageQueue.length[data.messageQueue.length-1].firstParagraph}.</p>
-                         <br/>
-  
-  
-                          <p>${data.messageQueue && data.messageQueue[data.messageQueue.length-1] && data.messageQueue.length[data.messageQueue.length-1].firstParagraph}</p>
-                          <br/>
-                          <p>${data.messageQueue && data.messageQueue[data.messageQueue.length-1] && data.messageQueue.length[data.messageQueue.length-1].firstParagraph}</p>
-                          <br/>
-      
-                         
-      
-                          <p>Warm Regards</p>,
-                          <p>– The Nurturer Team</p>`
+                  Data: `
+                    <h2>Nurturer - ${data.messageQueue && data.messageQueue[data.messageQueue.length - 1] && data.messageQueue[data.messageQueue.length - 1].subject}</h2>
+                    <p>Dear <strong>${data.name || ''}</strong>,</p>
+                    <br/>
+          
+                    <p>${data.messageQueue && data.messageQueue[data.messageQueue.length - 1] && data.messageQueue[data.messageQueue.length - 1].firstParagraph || ''}</p>
+                    <br/>
+          
+                    <p>${data.messageQueue && data.messageQueue[data.messageQueue.length - 1] && data.messageQueue[data.messageQueue.length - 1].secondParagraph || ''}</p>
+                    <br/>
+          
+                    <ul>
+                      ${
+                        (data.messageQueue &&
+                         data.messageQueue[data.messageQueue.length - 1] &&
+                         data.messageQueue[data.messageQueue.length - 1].bulletPoints)
+                          ? data.messageQueue[data.messageQueue.length - 1].bulletPoints.map(
+                              bp => `
+                                <li>
+                                  <strong>${bp.bulletPointBold || ''}</strong> — ${bp.bulletPointRest || ''} 
+                                  <a href="${bp.link || '#'}" target="_blank">${bp.link || ''}</a>
+                                </li>`
+                            ).join('')
+                          : ''
+                      }
+                    </ul>
+                    <br/>
+          
+                    <p>${data.messageQueue && data.messageQueue[data.messageQueue.length - 1] && data.messageQueue[data.messageQueue.length - 1].thirdParagraph || ''}</p>
+                    <br/>
+          
+                    <p>Warm Regards,</p>
+                    <p>– The Nurturer Team</p>
+                  `,
+                },
+                Text: {
+                  Data: data.messageQueue && data.messageQueue[data.messageQueue.length - 1] && data.messageQueue[data.messageQueue.length - 1].subject || '',
                 },
               },
               Subject: {
-                Data: data.messageQueue && data.messageQueue[data.messageQueue.length-1] && data.messageQueue.length[data.messageQueue.length-1].subject,
+                Data: data.messageQueue && data.messageQueue[data.messageQueue.length - 1] && data.messageQueue[data.messageQueue.length - 1].subject || '',
               },
-            }, 
-            Source: 'info@nurturer.ai'//process.env.SES_FROM_EMAIL, // must be a verified SES sender
+            },
+            Source: 'info@nurturer.ai', // must be verified in SES
           };
+          
       
           const command = new SendEmailCommand(params);
           const response = await sesClient.send(command);
@@ -527,41 +559,57 @@ const independenceDays = getDaysDifference(independenceDay);
          try {
           const params = {
             Destination: {
-              ToAddresses: [data.email], // recipient email
+              ToAddresses: [data.email],
             },
             Message: {
               Body: {
-                Text: {
-                  Data: data.messageQueue && data.messageQueue[data.messageQueue.length-1] && data.messageQueue.length[data.messageQueue.length-1].subject,
-                },
                 Html: {
-                  Data: ` <h2>Nurturer - ${data.messageQueue && data.messageQueue[data.messageQueue.length-1] && data.messageQueue.length[data.messageQueue.length-1].subject}</h2>
-                         <p>Dear <strong>${data.name && data.name}</strong>,</p>
-                         <br/>
-                         <br/>
-  
-                         
-                         <p>${data.messageQueue && data.messageQueue[data.messageQueue.length-1] && data.messageQueue.length[data.messageQueue.length-1].firstParagraph}.</p>
-                         <br/>
-  
-  
-                          <p>${data.messageQueue && data.messageQueue[data.messageQueue.length-1] && data.messageQueue.length[data.messageQueue.length-1].firstParagraph}</p>
-                          <br/>
-                          <p>${data.messageQueue && data.messageQueue[data.messageQueue.length-1] && data.messageQueue.length[data.messageQueue.length-1].firstParagraph}</p>
-                          <br/>
-      
-                         
-      
-                          <p>Warm Regards</p>,
-                          <p>– The Nurturer Team</p>`
+                  Data: `
+                    <h2>Nurturer - ${data.messageQueue && data.messageQueue[data.messageQueue.length - 1] && data.messageQueue[data.messageQueue.length - 1].subject}</h2>
+                    <p>Dear <strong>${data.name || ''}</strong>,</p>
+                    <br/>
+          
+                    <p>${data.messageQueue && data.messageQueue[data.messageQueue.length - 1] && data.messageQueue[data.messageQueue.length - 1].firstParagraph || ''}</p>
+                    <br/>
+          
+                    <p>${data.messageQueue && data.messageQueue[data.messageQueue.length - 1] && data.messageQueue[data.messageQueue.length - 1].secondParagraph || ''}</p>
+                    <br/>
+          
+                    <ul>
+                      ${
+                        (data.messageQueue &&
+                         data.messageQueue[data.messageQueue.length - 1] &&
+                         data.messageQueue[data.messageQueue.length - 1].bulletPoints)
+                          ? data.messageQueue[data.messageQueue.length - 1].bulletPoints.map(
+                              bp => `
+                                <li>
+                                  <strong>${bp.bulletPointBold || ''}</strong> — ${bp.bulletPointRest || ''} 
+                                  <a href="${bp.link || '#'}" target="_blank">${bp.link || ''}</a>
+                                </li>`
+                            ).join('')
+                          : ''
+                      }
+                    </ul>
+                    <br/>
+          
+                    <p>${data.messageQueue && data.messageQueue[data.messageQueue.length - 1] && data.messageQueue[data.messageQueue.length - 1].thirdParagraph || ''}</p>
+                    <br/>
+          
+                    <p>Warm Regards,</p>
+                    <p>– The Nurturer Team</p>
+                  `,
+                },
+                Text: {
+                  Data: data.messageQueue && data.messageQueue[data.messageQueue.length - 1] && data.messageQueue[data.messageQueue.length - 1].subject || '',
                 },
               },
               Subject: {
-                Data: data.messageQueue && data.messageQueue[data.messageQueue.length-1] && data.messageQueue.length[data.messageQueue.length-1].subject,
+                Data: data.messageQueue && data.messageQueue[data.messageQueue.length - 1] && data.messageQueue[data.messageQueue.length - 1].subject || '',
               },
-            }, 
-            Source: 'info@nurturer.ai'//process.env.SES_FROM_EMAIL, // must be a verified SES sender
+            },
+            Source: 'info@nurturer.ai', // must be verified in SES
           };
+          
       
           const command = new SendEmailCommand(params);
           const response = await sesClient.send(command);
@@ -609,41 +657,57 @@ const independenceDays = getDaysDifference(independenceDay);
          try {
           const params = {
             Destination: {
-              ToAddresses: [data.email], // recipient email
+              ToAddresses: [data.email],
             },
             Message: {
               Body: {
-                Text: {
-                  Data: data.messageQueue && data.messageQueue[data.messageQueue.length-1] && data.messageQueue.length[data.messageQueue.length-1].subject,
-                },
                 Html: {
-                  Data: ` <h2>Nurturer - ${data.messageQueue && data.messageQueue[data.messageQueue.length-1] && data.messageQueue.length[data.messageQueue.length-1].subject}</h2>
-                         <p>Dear <strong>${data.name && data.name}</strong>,</p>
-                         <br/>
-                         <br/>
-  
-                         
-                         <p>${data.messageQueue && data.messageQueue[data.messageQueue.length-1] && data.messageQueue.length[data.messageQueue.length-1].firstParagraph}.</p>
-                         <br/>
-  
-  
-                          <p>${data.messageQueue && data.messageQueue[data.messageQueue.length-1] && data.messageQueue.length[data.messageQueue.length-1].firstParagraph}</p>
-                          <br/>
-                          <p>${data.messageQueue && data.messageQueue[data.messageQueue.length-1] && data.messageQueue.length[data.messageQueue.length-1].firstParagraph}</p>
-                          <br/>
-      
-                         
-      
-                          <p>Warm Regards</p>,
-                          <p>– The Nurturer Team</p>`
+                  Data: `
+                    <h2>Nurturer - ${data.messageQueue && data.messageQueue[data.messageQueue.length - 1] && data.messageQueue[data.messageQueue.length - 1].subject}</h2>
+                    <p>Dear <strong>${data.name || ''}</strong>,</p>
+                    <br/>
+          
+                    <p>${data.messageQueue && data.messageQueue[data.messageQueue.length - 1] && data.messageQueue[data.messageQueue.length - 1].firstParagraph || ''}</p>
+                    <br/>
+          
+                    <p>${data.messageQueue && data.messageQueue[data.messageQueue.length - 1] && data.messageQueue[data.messageQueue.length - 1].secondParagraph || ''}</p>
+                    <br/>
+          
+                    <ul>
+                      ${
+                        (data.messageQueue &&
+                         data.messageQueue[data.messageQueue.length - 1] &&
+                         data.messageQueue[data.messageQueue.length - 1].bulletPoints)
+                          ? data.messageQueue[data.messageQueue.length - 1].bulletPoints.map(
+                              bp => `
+                                <li>
+                                  <strong>${bp.bulletPointBold || ''}</strong> — ${bp.bulletPointRest || ''} 
+                                  <a href="${bp.link || '#'}" target="_blank">${bp.link || ''}</a>
+                                </li>`
+                            ).join('')
+                          : ''
+                      }
+                    </ul>
+                    <br/>
+          
+                    <p>${data.messageQueue && data.messageQueue[data.messageQueue.length - 1] && data.messageQueue[data.messageQueue.length - 1].thirdParagraph || ''}</p>
+                    <br/>
+          
+                    <p>Warm Regards,</p>
+                    <p>– The Nurturer Team</p>
+                  `,
+                },
+                Text: {
+                  Data: data.messageQueue && data.messageQueue[data.messageQueue.length - 1] && data.messageQueue[data.messageQueue.length - 1].subject || '',
                 },
               },
               Subject: {
-                Data: data.messageQueue && data.messageQueue[data.messageQueue.length-1] && data.messageQueue.length[data.messageQueue.length-1].subject,
+                Data: data.messageQueue && data.messageQueue[data.messageQueue.length - 1] && data.messageQueue[data.messageQueue.length - 1].subject || '',
               },
-            }, 
-            Source: 'info@nurturer.ai'//process.env.SES_FROM_EMAIL, // must be a verified SES sender
+            },
+            Source: 'info@nurturer.ai', // must be verified in SES
           };
+          
       
           const command = new SendEmailCommand(params);
           const response = await sesClient.send(command);
@@ -692,42 +756,57 @@ const independenceDays = getDaysDifference(independenceDay);
           try {
             const params = {
               Destination: {
-                ToAddresses: [data.email], // recipient email
+                ToAddresses: [data.email],
               },
               Message: {
                 Body: {
-                  Text: {
-                    Data: data.messageQueue && data.messageQueue[data.messageQueue.length-1] && data.messageQueue.length[data.messageQueue.length-1].subject,
-                  },
                   Html: {
-                    Data: ` <h2>Nurturer - ${data.messageQueue && data.messageQueue[data.messageQueue.length-1] && data.messageQueue.length[data.messageQueue.length-1].subject}</h2>
-                    
-                           <p>Dear <strong>${data.name && data.name}</strong>,</p>
-                           <br/>
-                           <br/>
-    
-                           
-                           <p>${data.messageQueue && data.messageQueue[data.messageQueue.length-1] && data.messageQueue.length[data.messageQueue.length-1].firstParagraph}.</p>
-                           <br/>
-    
-    
-                            <p>${data.messageQueue && data.messageQueue[data.messageQueue.length-1] && data.messageQueue.length[data.messageQueue.length-1].secondParagraph}</p>
-                            <br/>
-                            <p>${data.messageQueue && data.messageQueue[data.messageQueue.length-1] && data.messageQueue.length[data.messageQueue.length-1].thirdParagraph}</p>
-                            <br/>
-        
-                           
-        
-                            <p>Warm Regards</p>,
-                            <p>– The Nurturer Team</p>`
+                    Data: `
+                      <h2>Nurturer - ${data.messageQueue && data.messageQueue[data.messageQueue.length - 1] && data.messageQueue[data.messageQueue.length - 1].subject}</h2>
+                      <p>Dear <strong>${data.name || ''}</strong>,</p>
+                      <br/>
+            
+                      <p>${data.messageQueue && data.messageQueue[data.messageQueue.length - 1] && data.messageQueue[data.messageQueue.length - 1].firstParagraph || ''}</p>
+                      <br/>
+            
+                      <p>${data.messageQueue && data.messageQueue[data.messageQueue.length - 1] && data.messageQueue[data.messageQueue.length - 1].secondParagraph || ''}</p>
+                      <br/>
+            
+                      <ul>
+                        ${
+                          (data.messageQueue &&
+                           data.messageQueue[data.messageQueue.length - 1] &&
+                           data.messageQueue[data.messageQueue.length - 1].bulletPoints)
+                            ? data.messageQueue[data.messageQueue.length - 1].bulletPoints.map(
+                                bp => `
+                                  <li>
+                                    <strong>${bp.bulletPointBold || ''}</strong> — ${bp.bulletPointRest || ''} 
+                                    <a href="${bp.link || '#'}" target="_blank">${bp.link || ''}</a>
+                                  </li>`
+                              ).join('')
+                            : ''
+                        }
+                      </ul>
+                      <br/>
+            
+                      <p>${data.messageQueue && data.messageQueue[data.messageQueue.length - 1] && data.messageQueue[data.messageQueue.length - 1].thirdParagraph || ''}</p>
+                      <br/>
+            
+                      <p>Warm Regards,</p>
+                      <p>– The Nurturer Team</p>
+                    `,
+                  },
+                  Text: {
+                    Data: data.messageQueue && data.messageQueue[data.messageQueue.length - 1] && data.messageQueue[data.messageQueue.length - 1].subject || '',
                   },
                 },
                 Subject: {
-                  Data: data.messageQueue && data.messageQueue[data.messageQueue.length-1] && data.messageQueue.length[data.messageQueue.length-1].subject,
+                  Data: data.messageQueue && data.messageQueue[data.messageQueue.length - 1] && data.messageQueue[data.messageQueue.length - 1].subject || '',
                 },
-              }, 
-              Source: 'info@nurturer.ai'//process.env.SES_FROM_EMAIL, // must be a verified SES sender
+              },
+              Source: 'info@nurturer.ai', // must be verified in SES
             };
+            
         
             const command = new SendEmailCommand(params);
             const response = await sesClient.send(command);
@@ -844,7 +923,7 @@ const apiEndpoint =`https://pmserver.vercel.app/api/om/chatgpt`
    messageType === "Independence"?
 
     
-   adminSettings.holidayQuery.replace(/\{\$/g, '${')
+   eval('`' + adminSettings.holidayQuery.replace(/\{\$/g, '${') + '`')
 
  /*` Generate an email subject of 5 words maximum,wishing the user a Happy Fourth of July, and 3 really short paragraphs of text, and fill in this object and return it as your answer(keep the object in valid JSON).For the id in each object of the bulletPoints array, please keep the id in the object below,do not delete them when generating your own object.Finally for the subject, make sure to put an emoji at the end of the generated subject:
  {"subject":"Happy Fourth ofJuly",
@@ -898,7 +977,7 @@ Please go through the javascript object ${JSON.stringify(previousMessage)}, and 
 
    messageType === "Christmas"?
 
-   adminSettings.holidayQuery.replace(/\{\$/g, '${')
+   eval('`' + adminSettings.holidayQuery.replace(/\{\$/g, '${') + '`')
 
 /*
    ` Generate an email subject of 5 words maximum,wishing the user a Merry Christmas, and 3 really short paragraphs of text, and fill in this object and return it as your answer(keep the object in valid JSON).For the id in each object of the bulletPoints array, please keep the id in the object below,do not delete them when generating your own object.Finally for the subject, make sure to put an emoji at the end of the generated subject:
@@ -955,7 +1034,7 @@ Please go through the javascript object ${JSON.stringify(previousMessage)}, and 
      messageType === "New Years"?
 
     
-     adminSettings.holidayQuery.replace(/\{\$/g, '${')
+     eval('`' + adminSettings.holidayQuery.replace(/\{\$/g, '${') + '`')
 
     /* ` Generate an email subject of 5 words maximum,wishing the user a Happy New Year, and 3 really short paragraphs of text, and fill in this object and return it as your answer(keep the object in valid JSON).For the id in each object of the bulletPoints array, please keep the id in the object below,do not delete them when generating your own object.Finally for the subject, make sure to put an emoji at the end of the generated subject:
      {"subject":"Happy New Year",
@@ -1009,7 +1088,7 @@ Please go through the javascript object ${JSON.stringify(previousMessage)}, and 
    messageType === "Birthday"?
 
 
-   adminSettings.birthdayQuery.replace(/\{\$/g, '${')
+   eval('`' + adminSettings.birthdayQuery.replace(/\{\$/g, '${') + '`')
   /* ` Generate an email subject of 5 words maximum,wishing the user a Happy Birthday, and 3 really short paragraphs of text, and fill in this object and return it as your answer(keep the object in valid JSON).For the id in each object of the bulletPoints array, please keep the id in the object below,do not delete them when generating your own object.Finally for the subject, make sure to put an emoji at the end of the generated subject:
    {"subject":"Happy Fourth ofJuly",
    messageType:"Event",
@@ -1056,7 +1135,7 @@ Please go through the javascript object ${JSON.stringify(previousMessage)}, and 
   Please go through the javascript object ${JSON.stringify(previousMessage)}, and try to adapt to my writing style,so you can sound like me,when providing your answer`*/
 
    :
-   adminSettings.emailQuery.replace(/\{\$/g, '${')
+   eval('`' + adminSettings.emailQuery.replace(/\{\$/g, '${') + '`')
 
  /*` Generate an email subject of 5 words maximum, and 3 really short paragraphs of text and 5 articles to refer to, and fill in this object and return it as your answer(keep the object in valid JSON).Articles should be not be older than ${Frequency}, should be from the year 2025, and links for the articles should from these sites only - PWC, Deloitte, McKinsey, Visitage, Gallup, Josh Bersin, Harvard Business Review and Forbes. For the id in each object of the bulletPoints array, please keep the id in the object below,do not delete them when generating your own object.Finally for the subject, make sure to put an emoji at the end of the generated subject:
     {"subject":" ",
