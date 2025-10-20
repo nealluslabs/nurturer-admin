@@ -211,7 +211,7 @@ export const simulateCronJob =   () => async (dispatch) => {
       }
 
       //MY SETUP VARIABLES FOR BIRTHDAY
-      const birthdayParts = data && data.birthday.split('/'); // Split the date string (DD/MM/YYYY)
+      const birthdayParts = data &&  data.birthday? data.birthday.split('/'): ('1/1/1980').split('/') ; // Split the date string (DD/MM/YYYY)
       const birthday = new Date(birthdayParts[2], birthdayParts[1] - 1, birthdayParts[0]); // Create a Date object
       const currentDate = new Date(); // Today's date
 
