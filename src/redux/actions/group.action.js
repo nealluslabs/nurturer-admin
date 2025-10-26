@@ -170,27 +170,31 @@ export const updateSettingsForAdminSettings = (updateObject) => async (dispatch)
 
 export const simulateCronJob =   () => async (dispatch) => {
   try {
-    console.log(" SIMULATED Cron job triggered at:", new Date().toISOString());
 
+    console.log("Cron job triggered at:", new Date().toISOString());
     let adminSettings
-
+                                       //later I will remove this hardcoding
     await db.collection("adminSettings").doc("KjE2Xz7avxs3Y5w4eXXF").get().then((doc)=>{
      if(doc.exists){
       adminSettings = doc.data()
      }
     });
 
-   
 
+
+
+    
   
     const snapshot = await db.collection("contacts").get();
   
     if (snapshot.empty) {
-     notifyErrorFxn("No Contacts in database to update!")
-      return 
+      return res.status(200).json({ message: "No contacts found." });
     }
   
     let batch = db.batch();
+    let contactsLog = [];
+     let totalUsersAffected = 0;
+
     let writeCount = 0;
     let committedBatches = 0;
   
@@ -202,12 +206,6 @@ export const simulateCronJob =   () => async (dispatch) => {
       if (!userDoc.exists) {
         console.log(`No user found for contacterId: ${contacterId}`);
         continue;
-      }
-
-
-      if (!adminSettings) {
-        notifyErrorFxn("There was an issue fetching prompts, please try again")
-        return;
       }
 
       //MY SETUP VARIABLES FOR BIRTHDAY
@@ -254,7 +252,7 @@ const independenceDays = getDaysDifference(independenceDay);
 
 // MY SETUP VARIABLES FOR HOLIDAY END
   
-      if (data.sendDate && data.frequency && data.frequency !=="None") {
+      if (data.sendDate && data.frequency && data.frequency !=="None" && adminSettings) {
         const currentSendDateNum = Number(data.sendDate);
         // currentBirthdaySendDateNum = Number(data.birthdaySendDate && data.birthdaySendDate); //not using this
        // const currentHolidaySendDateNum = Number(data.holidaySendDate && data.holidaySendDate);
@@ -264,9 +262,9 @@ const independenceDays = getDaysDifference(independenceDay);
         let updatedHolidaySendDate =data.holidaySendDate && data.holidaySendDate; //dont need this anymore - i am using hardcoded days of july 4, christmans, new years
         let aiGeneratedMessage;
   
-        if (currentSendDateNum === adminSettings.triggerDays) {
+        if (currentSendDateNum === (adminSettings && Number(adminSettings.triggerDays) && data && data.touchesAlert === true )) {
           aiGeneratedMessage = await generateAiMessage(
-            "Email",
+            "Email", 
             data.frequencyInDays,
             data.name,
             data.jobTitle,
@@ -274,11 +272,12 @@ const independenceDays = getDaysDifference(independenceDay);
             data.industry,
             data.interests,
             userDoc.data().queryMsg?.find((item) => item.messageType === "Email"),
-            
+           // userDoc.data(),
+           // data
           );
         }
   
-        if (currentBirthdaySendDateNumInDays === adminSettings.triggerDays) {
+        if (currentBirthdaySendDateNumInDays === (adminSettings && Number(adminSettings.triggerDays))  && data && data.eventsAlert === true) {
           aiGeneratedMessage = await generateAiMessage(
             "Birthday",
             data.birthdayFrequencyInDays,
@@ -288,11 +287,12 @@ const independenceDays = getDaysDifference(independenceDay);
             data.industry,
             data.interests,
             userDoc.data().queryMsg?.find((item) => item.messageType === "Birthday"),
-           
+           // userDoc.data(),
+           // data
           );
         }
   
-        if (christmasDays === adminSettings.triggerDays   ) {
+        if (christmasDays === (adminSettings && Number(adminSettings.triggerDays)) && data && data.eventsAlert === true  ) {
           aiGeneratedMessage = await generateAiMessage(
             "Christmas",
             data.holidayFrequencyInDays,
@@ -302,10 +302,11 @@ const independenceDays = getDaysDifference(independenceDay);
             data.industry,
             data.interests,
             userDoc.data().queryMsg?.find((item) => item.messageType === "Holiday"),
-           
+           // userDoc.data(),
+           // data
           );
         }
-        if (newYearsDays === adminSettings.triggerDays  ) {
+        if (newYearsDays === (adminSettings && Number(adminSettings.triggerDays))  && data && data.eventsAlert === true ) {
           aiGeneratedMessage = await generateAiMessage(
             "New Years",
             data.holidayFrequencyInDays,
@@ -315,10 +316,11 @@ const independenceDays = getDaysDifference(independenceDay);
             data.industry,
             data.interests,
             userDoc.data().queryMsg?.find((item) => item.messageType === "Holiday"),
-            
+          //  userDoc.data(),
+          //  data
           );
         }
-        if ( independenceDays === adminSettings.triggerDays  ) {
+        if ( independenceDays === (adminSettings && Number(adminSettings.triggerDays)) && data && data.eventsAlert === true  ) {
           aiGeneratedMessage = await generateAiMessage(
             "Independence",
             data.holidayFrequencyInDays,
@@ -328,7 +330,8 @@ const independenceDays = getDaysDifference(independenceDay);
             data.industry,
             data.interests,
             userDoc.data().queryMsg?.find((item) => item.messageType === "Holiday"),
-            
+          //  userDoc.data(),
+          //  data
           );
         }
         
@@ -341,7 +344,7 @@ const independenceDays = getDaysDifference(independenceDay);
         //may need to shorten this ai prompt so it will work on this free tier CRON
   
         //we are updating the sendDate EVERYDAY, WHETHER AN AI MESSAGE IS GENERATED OR NOT
-        updatedSendDate = String(currentSendDateNum - 1);
+        updatedSendDate =currentSendDateNum > 1 ? String(currentSendDateNum - 1): String(data.frequencyInDays);
 
         const updatedMessage = {
           firstParagraph: aiGeneratedMessage?.firstParagraph,
@@ -352,27 +355,27 @@ const independenceDays = getDaysDifference(independenceDay);
           messageType: aiGeneratedMessage?.messageType || "Email",
         };
   
-        console.log("UPDATED UPDATED MESSAGE IS -->", updatedMessage);
+        console.log("USER BEING UPDATED IS -->", data);
   
 
 
         //RELEASING EMAILS WHEN SEND DATE BECOMES ZERO
 
 
-        if( currentSendDateNum === 0 ){
+        if( currentSendDateNum === 1 ){
           //RELEASE EMAIL HERE - THE MOST RECENT ONE IN THE ARRAY THAT HAS TYPE EMAIL
 
-
+       if(data.touchesAlert !==null && data.touchesAlert ===true  ){
           try {
             const params = {
               Destination: {
-                ToAddresses: [data.email],
+              ToAddresses: [data.email],
               },
               Message: {
                 Body: {
                   Html: {
                     Data: `
-                      <h2>Nurturer - ${data.messageQueue && data.messageQueue[data.messageQueue.length - 1] && data.messageQueue[data.messageQueue.length - 1].subject}</h2>
+                      
                       <p>Dear <strong>${data.name || ''}</strong>,</p>
                       <br/>
             
@@ -419,9 +422,9 @@ const independenceDays = getDaysDifference(independenceDay);
             
         
             const command = new SendEmailCommand(params);
-            const response = await sesClient.send(command);
+             await sesClient.send(command);
         
-            console.log("✅ Email sent successfully:", response.MessageId);
+            //console.log("✅ Email sent successfully:", response.MessageId);
            // return response;
           } catch (error) {
             console.error("❌ Error sending email:", error);
@@ -455,9 +458,9 @@ const independenceDays = getDaysDifference(independenceDay);
             messageQueue: updatedMessageQueue,
           });
         }
+      }
 
-
-        if( currentBirthdaySendDateNum === 0 ){
+        if( currentBirthdaySendDateNum === 0 && data.eventsAlert !==null && data.eventsAlert ===true  ){
          //RELEASE EMAIL HERE - THE MOST RECENT ONE IN THE ARRAY THAT HAS TYPE BIRTHDAY
 
          try {
@@ -469,7 +472,7 @@ const independenceDays = getDaysDifference(independenceDay);
               Body: {
                 Html: {
                   Data: `
-                    <h2>Nurturer - ${data.messageQueue && data.messageQueue[data.messageQueue.length - 1] && data.messageQueue[data.messageQueue.length - 1].subject}</h2>
+                   
                     <p>Dear <strong>${data.name || ''}</strong>,</p>
                     <br/>
           
@@ -516,9 +519,9 @@ const independenceDays = getDaysDifference(independenceDay);
           
       
           const command = new SendEmailCommand(params);
-          const response = await sesClient.send(command);
+           await sesClient.send(command);
       
-          console.log("✅ Email sent successfully:", response.MessageId);
+          //console.log("✅ Email sent successfully:", response.MessageId);
          // return response;
         } catch (error) {
           console.error("❌ Error sending email:", error);
@@ -553,7 +556,7 @@ const independenceDays = getDaysDifference(independenceDay);
         }
 
         }
-        if(  christmasDays === 0  ){
+        if(  christmasDays === 0 && data.eventsAlert !==null && data.eventsAlert ===true   ){
            //RELEASE EMAIL HERE - THE MOST RECENT ONE IN THE ARRAY THAT HAS TYPE BIRTHDAY
 
          try {
@@ -565,7 +568,7 @@ const independenceDays = getDaysDifference(independenceDay);
               Body: {
                 Html: {
                   Data: `
-                    <h2>Nurturer - ${data.messageQueue && data.messageQueue[data.messageQueue.length - 1] && data.messageQueue[data.messageQueue.length - 1].subject}</h2>
+                   
                     <p>Dear <strong>${data.name || ''}</strong>,</p>
                     <br/>
           
@@ -612,9 +615,9 @@ const independenceDays = getDaysDifference(independenceDay);
           
       
           const command = new SendEmailCommand(params);
-          const response = await sesClient.send(command);
+         await sesClient.send(command);
       
-          console.log("✅ Email sent successfully:", response.MessageId);
+         // console.log("✅ Email sent successfully:", response.MessageId);
          // return response;
         } catch (error) {
           console.error("❌ Error sending email:", error);
@@ -651,7 +654,7 @@ const independenceDays = getDaysDifference(independenceDay);
         }
 
       }
-        if( independenceDays===0  ){
+        if( independenceDays===0  && data.eventsAlert !==null && data.eventsAlert ===true  ){
            //RELEASE EMAIL HERE - THE MOST RECENT ONE IN THE ARRAY THAT HAS TYPE BIRTHDAY
 
          try {
@@ -663,7 +666,7 @@ const independenceDays = getDaysDifference(independenceDay);
               Body: {
                 Html: {
                   Data: `
-                    <h2>Nurturer - ${data.messageQueue && data.messageQueue[data.messageQueue.length - 1] && data.messageQueue[data.messageQueue.length - 1].subject}</h2>
+                   
                     <p>Dear <strong>${data.name || ''}</strong>,</p>
                     <br/>
           
@@ -708,11 +711,10 @@ const independenceDays = getDaysDifference(independenceDay);
             Source: 'info@nurturer.ai', // must be verified in SES
           };
           
-      
           const command = new SendEmailCommand(params);
-          const response = await sesClient.send(command);
+           await sesClient.send(command);
       
-          console.log("✅ Email sent successfully:", response.MessageId);
+         // console.log("✅ Email sent successfully:", response.MessageId);
          // return response;
         } catch (error) {
           console.error("❌ Error sending email:", error);
@@ -750,7 +752,7 @@ const independenceDays = getDaysDifference(independenceDay);
         }
       }
 
-        if( newYearsDays===0  ){
+        if( newYearsDays===0 && data.eventsAlert !==null && data.eventsAlert ===true   ){
           //RELEASE EMAIL HERE - THE MOST RECENT ONE IN THE ARRAY THAT HAS TYPE BIRTHDAY
 
           try {
@@ -762,7 +764,7 @@ const independenceDays = getDaysDifference(independenceDay);
                 Body: {
                   Html: {
                     Data: `
-                      <h2>Nurturer - ${data.messageQueue && data.messageQueue[data.messageQueue.length - 1] && data.messageQueue[data.messageQueue.length - 1].subject}</h2>
+                     
                       <p>Dear <strong>${data.name || ''}</strong>,</p>
                       <br/>
             
@@ -807,11 +809,10 @@ const independenceDays = getDaysDifference(independenceDay);
               Source: 'info@nurturer.ai', // must be verified in SES
             };
             
-        
             const command = new SendEmailCommand(params);
-            const response = await sesClient.send(command);
+            await sesClient.send(command);
         
-            console.log("✅ Email sent successfully:", response.MessageId);
+           // console.log("✅ Email sent successfully:", response.MessageId);
            // return response;
           } catch (error) {
             console.error("❌ Error sending email:", error);
@@ -853,8 +854,8 @@ const independenceDays = getDaysDifference(independenceDay);
         //RELEASING EMAIL WHEN SEND DATE BECOMES ZERO - END
 
 
-    if( currentSendDateNum === adminSettings.triggerDays||currentBirthdaySendDateNum === adminSettings.triggerDays|| christmasDays === adminSettings.triggerDays || independenceDays===adminSettings.triggerDays ||newYearsDays ===adminSettings.triggerDays ){
-      //WHEN ONE OF THESE DATE IS adminSettings.triggerDays, AN AI MESSAGE WILL BE GENERATED FOR SURE
+    if( currentSendDateNum === (adminSettings && Number(adminSettings.triggerDays))||currentBirthdaySendDateNum === (adminSettings && Number(adminSettings.triggerDays))|| christmasDays === (adminSettings && Number(adminSettings.triggerDays)) || independenceDays===(adminSettings && Number(adminSettings.triggerDays)) ||newYearsDays ===(adminSettings && Number(adminSettings.triggerDays)) ){
+      //WHEN ONE OF THESE DATE IS Number(adminSettings.triggerDays), AN AI MESSAGE WILL BE GENERATED FOR SURE
       batch.update(doc.ref, {
         sendDate: updatedSendDate,
         //birthdaySendDate: updatedBirthdaySendDate,
@@ -864,7 +865,7 @@ const independenceDays = getDaysDifference(independenceDay);
     }
     
     else{
-      //OTHERWISE , WHEN NONE OF THESE DATES ARE adminSettings.triggerDays, WE ARE NOT UPDATING THE MESSAGE QUEUE, JUST REDUCING THE COUNTDOWN
+      //OTHERWISE , WHEN NONE OF THESE DATES ARE Number(adminSettings.triggerDays), WE ARE NOT UPDATING THE MESSAGE QUEUE, JUST REDUCING THE COUNTDOWN
        batch.update(doc.ref, {
           sendDate: updatedSendDate,
           //birthdaySendDate: updatedBirthdaySendDate,
@@ -872,6 +873,47 @@ const independenceDays = getDaysDifference(independenceDay);
         
         });
       }
+
+
+
+      const isTodayHoliday = (christmasDays === 0 || newYearsDays === 0 || independenceDays === 0);
+let whichHoliday = "";
+if (christmasDays === 0) whichHoliday = "Christmas";
+else if (newYearsDays === 0) whichHoliday = "New Years";
+else if (independenceDays === 0) whichHoliday = "Independence Day";
+
+const isHolidayAdminSendDate = (
+  christmasDays === Number(adminSettings.triggerDays) ||
+  newYearsDays === Number(adminSettings.triggerDays) ||
+  independenceDays === Number(adminSettings.triggerDays)
+);
+
+
+/**ADDING TO MY CONTACTS LOG ARRAY  */
+const isBirthdayToday = currentBirthdaySendDateNumInDays === 0;
+
+const isSendDateZero = Number(data.sendDate) === 0;
+
+const isSendDateAdminSendDate = Number(data.sendDate) === Number(adminSettings.triggerDays);
+
+contactsLog.push({
+  contactName: data.name,
+  contactEmail: data.email,
+  contactId: data.uid,
+  previousSendDate: data.sendDate,
+  newSendDate: updatedSendDate,
+  isTodayHoliday,
+  whichHoliday,
+  isHolidayAdminSendDate,
+  isSendDateZero,
+  isSendDateAdminSendDate,
+  isBirthdayToday
+});
+
+totalUsersAffected += 1;
+
+/**ADDING TO MY CONTACTS LOG ARRAY - END */
+
         writeCount++;
   
         // 🔑 If batch reaches 500 writes, commit and start a new one
@@ -891,7 +933,12 @@ const independenceDays = getDaysDifference(independenceDay);
       committedBatches++;
       console.log(`Committed final batch #${committedBatches} with ${writeCount} writes`);
     }
-  
+
+    await db.collection("cronlogs").add({
+      createdAt: new Date(),
+      totalUsersAffected,
+      contacts: contactsLog
+    });
 
     //return res.status(200).json({ message: `Contacts updated successfully. Total batches: ${committedBatches}` });
   
