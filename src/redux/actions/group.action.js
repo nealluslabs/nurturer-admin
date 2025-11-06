@@ -352,6 +352,8 @@ const independenceDays = getDaysDifference(independenceDay);
           thirdParagraph: aiGeneratedMessage?.thirdParagraph,
           bulletPoints: aiGeneratedMessage?.bulletPoints,
           subject: aiGeneratedMessage?.subject,
+          messageStatus:"Pending",
+          createdAt:new Date(),
           messageType: aiGeneratedMessage?.messageType || "Email",
         };
   
@@ -892,7 +894,7 @@ const isHolidayAdminSendDate = (
 /**ADDING TO MY CONTACTS LOG ARRAY  */
 const isBirthdayToday = currentBirthdaySendDateNumInDays === 0;
 
-const isSendDateZero = Number(data.sendDate) === 0;
+const isSendDateOne = Number(data.sendDate) === 1;
 
 const isSendDateAdminSendDate = Number(data.sendDate) === Number(adminSettings.triggerDays);
 
@@ -905,7 +907,7 @@ contactsLog.push({
   isTodayHoliday,
   whichHoliday,
   isHolidayAdminSendDate,
-  isSendDateZero,
+  isSendDateOne,
   isSendDateAdminSendDate,
   isBirthdayToday
 });
@@ -1245,7 +1247,7 @@ Please go through the javascript object ${JSON.stringify(previousMessage)}, and 
     if(fullJobDetailsResponse){
 
 
-      return {...fullJobDetailsResponse,createdAt:new Date()}
+      return {...fullJobDetailsResponse,createdAt:new Date(),messageStatus:"Pending"}
 
     }
       
