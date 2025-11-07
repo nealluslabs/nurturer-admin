@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Box, Typography } from "@mui/material";
 import { useDispatch } from "react-redux";
-import { simulateCronJob, updateSettingsForAdminSettings, updateTriggerDaysForAllContacts } from "src/redux/actions/group.action";
+import { simulateCronJob, updateAllContacts, updateSettingsForAdminSettings, updateTriggerDaysForAllContacts } from "src/redux/actions/group.action";
 
 export default function SettingsPage() {
 
@@ -326,7 +326,9 @@ Please go through the javascript object {$JSON.stringify(previousMessage)}, and 
               onClick={()=>{
 
               if(window.confirm("Are you sure you want to run this operation?")){
-                dispatch(simulateCronJob())
+               dispatch(simulateCronJob())
+               //dispatch(updateAllContacts())
+
               }
             }}
                 sx={{ 

@@ -164,7 +164,34 @@ export const updateSettingsForAdminSettings = (updateObject) => async (dispatch)
 
 }
 
+export const updateAllContacts = () => async (dispatch) => {
+  
 
+  try {
+    const snapshot = await db.collection("contacts").get();
+
+    if (snapshot.empty) {
+      console.log("No contacts found.");
+      return;
+    }
+
+    // Option 1: Batch update for efficiency
+    const batch = db.batch();
+
+    snapshot.docs.forEach((doc) => {
+      const docRef = db.collection("contacts").doc(doc.id);
+      batch.update(docRef, {
+        eventsAlert: true,
+        touchesAlert: true,
+      });
+    });
+
+    await batch.commit();
+    console.log(`✅ Updated ${snapshot.size} contacts successfully.`);
+  } catch (error) {
+    console.error("❌ Error updating contacts:", error);
+  }
+};
 
 
 
@@ -976,108 +1003,12 @@ const apiEndpoint =`https://pmserver.vercel.app/api/om/chatgpt`
     
    eval('`' + adminSettings.holidayQuery.replace(/\{\$/g, '${') + '`')
 
- /*` Generate an email subject of 5 words maximum,wishing the user a Happy Fourth of July, and 3 really short paragraphs of text, and fill in this object and return it as your answer(keep the object in valid JSON).For the id in each object of the bulletPoints array, please keep the id in the object below,do not delete them when generating your own object.Finally for the subject, make sure to put an emoji at the end of the generated subject:
- {"subject":"Happy Fourth ofJuly",
- messageType:"Holiday",
- "messageStatus":"Pending"
-  "firstParagraph":" ",
-  "secondParagraph":" ",
-  "thirdParagraph":" ",
-  "bulletPoints":[
-    {
-     "bulletPointBold":" ",
-     "bulletPointRest":" ",
-     "link":" ",
-     "id":"0",
-    },{
-      "bulletPointBold":" ",
-      "bulletPointRest":" ",
-      "link":" ",
-      "id":"1",
-    },{
-      "bulletPointBold":" ",
-      "bulletPointRest":" ",
-      "link":" ",
-      "id":"2",
-    },{
-      "bulletPointBold":" ",
-      "bulletPointRest":" ",
-      "link":" ",
-      "id":"3",
-    },{
-      "bulletPointBold":" ",
-      "bulletPointRest":" ",
-      "link":" ",
-      "id":"4",
-    },
-  ]
- } .The first paragraph should be about how you wish the receiver and everyone at their company,:${Company} a happy fourth of July.
-     Don't start the paragraph with Dear ${Name}, just jump into the writing.
-    second parargaph should be about how you are grateful for all the work they do in their industry: ${Industry}. Add a sentimental touch at this point.
-    Also mention how you hope they can get a well deserved break today, and maybe even dabble in their interests: ${Interests}.
-    The third Paragraph should be thanking them once again for the difference they make and wishing them  happy holidays.
-    The Subject should be composed from the content of the paragraphs above and should have some sort of "Happy Fourth of July" phrase in it.
-   in the JSON object you generate, there is no need to fill out the bulletPoints array, return the bulletPoints array as it is in the text above.
-
-Please go through the javascript object ${JSON.stringify(previousMessage)}, and try to adapt to my writing style,so you can sound like me,when providing your answer`*/
-
-
-
-
    :
 
    messageType === "Christmas"?
 
    eval('`' + adminSettings.holidayQuery.replace(/\{\$/g, '${') + '`')
 
-/*
-   ` Generate an email subject of 5 words maximum,wishing the user a Merry Christmas, and 3 really short paragraphs of text, and fill in this object and return it as your answer(keep the object in valid JSON).For the id in each object of the bulletPoints array, please keep the id in the object below,do not delete them when generating your own object.Finally for the subject, make sure to put an emoji at the end of the generated subject:
-   {"subject":"Merry Christmas",
-   messageType:"Holiday",
-   "messageStatus":"Pending"
-    "firstParagraph":" ",
-    "secondParagraph":" ",
-    "thirdParagraph":" ",
-    "bulletPoints":[
-      {
-       "bulletPointBold":" ",
-       "bulletPointRest":" ",
-       "link":" ",
-       "id":"0",
-      },{
-        "bulletPointBold":" ",
-        "bulletPointRest":" ",
-        "link":" ",
-        "id":"1",
-      },{
-        "bulletPointBold":" ",
-        "bulletPointRest":" ",
-        "link":" ",
-        "id":"2",
-      },{
-        "bulletPointBold":" ",
-        "bulletPointRest":" ",
-        "link":" ",
-        "id":"3",
-      },{
-        "bulletPointBold":" ",
-        "bulletPointRest":" ",
-        "link":" ",
-        "id":"4",
-      },
-    ]
-   } .The first paragraph should be about how you wish the receiver and everyone at their company,:${Company} a Merry Christmas!.
-       Don't start the paragraph with Dear ${Name}, just jump into the writing.
-      second parargaph should be about how you are grateful for all the work they do in their industry: ${Industry}. Add a sentimental touch at this point.
-      Also mention how you hope they can get a well deserved break today, and maybe even dabble in their interests: ${Interests}.
-      The third Paragraph should be thanking them once again for the difference they make and wishing them  happy holidays.
-      The Subject should be composed from the content of the paragraphs above and should have some sort of "Merry Christmas" phrase in it.
-     in the JSON object you generate, there is no need to fill out the bulletPoints array, return the bulletPoints array as it is in the text above.
-  
-  Please go through the javascript object ${JSON.stringify(previousMessage)}, and try to adapt to my writing style,so you can sound like me,when providing your answer`
-  */
-  
-  
   
      :
 
@@ -1087,151 +1018,15 @@ Please go through the javascript object ${JSON.stringify(previousMessage)}, and 
     
      eval('`' + adminSettings.holidayQuery.replace(/\{\$/g, '${') + '`')
 
-    /* ` Generate an email subject of 5 words maximum,wishing the user a Happy New Year, and 3 really short paragraphs of text, and fill in this object and return it as your answer(keep the object in valid JSON).For the id in each object of the bulletPoints array, please keep the id in the object below,do not delete them when generating your own object.Finally for the subject, make sure to put an emoji at the end of the generated subject:
-     {"subject":"Happy New Year",
-     messageType:"Holiday",
-     "messageStatus":"Pending"
-      "firstParagraph":" ",
-      "secondParagraph":" ",
-      "thirdParagraph":" ",
-      "bulletPoints":[
-        {
-         "bulletPointBold":" ",
-         "bulletPointRest":" ",
-         "link":" ",
-         "id":"0",
-        },{
-          "bulletPointBold":" ",
-          "bulletPointRest":" ",
-          "link":" ",
-          "id":"1",
-        },{
-          "bulletPointBold":" ",
-          "bulletPointRest":" ",
-          "link":" ",
-          "id":"2",
-        },{
-          "bulletPointBold":" ",
-          "bulletPointRest":" ",
-          "link":" ",
-          "id":"3",
-        },{
-          "bulletPointBold":" ",
-          "bulletPointRest":" ",
-          "link":" ",
-          "id":"4",
-        },
-      ]
-     } .The first paragraph should be about how you wish the receiver and everyone at their company,:${Company} a happy new year.
-         Don't start the paragraph with Dear ${Name}, just jump into the writing.
-        second parargaph should be about how you are grateful for all the work they do in their industry: ${Industry}. Add a sentimental touch at this point.
-        Also mention how you hope they can get a well deserved break today, and maybe even dabble in their interests: ${Interests}.
-        The third Paragraph should be thanking them once again for the difference they make and wishing them  happy holidays.
-        The Subject should be composed from the content of the paragraphs above and should have some sort of "Happy Fourth of July" phrase in it.
-       in the JSON object you generate, there is no need to fill out the bulletPoints array, return the bulletPoints array as it is in the text above.
-    
-    Please go through the javascript object ${JSON.stringify(previousMessage)}, and try to adapt to my writing style,so you can sound like me,when providing your answer`*/
-    
-    
-    
-    
        :
    messageType === "Birthday"?
 
 
    eval('`' + adminSettings.birthdayQuery.replace(/\{\$/g, '${') + '`')
-  /* ` Generate an email subject of 5 words maximum,wishing the user a Happy Birthday, and 3 really short paragraphs of text, and fill in this object and return it as your answer(keep the object in valid JSON).For the id in each object of the bulletPoints array, please keep the id in the object below,do not delete them when generating your own object.Finally for the subject, make sure to put an emoji at the end of the generated subject:
-   {"subject":"Happy Fourth ofJuly",
-   messageType:"Event",
-   "messageStatus":"Pending"
-    "firstParagraph":" ",
-    "secondParagraph":" ",
-    "thirdParagraph":" ",
-    "bulletPoints":[
-      {
-       "bulletPointBold":" ",
-       "bulletPointRest":" ",
-       "link":" ",
-       "id":"0",
-      },{
-        "bulletPointBold":" ",
-        "bulletPointRest":" ",
-        "link":" ",
-        "id":"1",
-      },{
-        "bulletPointBold":" ",
-        "bulletPointRest":" ",
-        "link":" ",
-        "id":"2",
-      },{
-        "bulletPointBold":" ",
-        "bulletPointRest":" ",
-        "link":" ",
-        "id":"3",
-      },{
-        "bulletPointBold":" ",
-        "bulletPointRest":" ",
-        "link":" ",
-        "id":"4",
-      },
-    ]
-   } .The first paragraph should be about how you wish the receiver a happy birthday and a year ahead filled with great moments,not just in relation to their job:${JobTitle},but in life as well.
-       Don't start the paragraph with Dear ${Name}, just jump into the writing.
-      second parargaph should be about how you are grateful for all the work they do in their industry: ${Industry}. Add a sentimental touch at this point.
-      Also mention how you hope they can get a well deserved break today, and maybe even dabble in their interests: ${Interests}.
-      The Subject should be composed from the content of the paragraphs above and should have some sort of "Happy Birthday" phrase in it.
-      The third Paragraph should be wishing them future success at their company:${Company},and then say something witty about their hobby:${Interests},before finally wishing them success at it.
-     in the JSON object you generate, there is no need to fill out the bulletPoints array, return the bulletPoints array as it is in the text above.
  
-  Please go through the javascript object ${JSON.stringify(previousMessage)}, and try to adapt to my writing style,so you can sound like me,when providing your answer`*/
 
    :
    eval('`' + adminSettings.emailQuery.replace(/\{\$/g, '${') + '`')
-
- /*` Generate an email subject of 5 words maximum, and 3 really short paragraphs of text and 5 articles to refer to, and fill in this object and return it as your answer(keep the object in valid JSON).Articles should be not be older than ${Frequency}, should be from the year 2025, and links for the articles should from these sites only - PWC, Deloitte, McKinsey, Visitage, Gallup, Josh Bersin, Harvard Business Review and Forbes. For the id in each object of the bulletPoints array, please keep the id in the object below,do not delete them when generating your own object.Finally for the subject, make sure to put an emoji at the end of the generated subject:
-    {"subject":" ",
-    messageType:"Email",
-    "messageStatus":"Pending"
-     "firstParagraph":" ",
-     "secondParagraph":" ",
-     "thirdParagraph":" ",
-     "bulletPoints":[
-       {
-        "bulletPointBold":" ",
-        "bulletPointRest":" ",
-        "link":" ",
-        "id":"0",
-       },{
-         "bulletPointBold":" ",
-         "bulletPointRest":" ",
-         "link":" ",
-         "id":"1",
-       },{
-         "bulletPointBold":" ",
-         "bulletPointRest":" ",
-         "link":" ",
-         "id":"2",
-       },{
-         "bulletPointBold":" ",
-         "bulletPointRest":" ",
-         "link":" ",
-         "id":"3",
-       },{
-         "bulletPointBold":" ",
-         "bulletPointRest":" ",
-         "link":" ",
-         "id":"4",
-       },
-     ]
-    } . The first paragraph should be a professional paragraph about how you are checking in with them and about their role..
-        Don't start the paragraph with Dear ${Name}, just jump into the writing.
-       second parargaph should be about how you have found some articles that relate to their industry ${Industry}.
-       The third paragraph should be about how you'd love to hear from them and you wish them luck in their future endeavors and hobbies: ${Interests}.
-       The Subject should be composed from the content of the paragraphs above and should have some sort of "catch up" phrase in it.
-
-    for each article, put in it's title into "bulletPointBold", it's source into "bulletPointRest" and a link to the article into "link"
-
-    make each paragraph relevant to the user's job: ${JobTitle},company:${Company},industry:${Industry}  and interests:${Interests}.Confirm the articles from the sites are written in 2025 and the links are free to the public and assessible. Please go through the javascript object ${JSON.stringify(previousMessage)}, and try to adapt to my writing style,so you can sound like me,when providing your answer`*/
 
 
  //const jobResponse = await axios.post(apiEndpoint,{prompt:prompt})
