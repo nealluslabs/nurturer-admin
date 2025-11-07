@@ -3,6 +3,7 @@ import { FaUser } from "react-icons/fa";
 import { MdDashboard } from "react-icons/md";
 import { MdEmail } from "react-icons/md";
 import { IoIosSettings } from "react-icons/io";
+import { AiOutlineFileText } from "react-icons/ai";
 
 const icon = (name) => <SvgColor src={`/assets/icons/navbar/${name}.svg`} sx={{ width: 1, height: 1 }} />;
 
@@ -21,6 +22,11 @@ const navConfig = [
     title: `Newsletters`,
     path: '/dashboard/media',
     icon: <MdEmail style={{ fontSize: '14px' }} />,
+  },
+  {
+    title: `Logs`,
+    path: '/dashboard/logs',
+    icon: <AiOutlineFileText style={{ fontSize: '14px' }} />,
   },
   {
     title: `Settings`,

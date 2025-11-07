@@ -12,6 +12,7 @@ import { isItLoading, saveAllGroup ,saveEmployeer,
         saveChapterInfo,saveTeacherInfo,saveCorrectStudentId,
          savePacks, clearSubjectsForAdding, clearSubjectPastExams, saveSubjectPastExams, savePastExamInfo, saveAllSongs } from '../reducers/group.slice';
 import firebase from "firebase/app";
+import axios from 'axios';
 
 import { getTeachers } from './job.action';
 import { SESClient, SendEmailCommand } from "@aws-sdk/client-ses";
@@ -231,7 +232,8 @@ export const simulateCronJob =   () => async (dispatch) => {
     const snapshot = await db.collection("contacts").get();
   
     if (snapshot.empty) {
-      return res.status(200).json({ message: "No contacts found." });
+      console.log("No contacts found.");
+      return;
     }
   
     let batch = db.batch();
@@ -905,7 +907,7 @@ const independenceDays = getDaysDifference(independenceDay);
         sendDate: updatedSendDate,
         //birthdaySendDate: updatedBirthdaySendDate,
         //holidaySendDate: updatedHolidaySendDate,
-        messageQueue: admin.firestore.FieldValue.arrayUnion(updatedMessage),
+        messageQueue: firebase.firestore.FieldValue.arrayUnion(updatedMessage),
       });
     }
     

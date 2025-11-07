@@ -73,6 +73,8 @@ import OneOnOneSessionPage from './pages/OneOnOneSessionPage';
 import AddCompanyPage from './pages/AddCompanyPage';
 import CompanyUsersPage from './pages/CompanyUsersPage';
 import EmployeeContactsPage from './pages/EmployeeContactsPage';
+import LogsPage from './pages/LogsPage';
+import LogDetailsPage from './pages/LogDetailsPage';
 
 export default function Router() {
   const routes = useRoutes([
@@ -128,6 +130,8 @@ export default function Router() {
         { path: 'add-company', element: <AddCompanyPage /> },
         { path: 'company-users', element: <CompanyUsersPage /> },
         { path: 'employee-contacts', element: <EmployeeContactsPage /> },
+        { path: 'logs', element: <LogsPage /> },
+        { path: 'log-details', element: <LogDetailsPage /> },
         { path: 'edit-teacher', element: <EditTeacher /> },
         { path: 'orders', element: <OrdersPage /> },
         // { path: 'my-cooler', element: <MyCoolersPage /> },

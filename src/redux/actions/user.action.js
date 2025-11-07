@@ -1,6 +1,7 @@
 import {fetchUsersPending, fetchUsersSuccess, fetchUsersFailed, fetchRealTimeUsersSuccess, fetchConnectedUserSuccess,
     initiatePending, initiateSuccess, initiateSuccess2, initiateFailed, clearUser, resetConnects} from '../reducers/user.slice';
 import { fetchEmployeeContactsStart, fetchEmployeeContactsSuccess, fetchEmployeeContactsError } from '../reducers/contacts.slice';
+import { fetchCronLogsStart, fetchCronLogsSuccess, fetchCronLogsError, fetchCronLogDetailsStart, fetchCronLogDetailsSuccess, fetchCronLogDetailsError } from '../reducers/cronlogs.slice';
 // import { updateUsedConnection } from '../reducers/auth2.slice';
     import { db, fb, auth, storage } from '../../config/firebase';
 import { sendChat } from './chat.action';
@@ -469,4 +470,44 @@ export const fetchEmployeeContacts = (contacterId) => async (dispatch) => {
     dispatch(fetchEmployeeContactsError(error.message));
   }
 };
-        
+
+export const fetchCronLogs = () => async (dispatch) => {
+  dispatch(fetchCronLogsStart());
+
+  try {
+    const snapshot = await db.collection("cronlogs").orderBy("createdAt", "desc").get();
+    const cronlogs = snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data(),
+      createdAt: doc.data().createdAt?.toDate() || new Date()
+    }));
+
+    dispatch(fetchCronLogsSuccess(cronlogs));
+  } catch (error) {
+    console.error("Error fetching cronlogs:", error);
+    dispatch(fetchCronLogsError(error.message));
+  }
+};
+
+export const fetchCronLogDetails = (logId) => async (dispatch) => {
+  dispatch(fetchCronLogDetailsStart());
+
+  try {
+    const logDoc = await db.collection("cronlogs").doc(logId).get();
+
+    if (!logDoc.exists) {
+      throw new Error("Log not found");
+    }
+
+    const logData = logDoc.data();
+    const contacts = logData.contacts || [];
+
+    dispatch(fetchCronLogDetailsSuccess({
+      contacts: contacts,
+      logId: logId
+    }));
+  } catch (error) {
+    console.error("Error fetching cron log details:", error);
+    dispatch(fetchCronLogDetailsError(error.message));
+  }
+};
