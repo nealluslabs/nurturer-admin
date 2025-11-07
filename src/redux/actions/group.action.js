@@ -902,6 +902,8 @@ contactsLog.push({
   contactName: data.name,
   contactEmail: data.email,
   contactId: data.uid,
+  emailSubject:aiGeneratedMessage?aiGeneratedMessage:"no email sent out/no subject generated",
+  wasEmailSentOutToday:isSendDateOne,
   previousSendDate: data.sendDate,
   newSendDate: updatedSendDate,
   isTodayHoliday,
