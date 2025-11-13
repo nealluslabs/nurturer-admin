@@ -61,7 +61,7 @@ export default function RecentTransaction() {
         </Grid>
          </>
           :
-          <p style={{paddingTop: '10%', paddingLeft: '30%', textAlign: 'center'}}><b>No transactions yet</b></p>
+          <p style={{paddingTop: '10%', paddingLeft: '30%', textAlign: 'left'}}><b>No transactions yet</b></p>
         }
       </Grid>
       {/* <Grid container spacing={2}>

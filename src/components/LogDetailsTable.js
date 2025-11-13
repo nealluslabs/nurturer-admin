@@ -36,7 +36,7 @@ const LogDetailsTable = ({
 
   if (logDetails.length === 0) {
     return (
-      <Paper sx={{ p: 4, textAlign: 'center' }}>
+      <Paper sx={{ p: 4, textAlign: 'left' }}>
         <Typography variant="h6" color="text.secondary">
           No log details found
         </Typography>
@@ -49,11 +49,11 @@ const LogDetailsTable = ({
       <Table sx={{ maxWidth: 1500, tableLayout: "fixed" }} aria-label="log details table">
         <TableHead>
           <TableRow style={{ backgroundColor: "#20dbe4" }}>
-            <StyledTableCell>Email</StyledTableCell>
-            <StyledTableCell align="right">Name</StyledTableCell>
-            <StyledTableCell align="right">Birthday</StyledTableCell>
-            <StyledTableCell align="right">Send Date</StyledTableCell>
-            <StyledTableCell align="right">View</StyledTableCell>
+            <StyledTableCell align="left">Email</StyledTableCell>
+            <StyledTableCell align="left">Name</StyledTableCell>
+            <StyledTableCell align="left">Birthday</StyledTableCell>
+            <StyledTableCell align="left">Send Date</StyledTableCell>
+            <StyledTableCell align="left">View</StyledTableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -65,19 +65,19 @@ const LogDetailsTable = ({
             : logDetails
           ).map((detail) => (
             <TableRow key={detail.contactId || detail.id}>
-              <StyledTableCell component="th" scope="row">
+              <StyledTableCell component="th" scope="row" align="left">
                 {detail.contactEmail || detail.email}
               </StyledTableCell>
-              <StyledTableCell>
+              <StyledTableCell align="left">
                 {detail.contactName || detail.name}
               </StyledTableCell>
-              <StyledTableCell>
+              <StyledTableCell align="left">
                 {detail.birthday || 'N/A'}
               </StyledTableCell>
-              <StyledTableCell>
+              <StyledTableCell align="left">
                 {detail.sendDate ? new Date(detail.sendDate).toLocaleString() : 'N/A'}
               </StyledTableCell>
-              <StyledTableCell>
+              <StyledTableCell align="left">
                 <Button
                   variant="contained"
                   size="small"

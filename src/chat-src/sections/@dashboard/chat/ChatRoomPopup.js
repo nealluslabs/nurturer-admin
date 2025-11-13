@@ -28,7 +28,7 @@ export default function ChatRoomPopup({ participant, isOpen, onClose }) {
 
   return (
     <DialogAnimate fullWidth maxWidth="xs" open={isOpen} onClose={onClose}>
-      <DialogContent sx={{ pb: 5, textAlign: 'center' }}>
+      <DialogContent sx={{ pb: 5, textAlign: 'left' }}>
         <Avatar
           alt={name}
           src={avatar}

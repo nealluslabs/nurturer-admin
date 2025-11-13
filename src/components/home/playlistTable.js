@@ -221,13 +221,13 @@ export default function PlaylistTable({jobs}) {
           <TableHead>
             <TableRow>
               <StyledTableCell>Author</StyledTableCell>
-              <StyledTableCell align="right">Playlist Name</StyledTableCell>
-              <StyledTableCell align="right">Registered</StyledTableCell>
+              <StyledTableCell align="left">Playlist Name</StyledTableCell>
+              <StyledTableCell align="left">Registered</StyledTableCell>
               
-              {/*<StyledTableCell align="right">Industry</StyledTableCell>
+              {/*<StyledTableCell align="left">Industry</StyledTableCell>
               <StyledTableCell align="center">State</StyledTableCell>
-              <StyledTableCell align="right"></StyledTableCell>*/}
-              <StyledTableCell align="right"></StyledTableCell>
+              <StyledTableCell align="left"></StyledTableCell>*/}
+              <StyledTableCell align="left"></StyledTableCell>
              
             </TableRow>
           </TableHead>
@@ -243,21 +243,21 @@ export default function PlaylistTable({jobs}) {
                 <TableCell component="th" scope="row">
                   {row.author}
                 </TableCell>
-                <TableCell style={{ width: 140 }} align="right">
+                <TableCell style={{ width: 140 }} align="left">
                   {row.playlistName}
                 </TableCell>
-                {/*<TableCell style={{ width: 140 }} align="right">
+                {/*<TableCell style={{ width: 140 }} align="left">
                 {row.accountCreated &&typeof(row.accountCreated) !== "string"  ?(new Date(row.accountCreated.seconds*1000)).toDateString():row.accountCreated}
                 </TableCell>*/}
                 
-                <TableCell style={{ width: 140 }} align="right">
+                <TableCell style={{ width: 140 }} align="left">
                     {/* { row.createdAt } */}
                 {row.createdAt &&typeof(row.createdAt) !== "string"  ?(new Date(row.createdAt.seconds*1000)).toDateString():(row.createdAt &&typeof(row.createdAt) !== "string"  ?(new Date(row.createdAt.seconds*1000)).toDateString():typeof(row.createdAt) === "string" &&row.createdAt ) }
                 </TableCell>
 
                
 
-                <TableCell style={{ width: 180 }} align="right">
+                <TableCell style={{ width: 180 }} align="left">
                   <Button
                     type="submit"
                     // fullWidth
@@ -277,7 +277,7 @@ export default function PlaylistTable({jobs}) {
                 </TableCell>
 
 
-                {/*<TableCell style={{ width: 180 }} align="right">
+                {/*<TableCell style={{ width: 180 }} align="left">
                   <Button
                     type="submit"
                     // fullWidth

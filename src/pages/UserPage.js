@@ -218,7 +218,7 @@ export default function UserPage() {
 
                         <TableCell align="left">{location}</TableCell>
 
-                        <TableCell align="right">
+                        <TableCell align="left">
                         <Button variant="contained" style={{backgroundColor: "black"}}>
                           VIEW
                         </Button>
@@ -239,7 +239,7 @@ export default function UserPage() {
                       <TableCell align="center" colSpan={6} sx={{ py: 3 }}>
                         <Paper
                           sx={{
-                            textAlign: 'center',
+                            textAlign: 'left',
                           }}
                         >
                           <Typography variant="h6" paragraph>

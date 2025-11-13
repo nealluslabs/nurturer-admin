@@ -94,12 +94,12 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
     backgroundColor: "#20dbe4",
     color: theme.palette.common.white,
     width: 'auto',
-    textAlign: 'center',
+    textAlign: 'left',
   },
   [`&.${tableCellClasses.body}`]: {
     fontSize: 14,
     width: 'auto',
-    textAlign: 'center',
+    textAlign: 'left',
   },
 }));
 
@@ -222,10 +222,10 @@ export default function CJobList() {
             <TableHead>
               <TableRow style={{ backgroundColor: "#20dbe4" }}>
                 <StyledTableCell>Company Name</StyledTableCell>
-                <StyledTableCell align="right">Email</StyledTableCell>
-                <StyledTableCell align="right">Company ID</StyledTableCell>
-                <StyledTableCell align="right">Date</StyledTableCell>
-                <StyledTableCell align="right">View</StyledTableCell>
+                <StyledTableCell align="left">Email</StyledTableCell>
+                <StyledTableCell align="left">Company ID</StyledTableCell>
+                <StyledTableCell align="left">Date</StyledTableCell>
+                <StyledTableCell align="left">View</StyledTableCell>
               </TableRow>
             </TableHead>
             <TableBody>

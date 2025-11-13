@@ -202,9 +202,9 @@ export default function CJobList({jobs}) {
           <TableHead>
             <TableRow>
               <StyledTableCell>Company</StyledTableCell>
-              <StyledTableCell align="right">Location</StyledTableCell>
+              <StyledTableCell align="left">Location</StyledTableCell>
               <StyledTableCell align="center"></StyledTableCell>
-              <StyledTableCell align="right"></StyledTableCell>
+              <StyledTableCell align="left"></StyledTableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -219,12 +219,12 @@ export default function CJobList({jobs}) {
                 <TableCell component="th" scope="row">
                   {row.company}
                 </TableCell>
-                <TableCell style={{ width: 140 }} align="right">
+                <TableCell style={{ width: 140 }} align="left">
                   {row.location}
                 </TableCell>
-                <TableCell style={{ width: 140 }} align="right">
+                <TableCell style={{ width: 140 }} align="left">
                 </TableCell>
-                <TableCell style={{ width: 180 }} align="right">
+                <TableCell style={{ width: 180 }} align="left">
                   <Button
                     type="submit"
                     // fullWidth
@@ -279,9 +279,9 @@ export default function CJobList({jobs}) {
           <TableHead>
             <TableRow>
             <StyledTableCell>Company</StyledTableCell>
-              <StyledTableCell align="right">Location</StyledTableCell>
+              <StyledTableCell align="left">Location</StyledTableCell>
               <StyledTableCell align="center"></StyledTableCell>
-              <StyledTableCell align="right"></StyledTableCell>
+              <StyledTableCell align="left"></StyledTableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -296,10 +296,10 @@ export default function CJobList({jobs}) {
                 <TableCell component="th" scope="row">
                   {row.company}
                 </TableCell>
-                <TableCell style={{ width: 140 }} align="right">
+                <TableCell style={{ width: 140 }} align="left">
                   {row.location}
                 </TableCell>
-                <TableCell style={{ width: 280 }} align="right">
+                <TableCell style={{ width: 280 }} align="left">
                 </TableCell>
                
               </TableRow>

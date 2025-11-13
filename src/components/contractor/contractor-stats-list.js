@@ -238,13 +238,13 @@ export default function ContractorStatsList({jobs}) {
           <TableHead>
             <TableRow>
               <StyledTableCell>Subject Watched</StyledTableCell>
-              <StyledTableCell align="right">Course Name</StyledTableCell>
-              <StyledTableCell align="right">Watched On</StyledTableCell>
+              <StyledTableCell align="left">Course Name</StyledTableCell>
+              <StyledTableCell align="left">Watched On</StyledTableCell>
               
-              {/*<StyledTableCell align="right">Industry</StyledTableCell>
+              {/*<StyledTableCell align="left">Industry</StyledTableCell>
               <StyledTableCell align="center">State</StyledTableCell>
-              <StyledTableCell align="right"></StyledTableCell>*/}
-              <StyledTableCell align="right"></StyledTableCell>
+              <StyledTableCell align="left"></StyledTableCell>*/}
+              <StyledTableCell align="left"></StyledTableCell>
              
             </TableRow>
           </TableHead>
@@ -260,25 +260,25 @@ export default function ContractorStatsList({jobs}) {
                 <TableCell component="th" scope="row">
                   {row.subject}
                 </TableCell>
-                <TableCell style={{ width: 140 }} align="right">
+                <TableCell style={{ width: 140 }} align="left">
                   {row.courseName}
                 </TableCell>
 
-                <TableCell style={{ width: 140 }} align="right">
+                <TableCell style={{ width: 140 }} align="left">
                   {row.watchedOn}
                 </TableCell>
 
-                {/*<TableCell style={{ width: 140 }} align="right">
+                {/*<TableCell style={{ width: 140 }} align="left">
                 {row.accountCreated &&typeof(row.accountCreated) !== "string"  ?(new Date(row.accountCreated.seconds*1000)).toDateString():row.accountCreated}
                 </TableCell>*/}
                 
-                {/*<TableCell style={{ width: 140 }} align="right">
+                {/*<TableCell style={{ width: 140 }} align="left">
                 {row.registeredOn &&typeof(row.registeredOn) !== "string"  ?(new Date(row.registeredOn.seconds*1000)).toDateString():row.accountCreated}
                 </TableCell>*/}
 
                
 
-                <TableCell style={{ width: 180 }} align="right">
+                <TableCell style={{ width: 180 }} align="left">
                   <Button
                     type="submit"
                     // fullWidth
@@ -297,7 +297,7 @@ export default function ContractorStatsList({jobs}) {
                 </TableCell>
 
 
-                {/*<TableCell style={{ width: 180 }} align="right">
+                {/*<TableCell style={{ width: 180 }} align="left">
                   <Button
                     type="submit"
                     // fullWidth

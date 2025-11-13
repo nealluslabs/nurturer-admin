@@ -92,12 +92,12 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
     backgroundColor: "#20dbe4",
     color: theme.palette.common.white,
     width: 'auto',
-    textAlign: 'center',
+    textAlign: 'left',
   },
   [`&.${tableCellClasses.body}`]: {
     fontSize: 14,
     width: 'auto',
-    textAlign: 'center',
+    textAlign: 'left',
   },
 }));
 
@@ -190,7 +190,7 @@ export default function EmployeeContactsPage() {
           </Box>
         </center>
       ) : employeeContacts.length === 0 ? (
-        <Paper sx={{ p: 4, textAlign: 'center' }}>
+        <Paper sx={{ p: 4, textAlign: 'left' }}>
           <Typography variant="h6" color="text.secondary">
             No contacts found for {userName || `User ID: ${contacterId}`}
           </Typography>
@@ -204,10 +204,10 @@ export default function EmployeeContactsPage() {
             <TableHead>
               <TableRow style={{ backgroundColor: "#20dbe4" }}>
                 <StyledTableCell>Contact Name</StyledTableCell>
-                <StyledTableCell align="right">Email</StyledTableCell>
-                <StyledTableCell align="right">Phone</StyledTableCell>
-                <StyledTableCell align="right">Company</StyledTableCell>
-                <StyledTableCell align="right">Date Added</StyledTableCell>
+                <StyledTableCell align="left">Email</StyledTableCell>
+                <StyledTableCell align="left">Phone</StyledTableCell>
+                <StyledTableCell align="left">Company</StyledTableCell>
+                <StyledTableCell align="left">Date Added</StyledTableCell>
               </TableRow>
             </TableHead>
             <TableBody>

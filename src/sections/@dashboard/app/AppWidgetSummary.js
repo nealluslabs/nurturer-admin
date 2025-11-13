@@ -36,7 +36,7 @@ export default function AppWidgetSummary({ title, total, icon, color = 'primary'
       sx={{
         py: 5,
         boxShadow: 0,
-        textAlign: 'center',
+        textAlign: 'left',
         color: (theme) => theme.palette[color].darker,
         bgcolor: (theme) => theme.palette[color].lighter,
         ...sx,

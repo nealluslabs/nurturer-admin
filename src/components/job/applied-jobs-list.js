@@ -160,9 +160,9 @@ export default function AppliedJobsList() {
       <TableHead>
           <TableRow>
             <StyledTableCell>Job Title</StyledTableCell>
-            <StyledTableCell align="right">Job Type</StyledTableCell>
-            <StyledTableCell align="right">Rate($/HR)</StyledTableCell>
-            <StyledTableCell align="right"></StyledTableCell>
+            <StyledTableCell align="left">Job Type</StyledTableCell>
+            <StyledTableCell align="left">Rate($/HR)</StyledTableCell>
+            <StyledTableCell align="left"></StyledTableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -174,13 +174,13 @@ export default function AppliedJobsList() {
               <TableCell component="th" scope="row">
                 {row.title}
               </TableCell>
-              <TableCell style={{ width: 140 }} align="right">
+              <TableCell style={{ width: 140 }} align="left">
                 {row.type}
               </TableCell>
-              <TableCell style={{ width: 160 }} align="right">
+              <TableCell style={{ width: 160 }} align="left">
                 {row.rate}
               </TableCell>
-              <TableCell style={{ width: 180 }} align="right">
+              <TableCell style={{ width: 180 }} align="left">
               <Button
               type="submit"
               // fullWidth

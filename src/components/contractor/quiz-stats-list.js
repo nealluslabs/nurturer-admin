@@ -270,14 +270,14 @@ export default function QuizStatsList({student,allQuizzes}) {
           <TableHead>
             <TableRow>
               <StyledTableCell>Playlist Name</StyledTableCell>
-              <StyledTableCell align="right">Shared</StyledTableCell>
-              <StyledTableCell align="right">Number of Songs</StyledTableCell>
-              <StyledTableCell align="right">Uploaded On</StyledTableCell>
+              <StyledTableCell align="left">Shared</StyledTableCell>
+              <StyledTableCell align="left">Number of Songs</StyledTableCell>
+              <StyledTableCell align="left">Uploaded On</StyledTableCell>
               
-              {/*<StyledTableCell align="right">Industry</StyledTableCell>
+              {/*<StyledTableCell align="left">Industry</StyledTableCell>
               <StyledTableCell align="center">State</StyledTableCell>
-              <StyledTableCell align="right"></StyledTableCell>*/}
-              <StyledTableCell align="right"></StyledTableCell>
+              <StyledTableCell align="left"></StyledTableCell>*/}
+              <StyledTableCell align="left"></StyledTableCell>
               
             </TableRow>
           </TableHead>
@@ -294,37 +294,37 @@ export default function QuizStatsList({student,allQuizzes}) {
                 <TableCell component="th" scope="row">
                   {row.title}
                 </TableCell>
-                <TableCell style={{ width: 140 }} align="right">
+                <TableCell style={{ width: 140 }} align="left">
                   {row.subject}
                 </TableCell>
 
-               {/* <TableCell style={{ width: 140 }} align="right">
+               {/* <TableCell style={{ width: 140 }} align="left">
                   {console.log("QUIZ TAKEN ON IS--->," ,row.takenOn)}
                   { row.takenOn && (new Date((row.takenOn.seconds)*1000)).toDateString()}
                   
                 </TableCell> */}
 
 
-                {<TableCell style={{ width: 140 }} align="right">
+                {<TableCell style={{ width: 140 }} align="left">
                 {row.takenOn &&typeof(row.takenOn) !== "string"  ?(new Date(row.takenOn.seconds*1000)).toDateString():new Date(row.takenOn).toDateString()}
                 </TableCell>}
 
-                <TableCell style={{ width: 140 }} align="right">
+                <TableCell style={{ width: 140 }} align="left">
                   {/*row.resultPercentage > 50? ("pass" `${student.quizzesTaken[index].resultPercentage}%`):"TBD"*/}
                   {`${student.quizzesTaken[index].resultPercentage}%` }
                 </TableCell>
 
-                {/*<TableCell style={{ width: 140 }} align="right">
+                {/*<TableCell style={{ width: 140 }} align="left">
                 {row.accountCreated &&typeof(row.accountCreated) !== "string"  ?(new Date(row.accountCreated.seconds*1000)).toDateString():row.accountCreated}
                 </TableCell>*/}
                 
-                {/*<TableCell style={{ width: 140 }} align="right">
+                {/*<TableCell style={{ width: 140 }} align="left">
                 {row.registeredOn &&typeof(row.registeredOn) !== "string"  ?(new Date(row.registeredOn.seconds*1000)).toDateString():row.accountCreated}
                 </TableCell>*/}
 
                
 
-                <TableCell style={{ width: 180 }} align="right">
+                <TableCell style={{ width: 180 }} align="left">
                   <Button
                     type="submit"
                     // fullWidth
@@ -343,7 +343,7 @@ export default function QuizStatsList({student,allQuizzes}) {
                 </TableCell>
 
 
-                {/*<TableCell style={{ width: 180 }} align="right">
+                {/*<TableCell style={{ width: 180 }} align="left">
                   <Button
                     type="submit"
                     // fullWidth
@@ -364,7 +364,7 @@ export default function QuizStatsList({student,allQuizzes}) {
             ))):
            
              <TableRow>
-            <TableCell style={{ width: 140 }} align="right">
+            <TableCell style={{ width: 140 }} align="left">
                   No playlists created for this user
                 </TableCell>
                 </TableRow>

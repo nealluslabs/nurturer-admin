@@ -36,7 +36,7 @@ const LogsTable = ({
 
   if (logs.length === 0) {
     return (
-      <Paper sx={{ p: 4, textAlign: 'center' }}>
+      <Paper sx={{ p: 4, textAlign: 'left' }}>
         <Typography variant="h6" color="text.secondary">
           No logs found
         </Typography>
@@ -49,9 +49,9 @@ const LogsTable = ({
       <Table sx={{ maxWidth: 1500, tableLayout: "fixed" }} aria-label="logs table">
         <TableHead>
           <TableRow style={{ backgroundColor: "#20dbe4" }}>
-            <StyledTableCell>Created</StyledTableCell>
-            <StyledTableCell align="right">Users Affected</StyledTableCell>
-            <StyledTableCell align="right">View</StyledTableCell>
+            <StyledTableCell align="left">Created</StyledTableCell>
+            <StyledTableCell align="left">Users Affected</StyledTableCell>
+            <StyledTableCell align="left">View</StyledTableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -63,13 +63,13 @@ const LogsTable = ({
             : logs
           ).map((log) => (
             <TableRow key={log.id}>
-              <StyledTableCell component="th" scope="row">
+              <StyledTableCell component="th" scope="row" align="left">
                 {log.createdAt?.toLocaleString() || 'N/A'}
               </StyledTableCell>
-              <StyledTableCell>
+              <StyledTableCell align="left">
                 {log.contacts?.length || 0}
               </StyledTableCell>
-              <StyledTableCell>
+              <StyledTableCell align="left">
                 <Button
                   variant="contained"
                   size="small"
@@ -78,6 +78,7 @@ const LogsTable = ({
                     color: "white",
                     fontSize: "12px",
                     boxShadow: 'none',
+                    padding: "0xp 8px"
                   }}
                   onClick={() => onViewLog(log)}
                 >

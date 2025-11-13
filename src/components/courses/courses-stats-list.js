@@ -257,7 +257,7 @@ export default function CoursesStatsList({jobs}) {
                 <TableCell style={{ width: 140 }} align="center">
                   {row.section}
                 </TableCell>
-                {/*<TableCell style={{ width: 140 }} align="right">
+                {/*<TableCell style={{ width: 140 }} align="left">
                 {row.accountCreated &&typeof(row.accountCreated) !== "string"  ?(new Date(row.accountCreated.seconds*1000)).toDateString():row.accountCreated}
                 </TableCell>*/}
                 
@@ -289,7 +289,7 @@ export default function CoursesStatsList({jobs}) {
                 </TableCell>
 
 
-                {/*<TableCell style={{ width: 180 }} align="right">
+                {/*<TableCell style={{ width: 180 }} align="left">
                   <Button
                     type="submit"
                     // fullWidth

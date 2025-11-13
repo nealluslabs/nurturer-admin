@@ -244,14 +244,14 @@ export default function LessonStatsList({student,allLessons}) {
           <TableHead>
             <TableRow>
               <StyledTableCell>Song Name</StyledTableCell>
-              <StyledTableCell align="right">Played</StyledTableCell>
-              <StyledTableCell align="right">Downloaded</StyledTableCell>
-              <StyledTableCell align="right">Uploaded On</StyledTableCell>
+              <StyledTableCell align="left">Played</StyledTableCell>
+              <StyledTableCell align="left">Downloaded</StyledTableCell>
+              <StyledTableCell align="left">Uploaded On</StyledTableCell>
               
-              {/*<StyledTableCell align="right">Industry</StyledTableCell>
+              {/*<StyledTableCell align="left">Industry</StyledTableCell>
               <StyledTableCell align="center">State</StyledTableCell>
-              <StyledTableCell align="right"></StyledTableCell>*/}
-              <StyledTableCell align="right"></StyledTableCell>
+              <StyledTableCell align="left"></StyledTableCell>*/}
+              <StyledTableCell align="left"></StyledTableCell>
              
             </TableRow>
           </TableHead>
@@ -268,28 +268,28 @@ export default function LessonStatsList({student,allLessons}) {
                 <TableCell component="th" scope="row">
                   {row.title}
                 </TableCell>
-                <TableCell style={{ width: 140 }} align="right">
+                <TableCell style={{ width: 140 }} align="left">
                   {row.section}
                 </TableCell>
-                <TableCell style={{ width: 140 }} align="right">
+                <TableCell style={{ width: 140 }} align="left">
                   {row.category}
                 </TableCell>
 
-                <TableCell style={{ width: 140 }} align="right">
+                <TableCell style={{ width: 140 }} align="left">
                   {student.lessonsWatched && student.lessonsWatched[index].takenOn && (new Date((student.lessonsWatched[index].takenOn.seconds)*1000)).toDateString()}
                 </TableCell>
 
-                {/*<TableCell style={{ width: 140 }} align="right">
+                {/*<TableCell style={{ width: 140 }} align="left">
                 {row.accountCreated &&typeof(row.accountCreated) !== "string"  ?(new Date(row.accountCreated.seconds*1000)).toDateString():row.accountCreated}
                 </TableCell>*/}
                 
-                {/*<TableCell style={{ width: 140 }} align="right">
+                {/*<TableCell style={{ width: 140 }} align="left">
                 {row.registeredOn &&typeof(row.registeredOn) !== "string"  ?(new Date(row.registeredOn.seconds*1000)).toDateString():row.accountCreated}
                 </TableCell>*/}
 
                
 
-                <TableCell style={{ width: 180 }} align="right">
+                <TableCell style={{ width: 180 }} align="left">
                   <Button
                     type="submit"
                     // fullWidth
@@ -308,7 +308,7 @@ export default function LessonStatsList({student,allLessons}) {
                 </TableCell>
 
 
-                {/*<TableCell style={{ width: 180 }} align="right">
+                {/*<TableCell style={{ width: 180 }} align="left">
                   <Button
                     type="submit"
                     // fullWidth
@@ -329,7 +329,7 @@ export default function LessonStatsList({student,allLessons}) {
             )))
             :
             <TableRow>
-            <TableCell style={{ width: 140 }} align="right">
+            <TableCell style={{ width: 140 }} align="left">
               {"No Songs uploaded for this user."}
             </TableCell>
             </TableRow>

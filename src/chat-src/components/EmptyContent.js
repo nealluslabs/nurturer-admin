@@ -10,7 +10,7 @@ import Image from './Image';
 const RootStyle = styled('div')(({ theme }) => ({
   height: '100%',
   display: 'flex',
-  textAlign: 'center',
+  textAlign: 'left',
   alignItems: 'center',
   flexDirection: 'column',
   justifyContent: 'center',

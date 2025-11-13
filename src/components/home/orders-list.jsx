@@ -290,9 +290,9 @@ export default function OrdersList({ordersData}) {
             <TableRow>
               <StyledTableCell>Course(s)</StyledTableCell>
               <StyledTableCell>Affiliate ID</StyledTableCell>
-              <StyledTableCell align="right">Email Address</StyledTableCell>
-              <StyledTableCell align="right">Purchased</StyledTableCell>
-              <StyledTableCell align="right">Action</StyledTableCell>
+              <StyledTableCell align="left">Email Address</StyledTableCell>
+              <StyledTableCell align="left">Purchased</StyledTableCell>
+              <StyledTableCell align="left">Action</StyledTableCell>
              
             </TableRow>
           </TableHead>
@@ -309,19 +309,19 @@ export default function OrdersList({ordersData}) {
                   {row && row.title}
                   
                 </TableCell>
-                <TableCell style={{ width: 140 }} align="right">
+                <TableCell style={{ width: 140 }} align="left">
                   { row &&  row.affiliateId }
                 </TableCell>
-                <TableCell style={{ width: 140 }} align="right">
+                <TableCell style={{ width: 140 }} align="left">
                   { row &&  row.email}
                 </TableCell>
-                <TableCell style={{ width: 140 }} align="right">
+                <TableCell style={{ width: 140 }} align="left">
                 {row && row.purchasedOn }
                 </TableCell>
 
                
 
-                <TableCell style={{ width: 180 }} align="right">
+                <TableCell style={{ width: 180 }} align="left">
                   <Button
                     type="submit"
                     // fullWidth

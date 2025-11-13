@@ -92,12 +92,12 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
     backgroundColor: "#20dbe4",
     color: theme.palette.common.white,
     width: 'auto',
-    textAlign: 'center',
+    textAlign: 'left',
   },
   [`&.${tableCellClasses.body}`]: {
     fontSize: 14,
     width: 'auto',
-    textAlign: 'center',
+    textAlign: 'left',
   },
 }));
 
@@ -237,11 +237,11 @@ export default function CompanyUsersPage() {
           <Table sx={{ maxWidth: 1500, tableLayout: "fixed" }} aria-label="company users table">
             <TableHead>
               <TableRow style={{ backgroundColor: "#20dbe4" }}>
-                <StyledTableCell>Name</StyledTableCell>
-                <StyledTableCell align="right">Email</StyledTableCell>
-                <StyledTableCell align="right">Company ID</StyledTableCell>
-                <StyledTableCell align="right">Date Registered</StyledTableCell>
-                <StyledTableCell align="right">View</StyledTableCell>
+                <StyledTableCell align="left">Name</StyledTableCell>
+                <StyledTableCell align="left">Email</StyledTableCell>
+                <StyledTableCell align="left">Company ID</StyledTableCell>
+                <StyledTableCell align="left">Date Registered</StyledTableCell>
+                <StyledTableCell align="left">View</StyledTableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -253,7 +253,7 @@ export default function CompanyUsersPage() {
                 : users
               ).map((user) => (
                 <TableRow key={user.id || Math.random()}>
-                  <StyledTableCell component="th" scope="row">
+                  <StyledTableCell component="th" scope="row" align="left">
                     {user.fullName
                       || (user.firstName && user.lastName && `${user.firstName} ${user.lastName}`)
                       || user.displayName
@@ -262,13 +262,13 @@ export default function CompanyUsersPage() {
                       || user.email
                       || "-"}
                   </StyledTableCell>
-                  <StyledTableCell>
+                  <StyledTableCell align="left">
                     {user.email || "-"}
                   </StyledTableCell>
-                  <StyledTableCell>
+                  <StyledTableCell align="left">
                     {user.companyID || "-"}
                   </StyledTableCell>
-                  <StyledTableCell>
+                  <StyledTableCell align="left">
                     {user.registeredOn && typeof user.registeredOn !== "string"
                       ? new Date(user.registeredOn.seconds * 1000).toDateString()
                       : (user.accountCreated && typeof user.accountCreated !== "string"
@@ -276,7 +276,7 @@ export default function CompanyUsersPage() {
                           : (typeof user.accountCreated === "string" && user.accountCreated)
                         ) || user.fulldate || "-"}
                   </StyledTableCell>
-                  <StyledTableCell>
+                  <StyledTableCell align="left">
                     <Button
                       variant="contained"
                       size="small"

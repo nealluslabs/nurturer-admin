@@ -6,12 +6,12 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
     backgroundColor: "#20dbe4",
     color: theme.palette.common.white,
     width: 'auto',
-    textAlign: 'center',
+    textAlign: 'left',
   },
   [`&.${tableCellClasses.body}`]: {
     fontSize: 14,
     width: 'auto',
-    textAlign: 'center',
+    textAlign: 'left',
   },
 }));
 

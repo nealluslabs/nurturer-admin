@@ -30,7 +30,7 @@ export default function ChartStyle() {
             borderRadius: Number(theme.shape.borderRadius) * 1.5,
             '& .apexcharts-tooltip-title': {
               border: 0,
-              textAlign: 'center',
+              textAlign: 'left',
               fontWeight: theme.typography.fontWeightBold,
               backgroundColor: theme.palette.grey[500_16],
               color: theme.palette.text[theme.palette.mode === 'light' ? 'secondary' : 'primary'],

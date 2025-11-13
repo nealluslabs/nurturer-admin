@@ -226,14 +226,14 @@ console.log(jobList)
           <TableHead>
             <TableRow>
               <StyledTableCell>Song Name</StyledTableCell>
-              <StyledTableCell align="right">Played</StyledTableCell>
-              <StyledTableCell align="right">Downloaded</StyledTableCell>
-              <StyledTableCell align="right">Uploaded On</StyledTableCell>
+              <StyledTableCell align="left">Played</StyledTableCell>
+              <StyledTableCell align="left">Downloaded</StyledTableCell>
+              <StyledTableCell align="left">Uploaded On</StyledTableCell>
               
-              {/*<StyledTableCell align="right">Industry</StyledTableCell>
+              {/*<StyledTableCell align="left">Industry</StyledTableCell>
               <StyledTableCell align="center">State</StyledTableCell>
-              <StyledTableCell align="right"></StyledTableCell>*/}
-              <StyledTableCell align="right"></StyledTableCell>
+              <StyledTableCell align="left"></StyledTableCell>*/}
+              <StyledTableCell align="left"></StyledTableCell>
              
             </TableRow>
           </TableHead>
@@ -249,26 +249,26 @@ console.log(jobList)
                 <TableCell component="th" scope="row">
                   {row.name}
                 </TableCell>
-                <TableCell style={{ width: 140 }} align="right">
+                <TableCell style={{ width: 140 }} align="left">
                   {/* {row.description} */}
                   2,000
                 </TableCell>
-                {/*<TableCell style={{ width: 140 }} align="right">
+                {/*<TableCell style={{ width: 140 }} align="left">
                 {row.accountCreated &&typeof(row.accountCreated) !== "string"  ?(new Date(row.accountCreated.seconds*1000)).toDateString():row.accountCreated}
                 </TableCell>*/}
                 
-                <TableCell style={{ width: 140 }} align="right">
+                <TableCell style={{ width: 140 }} align="left">
                     {/* { row.deadline } */}
                     1,500
                 </TableCell>
 
-                <TableCell style={{ width: 140 }} align="right">
+                <TableCell style={{ width: 140 }} align="left">
                     {/* { row.payout } */ row.createdAt? row.createdAt : "March 1 2025"} 
                 </TableCell>
 
                
 
-                <TableCell style={{ width: 180 }} align="right">
+                <TableCell style={{ width: 180 }} align="left">
                   <Button
                     type="submit"
                     // fullWidth
@@ -288,7 +288,7 @@ console.log(jobList)
                 </TableCell>
 
 
-                {/*<TableCell style={{ width: 180 }} align="right">
+                {/*<TableCell style={{ width: 180 }} align="left">
                   <Button
                     type="submit"
                     // fullWidth

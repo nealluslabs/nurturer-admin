@@ -28,7 +28,7 @@ export default function MainLayout() {
         <Box
           sx={{
             py: 5,
-            textAlign: 'center',
+            textAlign: 'left',
             position: 'relative',
             bgcolor: 'background.default',
           }}
