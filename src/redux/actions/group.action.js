@@ -15,6 +15,7 @@ import firebase from "firebase/app";
 
 import { getTeachers } from './job.action';
 import { SESClient, SendEmailCommand } from "@aws-sdk/client-ses";
+import axios from 'axios'
 
 const sesClient = new SESClient({
   region: "eu-north-1", // e.g. "us-east-1" - come and remove these environemt variables before pushing o !
