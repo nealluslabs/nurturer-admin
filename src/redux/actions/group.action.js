@@ -26,7 +26,7 @@ const sesClient = new SESClient({
   },
 });
 
-
+ 
 let sentOut = false;
 
 // 🔹 Runs BEFORE any request is sent
