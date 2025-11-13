@@ -25,6 +25,22 @@ const sesClient = new SESClient({
 });
 
 
+let sentOut = false;
+
+// 🔹 Runs BEFORE any request is sent
+axios.interceptors.request.use(
+  config => {
+    sentOut = true; // ✅ Marks that the request was initiated
+    console.log('📤 Request initiated to:', config.url);
+    return config;
+  },
+  error => {
+    console.error('❌ Failed to initiate request:', error.message);
+    return Promise.reject(error);
+  }
+);
+
+
 export const createGroup = (groupData, user, file, navigate, setLoading, url) => async (dispatch) => {
   var options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
   var today  = new Date();
@@ -165,29 +181,28 @@ export const updateSettingsForAdminSettings = (updateObject) => async (dispatch)
 }
 
 export const updateAllContacts = () => async (dispatch) => {
-  
-
   try {
-    const snapshot = await db.collection("contacts").get();
+    const oldPhotoUrl = "https://nurturer.s3.eu-west-3.amazonaws.com/no-pic.png";
+    const newPhotoUrl =
+      "https://firebasestorage.googleapis.com/v0/b/bridgetech-advance-project.appspot.com/o/profile_images%2Fprofile.jpg?alt=media&token=b3c94ada-1b08-4834-bbd1-647882c7195a";
+
+    // Query contacts that have the old photoUrl
+    const snapshot = await db.collection("contacts").where("photoUrl", "==", oldPhotoUrl).get();
 
     if (snapshot.empty) {
-      console.log("No contacts found.");
+      console.log("No contacts found with the old photo URL.");
       return;
     }
 
-    // Option 1: Batch update for efficiency
     const batch = db.batch();
 
     snapshot.docs.forEach((doc) => {
       const docRef = db.collection("contacts").doc(doc.id);
-      batch.update(docRef, {
-        eventsAlert: true,
-        touchesAlert: true,
-      });
+      batch.update(docRef, { photoUrl: newPhotoUrl });
     });
 
     await batch.commit();
-    console.log(`✅ Updated ${snapshot.size} contacts successfully.`);
+    console.log(`✅ Updated ${snapshot.size} contacts with new photo URL successfully.`);
   } catch (error) {
     console.error("❌ Error updating contacts:", error);
   }
@@ -929,9 +944,15 @@ contactsLog.push({
   contactName: data.name,
   contactEmail: data.email,
   contactId: data.uid,
-  emailSubject:aiGeneratedMessage?aiGeneratedMessage:"no email sent out/no subject generated",
-  wasEmailSentOutToday:isSendDateOne,
+  emailSubject:aiGeneratedMessage?aiGeneratedMessage:"no subject generated",
+  wasEmailSentOutToday:isSendDateOne?"yes":"no",
   previousSendDate: data.sendDate,
+  generatedMessage:
+  {subject:aiGeneratedMessage?aiGeneratedMessage.subject:" ",
+  firstParagragph:aiGeneratedMessage?aiGeneratedMessage.firstParagraph:"",
+  secondParagragph:aiGeneratedMessage?aiGeneratedMessage.firstParagraph:"",
+  },
+  wasOpenAiRequestSent:sentOut?"yes":"no",
   newSendDate: updatedSendDate,
   isTodayHoliday,
   whichHoliday,
@@ -1033,7 +1054,10 @@ const apiEndpoint =`https://pmserver.vercel.app/api/om/chatgpt`
 
 
     try {
+      
       const jobResponse = await axios.post(apiEndpoint, { prompt });
+
+      sentOut = //chat gpt complete this
     
       console.log("✅ OpenAI API call succeeded:", jobResponse.status, jobResponse.statusText);
 
