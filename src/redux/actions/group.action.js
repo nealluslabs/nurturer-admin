@@ -27,6 +27,8 @@ const sesClient = new SESClient({
 });
 
  
+
+let initialSentInPrompt;
 let sentOut = false;
 
 // 🔹 Runs BEFORE any request is sent
@@ -218,15 +220,117 @@ export const simulateCronJob =   () => async (dispatch) => {
     console.log("Cron job triggered at:", new Date().toISOString());
     let adminSettings
                                        //later I will remove this hardcoding
-    await db.collection("adminSettings").doc("KjE2Xz7avxs3Y5w4eXXF").get().then((doc)=>{
-     if(doc.exists){
-      adminSettings = doc.data()
-     }
-    });
+            const doc = await db.collection("adminSettings").doc("KjE2Xz7avxs3Y5w4eXXF").get();
+
+             if (doc.exists) {
+              adminSettings = doc.data();
+            } else {
+              console.error("Admin settings document not found!");
+              return; // prevent continuing if it’s missing
+            }
+
+  //  await db.collection("adminSettings").doc("KjE2Xz7avxs3Y5w4eXXF").get().then((doc)=>{
+  //   if(doc.exists){
+  //    adminSettings = doc.data()
+  //   }
+  //  });
+
+
+ 
+
+const generateAiMessage = async(messageType,Frequency,Name,JobTitle,Company,Industry,Interests,previousMessage) =>  { //do not delete the other argumens they are being called by the query in the eval
+            
+ 
+
+
+  //AUG 29TH 2025 - USUALLY PROMPTS WILL BE EMAILS, BUT OCCASSIONALLY IF IT'S THE CONTACTS BIRTHDAY, OR A HOLIDAY, THEN A HOLIDAY PROMPT WILL BE SENT OUT
+  //FOR NOW THOUGH WE WILL CHANGE THE PROMPT BASED ON THE MESSAGE TYPE BEING PASSED IN
+
+ //const apiEndpoint =`https://nurturer-helper-api.vercel.app/api/om/chatgpt`
+ const apiEndpoint =`https://pmserver.vercel.app/api/om/chatgpt`
+//const apiEndpoint =`http://localhost:5008/api/om/chatgpt`
+
+//console.log("USER BEING PASSED INTO GENERATE AI MESSAGE--->",user)
+ const prompt = 
+   messageType === "Independence"?
+
+    
+   eval('`' + adminSettings.holidayQuery.replace(/\{\$/g, '${') + '`')
+
+   :
+
+   messageType === "Christmas"?
+
+   eval('`' + adminSettings.holidayQuery.replace(/\{\$/g, '${') + '`')
+
+  
+     :
+
+
+     messageType === "New Years"?
+
+    
+     eval('`' + adminSettings.holidayQuery.replace(/\{\$/g, '${') + '`')
+
+       :
+   messageType === "Birthday"?
+
+
+   eval('`' + adminSettings.birthdayQuery.replace(/\{\$/g, '${') + '`')
+ 
+
+   :
+   eval('`' + adminSettings.emailQuery.replace(/\{\$/g, '${') + '`')
+
+
+ //const jobResponse = await axios.post(apiEndpoint,{prompt:prompt})
+ initialSentInPrompt = prompt
+
+    try {
+      
+      const jobResponse = await axios.post(apiEndpoint, { prompt });
+
+      sentOut = true
+
+
+    
+      console.log("✅ OpenAI API call succeeded:", jobResponse.status, jobResponse.statusText);
+
+      console.log("OUR RESPONSE FROM OUR BACKEND, WHICH CALLS CHAT GPT-->",jobResponse.data)
+
+    const fullJobDetailsResponse = /*JSON.parse(jobResponse.data)*/jobResponse.data
+
+    if(fullJobDetailsResponse){
+
+
+      return {...fullJobDetailsResponse,createdAt:new Date(),messageStatus:"Pending"}
+
+    }
+      
+      
+    } catch (error) {
+      // This block runs if the request fails
+      if (error.response) {
+        // The server responded but returned an error status code (e.g. 429, 500)
+        console.error("❌ OpenAI API call failed:", error.response.status, error.response.statusText);
+        console.error("Response data:", error.response.data);
+      } else if (error.request) {
+        // The request was made but no response was received
+        console.error("⚠️ No response received from OpenAI API:", error.request);
+      } else {
+        // Something happened while setting up the request
+        console.error("🚨 Error setting up request:", error.message);
+      }
+    
+      // Optionally: you can also log the timestamp
+      console.error("🕒 Error occurred at:", new Date().toISOString());
+    }
+    
 
 
 
-
+}
+ 
     
   
     const snapshot = await db.collection("contacts").get();
@@ -307,7 +411,9 @@ const independenceDays = getDaysDifference(independenceDay);
         let updatedHolidaySendDate =data.holidaySendDate && data.holidaySendDate; //dont need this anymore - i am using hardcoded days of july 4, christmans, new years
         let aiGeneratedMessage;
   
-        if (currentSendDateNum === (adminSettings && Number(adminSettings.triggerDays) && data && data.touchesAlert === true )) {
+        if (currentSendDateNum === (adminSettings && Number(adminSettings.triggerDays)) && data && data.touchesAlert === true ) {
+
+          console.log("GENERATE AI MESSAGE IS ABOUT TO TRIGGER FOR--->",data.name)
           aiGeneratedMessage = await generateAiMessage(
             "Email", 
             data.frequencyInDays,
@@ -335,6 +441,7 @@ const independenceDays = getDaysDifference(independenceDay);
            // userDoc.data(),
            // data
           );
+          sentOut = true
         }
   
         if (christmasDays === (adminSettings && Number(adminSettings.triggerDays)) && data && data.eventsAlert === true  ) {
@@ -350,6 +457,8 @@ const independenceDays = getDaysDifference(independenceDay);
            // userDoc.data(),
            // data
           );
+
+          sentOut = true
         }
         if (newYearsDays === (adminSettings && Number(adminSettings.triggerDays))  && data && data.eventsAlert === true ) {
           aiGeneratedMessage = await generateAiMessage(
@@ -364,6 +473,8 @@ const independenceDays = getDaysDifference(independenceDay);
           //  userDoc.data(),
           //  data
           );
+
+          sentOut = true
         }
         if ( independenceDays === (adminSettings && Number(adminSettings.triggerDays)) && data && data.eventsAlert === true  ) {
           aiGeneratedMessage = await generateAiMessage(
@@ -378,6 +489,8 @@ const independenceDays = getDaysDifference(independenceDay);
           //  userDoc.data(),
           //  data
           );
+
+          sentOut = true
         }
         
         /*else {
@@ -392,11 +505,11 @@ const independenceDays = getDaysDifference(independenceDay);
         updatedSendDate =currentSendDateNum > 1 ? String(currentSendDateNum - 1): String(data.frequencyInDays);
 
         const updatedMessage = {
-          firstParagraph: aiGeneratedMessage?.firstParagraph,
-          secondParagraph: aiGeneratedMessage?.secondParagraph,
-          thirdParagraph: aiGeneratedMessage?.thirdParagraph,
-          bulletPoints: aiGeneratedMessage?.bulletPoints,
-          subject: aiGeneratedMessage?.subject,
+          firstParagraph: aiGeneratedMessage?aiGeneratedMessage.firstParagraph:"",
+          secondParagraph: aiGeneratedMessage?aiGeneratedMessage.secondParagraph:"",
+          thirdParagraph: aiGeneratedMessage?aiGeneratedMessage.thirdParagraph:"",
+          bulletPoints: aiGeneratedMessage?aiGeneratedMessage.bulletPoints:"",
+          subject: aiGeneratedMessage?aiGeneratedMessage.subject:"",
           messageStatus:"Pending",
           createdAt:new Date(),
           messageType: aiGeneratedMessage?.messageType || "Email",
@@ -956,6 +1069,9 @@ contactsLog.push({
   secondParagragph:aiGeneratedMessage?aiGeneratedMessage.firstParagraph:"",
   },
   wasOpenAiRequestSent:sentOut?"yes":"no",
+  
+  initialMessagePrompt:initialSentInPrompt?initialSentInPrompt:"",
+ 
   newSendDate: updatedSendDate,
   isTodayHoliday,
   whichHoliday,
@@ -1009,95 +1125,7 @@ totalUsersAffected += 1;
 
 
 
- export const generateAiMessage = async(messageType,Frequency,Name,JobTitle,Company,Industry,Interests,previousMessage) =>  {
-            
  
-
-
-  //AUG 29TH 2025 - USUALLY PROMPTS WILL BE EMAILS, BUT OCCASSIONALLY IF IT'S THE CONTACTS BIRTHDAY, OR A HOLIDAY, THEN A HOLIDAY PROMPT WILL BE SENT OUT
-  //FOR NOW THOUGH WE WILL CHANGE THE PROMPT BASED ON THE MESSAGE TYPE BEING PASSED IN
-
- //const apiEndpoint =`https://nurturer-helper-api.vercel.app/api/om/chatgpt`
-const apiEndpoint =`https://pmserver.vercel.app/api/om/chatgpt`
-
-//console.log("USER BEING PASSED INTO GENERATE AI MESSAGE--->",user)
- const prompt = 
-   messageType === "Independence"?
-
-    
-   eval('`' + adminSettings.holidayQuery.replace(/\{\$/g, '${') + '`')
-
-   :
-
-   messageType === "Christmas"?
-
-   eval('`' + adminSettings.holidayQuery.replace(/\{\$/g, '${') + '`')
-
-  
-     :
-
-
-     messageType === "New Years"?
-
-    
-     eval('`' + adminSettings.holidayQuery.replace(/\{\$/g, '${') + '`')
-
-       :
-   messageType === "Birthday"?
-
-
-   eval('`' + adminSettings.birthdayQuery.replace(/\{\$/g, '${') + '`')
- 
-
-   :
-   eval('`' + adminSettings.emailQuery.replace(/\{\$/g, '${') + '`')
-
-
- //const jobResponse = await axios.post(apiEndpoint,{prompt:prompt})
-
-
-    try {
-      
-      const jobResponse = await axios.post(apiEndpoint, { prompt });
-
-      sentOut = //chat gpt complete this
-    
-      console.log("✅ OpenAI API call succeeded:", jobResponse.status, jobResponse.statusText);
-
-      console.log("OUR RESPONSE FROM OUR BACKEND, WHICH CALLS CHAT GPT-->",jobResponse.data)
-
-    const fullJobDetailsResponse = /*JSON.parse(jobResponse.data)*/jobResponse.data
-
-    if(fullJobDetailsResponse){
-
-
-      return {...fullJobDetailsResponse,createdAt:new Date(),messageStatus:"Pending"}
-
-    }
-      
-      
-    } catch (error) {
-      // This block runs if the request fails
-      if (error.response) {
-        // The server responded but returned an error status code (e.g. 429, 500)
-        console.error("❌ OpenAI API call failed:", error.response.status, error.response.statusText);
-        console.error("Response data:", error.response.data);
-      } else if (error.request) {
-        // The request was made but no response was received
-        console.error("⚠️ No response received from OpenAI API:", error.request);
-      } else {
-        // Something happened while setting up the request
-        console.error("🚨 Error setting up request:", error.message);
-      }
-    
-      // Optionally: you can also log the timestamp
-      console.error("🕒 Error occurred at:", new Date().toISOString());
-    }
-    
-
-
-
-}
 
 
 
