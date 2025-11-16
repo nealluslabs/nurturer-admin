@@ -203,7 +203,7 @@ export default function CJobList({jobs}) {
             <TableRow>
               <StyledTableCell>Company</StyledTableCell>
               <StyledTableCell align="left">Location</StyledTableCell>
-              <StyledTableCell align="center"></StyledTableCell>
+              <StyledTableCell align="left"></StyledTableCell>
               <StyledTableCell align="left"></StyledTableCell>
             </TableRow>
           </TableHead>
@@ -280,7 +280,7 @@ export default function CJobList({jobs}) {
             <TableRow>
             <StyledTableCell>Company</StyledTableCell>
               <StyledTableCell align="left">Location</StyledTableCell>
-              <StyledTableCell align="center"></StyledTableCell>
+              <StyledTableCell align="left"></StyledTableCell>
               <StyledTableCell align="left"></StyledTableCell>
             </TableRow>
           </TableHead>

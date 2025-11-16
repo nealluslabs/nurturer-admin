@@ -230,7 +230,7 @@ console.log(jobList)
               <StyledTableCell align="left">Registered</StyledTableCell>
               
               {/*<StyledTableCell align="left">Industry</StyledTableCell>
-              <StyledTableCell align="center">State</StyledTableCell>
+              <StyledTableCell align="left">State</StyledTableCell>
               <StyledTableCell align="left"></StyledTableCell>*/}
               <StyledTableCell align="left"></StyledTableCell>
              

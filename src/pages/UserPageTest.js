@@ -225,7 +225,7 @@ export default function UserPage() {
                 {isNotFound && (
                   <TableBody>
                     <TableRow>
-                      <TableCell align="center" colSpan={6} sx={{ py: 3 }}>
+                      <TableCell align="left" colSpan={6} sx={{ py: 3 }}>
                         <Paper
                           sx={{
                             textAlign: 'left',

@@ -237,7 +237,7 @@ export default function CJobList() {
                 : companiesData
               ).map((company) => (
                 <TableRow key={company.id || Math.random()}>
-                  <StyledTableCell component="th" scope="row">
+                  <StyledTableCell component="th" scope="row" align="left">
                     {company.companyName 
                       || company.name 
                       || company.firstName && company.lastName && `${company.firstName} ${company.lastName}`
@@ -246,13 +246,13 @@ export default function CJobList() {
                       || company.email
                       || "-"}
                   </StyledTableCell>
-                  <StyledTableCell>
+                  <StyledTableCell align="left">
                     {company.email || company.companyContact || "-"}
                   </StyledTableCell>
-                  <StyledTableCell>
+                  <StyledTableCell align="left">
                     {company.companyID || "-"}
                   </StyledTableCell>
-                  <StyledTableCell>
+                  <StyledTableCell align="left">
                     {company.createdAt && typeof company.createdAt !== "string"
                       ? new Date(company.createdAt.seconds * 1000).toDateString()
                       : (company.dateCreated && typeof company.dateCreated !== "string"
@@ -260,7 +260,7 @@ export default function CJobList() {
                           : (typeof company.dateCreated === "string" && company.dateCreated)
                         ) || company.date || "-"}
                   </StyledTableCell>
-                  <StyledTableCell>
+                  <StyledTableCell align="left">
                     <Button
                       variant="contained"
                       size="small"

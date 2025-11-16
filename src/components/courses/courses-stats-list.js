@@ -231,14 +231,14 @@ export default function CoursesStatsList({jobs}) {
         <Table sx={{ maxWidth: 1500,tableLayout:"fixed" }} aria-label="custom pagination table">
           <TableHead>
             <TableRow>
-              <StyledTableCell align="center">Name</StyledTableCell>
-              <StyledTableCell align="center" >Section</StyledTableCell>
-              <StyledTableCell align="center">Sub Section</StyledTableCell>
+              <StyledTableCell align="left">Name</StyledTableCell>
+              <StyledTableCell align="left" >Section</StyledTableCell>
+              <StyledTableCell align="left">Sub Section</StyledTableCell>
               
-              {/*<StyledTableCell align="center">Industry</StyledTableCell>
-              <StyledTableCell align="center">State</StyledTableCell>
-              <StyledTableCell align="center"></StyledTableCell>*/}
-              <StyledTableCell align="center">Taken</StyledTableCell>
+              {/*<StyledTableCell align="left">Industry</StyledTableCell>
+              <StyledTableCell align="left">State</StyledTableCell>
+              <StyledTableCell align="left"></StyledTableCell>*/}
+              <StyledTableCell align="left">Taken</StyledTableCell>
              
             </TableRow>
           </TableHead>
@@ -254,21 +254,21 @@ export default function CoursesStatsList({jobs}) {
                 <TableCell component="th" scope="row">
                   {row.title}
                 </TableCell>
-                <TableCell style={{ width: 140 }} align="center">
+                <TableCell style={{ width: 140 }} align="left">
                   {row.section}
                 </TableCell>
                 {/*<TableCell style={{ width: 140 }} align="left">
                 {row.accountCreated &&typeof(row.accountCreated) !== "string"  ?(new Date(row.accountCreated.seconds*1000)).toDateString():row.accountCreated}
                 </TableCell>*/}
                 
-                <TableCell style={{ width: 140 }} align="center">
+                <TableCell style={{ width: 140 }} align="left">
                 {/*row.registeredOn &&typeof(row.registeredOn) !== "string"  ?(new Date(row.registeredOn.seconds*1000)).toDateString():row.accountCreated*/}
                 {row.subSection}
                 </TableCell>
 
                
 
-                <TableCell style={{ width: 180 }} align="center">
+                <TableCell style={{ width: 180 }} align="left">
                 {row.watched[0]}
                  
                  {/* <Button
