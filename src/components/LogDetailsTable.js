@@ -72,10 +72,10 @@ const LogDetailsTable = ({
                 {detail.contactName || detail.name}
               </StyledTableCell>
               <StyledTableCell align="left">
-                {detail.birthday || 'N/A'}
+                {detail.birthday ? 'True' : 'False'}
               </StyledTableCell>
               <StyledTableCell align="left">
-                {detail.sendDate ? new Date(detail.sendDate).toLocaleString() : 'N/A'}
+                {detail.sendDate ? 'True' : 'False'}
               </StyledTableCell>
               <StyledTableCell align="left">
                 <Button
