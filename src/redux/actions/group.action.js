@@ -278,7 +278,7 @@ const generateAiMessage = async(messageType,Frequency,Name,JobTitle,Company,Indu
 
    eval('`' + adminSettings.birthdayQuery.replace(/\{\$/g, '${') + '`')
  
-
+ 
    :
    eval('`' + adminSettings.emailQuery.replace(/\{\$/g, '${') + '`')
 
