@@ -1016,6 +1016,8 @@ const independenceDays = getDaysDifference(independenceDay);
 
     if( currentSendDateNum === (adminSettings && Number(adminSettings.triggerDays))||currentBirthdaySendDateNum === (adminSettings && Number(adminSettings.triggerDays))|| christmasDays === (adminSettings && Number(adminSettings.triggerDays)) || independenceDays===(adminSettings && Number(adminSettings.triggerDays)) ||newYearsDays ===(adminSettings && Number(adminSettings.triggerDays)) ){
       //WHEN ONE OF THESE DATE IS Number(adminSettings.triggerDays), AN AI MESSAGE WILL BE GENERATED FOR SURE
+    
+      if(aiGeneratedMessage && aiGeneratedMessage.firstParagraph){
       batch.update(doc.ref, {
         sendDate: updatedSendDate,
         //birthdaySendDate: updatedBirthdaySendDate,
@@ -1023,6 +1025,7 @@ const independenceDays = getDaysDifference(independenceDay);
         messageQueue: firebase.firestore.FieldValue.arrayUnion(updatedMessage),
       });
     }
+  }
     
     else{
       //OTHERWISE , WHEN NONE OF THESE DATES ARE Number(adminSettings.triggerDays), WE ARE NOT UPDATING THE MESSAGE QUEUE, JUST REDUCING THE COUNTDOWN
