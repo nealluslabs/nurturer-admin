@@ -272,7 +272,29 @@ const generateAiMessage = async(messageType,Frequency,Name,JobTitle,Company,Indu
     
      eval('`' + adminSettings.holidayQuery.replace(/\{\$/g, '${') + '`')
 
-       :
+     :
+     messageType === "Thanksgiving"?
+ 
+  
+   eval('`' + adminSettings.holidayQuery.replace(/\{\$/g, '${') + '`')
+ 
+  
+     :
+     messageType === "Labor Day"?
+ 
+  
+   eval('`' + adminSettings.holidayQuery.replace(/\{\$/g, '${') + '`')
+ 
+  
+     :
+ 
+     messageType === "Memorial Day"?
+ 
+  
+   eval('`' + adminSettings.holidayQuery.replace(/\{\$/g, '${') + '`')
+ 
+  
+     :
    messageType === "Birthday"?
 
 
@@ -387,6 +409,28 @@ const newYearsDay = new Date(currentYear+1, 0, 1);
 // Independence Day: July 4
 const independenceDay = new Date(currentYear, 6, 4); // 6 = July
 
+// Memorial Day (last Monday in May)
+const memorialDay = (() => {
+  let d = new Date(currentYear, 4, 31); // May 31
+  let day = d.getDay();
+  return new Date(currentYear, 4, 31 - day); // Back up to Monday
+})();
+
+// Labor Day (first Monday in September)
+const laborDay = (() => {
+  let d = new Date(currentYear, 8, 1); // September 1
+  let day = d.getDay();
+  return new Date(currentYear, 8, day === 0 ? 2 : 9 - day); 
+})();
+
+// Thanksgiving (4th Thursday in November)
+const thanksgiving = (() => {
+  let d = new Date(currentYear, 10, 1); // November 1
+  let day = d.getDay();
+  let firstThursday = day <= 4 ? 4 - day : 11 - day;
+  return new Date(currentYear, 10, firstThursday + 21); // + 3 more Thursdays
+})();
+
 // Function to get the difference in days (positive number)
 const getDaysDifference = (holiday) => {
   const timeDifference = holiday - currentDate;
@@ -397,6 +441,13 @@ const getDaysDifference = (holiday) => {
 const christmasDays = getDaysDifference(christmas);
 const newYearsDays = getDaysDifference(newYearsDay);
 const independenceDays = getDaysDifference(independenceDay);
+const memorialDays = getDaysDifference(memorialDay);
+const laborDays =  getDaysDifference(laborDay);
+const thanksgivingDays = getDaysDifference(thanksgiving);
+
+console.log("HOW MANY DAYS TILL THANKSGIVING--->",thanksgivingDays)
+
+console.log("WHAT IS ADMIN SETTINGS TRIGGER DAYS --->",adminSettings && Number(adminSettings.triggerDays))
 
 
 // MY SETUP VARIABLES FOR HOLIDAY END
@@ -423,7 +474,7 @@ const independenceDays = getDaysDifference(independenceDay);
             data.industry,
             data.interests,
             userDoc.data().queryMsg?.find((item) => item.messageType === "Email"),
-            Number(adminSettings.triggerDays)
+            adminSettings && Number(adminSettings.triggerDays)
            // userDoc.data(),
            // data
           );
@@ -439,7 +490,7 @@ const independenceDays = getDaysDifference(independenceDay);
             data.industry,
             data.interests,
             userDoc.data().queryMsg?.find((item) => item.messageType === "Birthday"),
-            Number(adminSettings.triggerDays)
+            adminSettings && Number(adminSettings.triggerDays)
            // userDoc.data(),
            // data
           );
@@ -456,7 +507,7 @@ const independenceDays = getDaysDifference(independenceDay);
             data.industry,
             data.interests,
             userDoc.data().queryMsg?.find((item) => item.messageType === "Holiday"),
-            Number(adminSettings.triggerDays)
+            adminSettings && Number(adminSettings.triggerDays)
            // userDoc.data(),
            // data
           );
@@ -473,7 +524,7 @@ const independenceDays = getDaysDifference(independenceDay);
             data.industry,
             data.interests,
             userDoc.data().queryMsg?.find((item) => item.messageType === "Holiday"),
-            Number(adminSettings.triggerDays)
+            adminSettings && Number(adminSettings.triggerDays)
           //  userDoc.data(),
           //  data
           );
@@ -490,7 +541,43 @@ const independenceDays = getDaysDifference(independenceDay);
             data.industry,
             data.interests,
             userDoc.data().queryMsg?.find((item) => item.messageType === "Holiday"),
-            Number(adminSettings.triggerDays)
+            adminSettings && Number(adminSettings.triggerDays)
+          //  userDoc.data(),
+          //  data
+          );
+
+          sentOut = true
+        }
+
+        if (thanksgivingDays === (adminSettings && Number(adminSettings.triggerDays))  && data && data.eventsAlert === true ) {
+          aiGeneratedMessage = await generateAiMessage(
+            "Thanksgiving",
+            data.holidayFrequencyInDays,
+            data.name,
+            data.jobTitle,
+            data.company,
+            data.industry,
+            data.interests,
+            userDoc.data().queryMsg?.find((item) => item.messageType === "Holiday"),
+            adminSettings && Number(adminSettings.triggerDays)
+          //  userDoc.data(),
+          //  data
+          );
+
+          sentOut = true
+        }
+
+        if (laborDays === (adminSettings && Number(adminSettings.triggerDays))  && data && data.eventsAlert === true ) {
+          aiGeneratedMessage = await generateAiMessage(
+            "Labor Day",
+            data.holidayFrequencyInDays,
+            data.name,
+            data.jobTitle,
+            data.company,
+            data.industry,
+            data.interests,
+            userDoc.data().queryMsg?.find((item) => item.messageType === "Holiday"),
+            adminSettings && Number(adminSettings.triggerDays)
           //  userDoc.data(),
           //  data
           );
@@ -498,6 +585,23 @@ const independenceDays = getDaysDifference(independenceDay);
           sentOut = true
         }
         
+        if (memorialDays === (adminSettings && Number(adminSettings.triggerDays))  && data && data.eventsAlert === true ) {
+          aiGeneratedMessage = await generateAiMessage(
+            "Memorial Day",
+            data.holidayFrequencyInDays,
+            data.name,
+            data.jobTitle,
+            data.company,
+            data.industry,
+            data.interests,
+            userDoc.data().queryMsg?.find((item) => item.messageType === "Holiday"),
+            adminSettings && Number(adminSettings.triggerDays)
+          //  userDoc.data(),
+          //  data
+          );
+
+          sentOut = true
+        }
         /*else {
           updatedSendDate = String(currentSendDateNum - 1);
          
@@ -520,7 +624,10 @@ const independenceDays = getDaysDifference(independenceDay);
           messageType: aiGeneratedMessage?.messageType || "Email",
         };
   
-        console.log("USER BEING UPDATED IS -->", data);
+        //console.log("USER BEING UPDATED IS -->", data);
+        console.log("HOW MANY DAYS TILL THANKSGIVING--->",thanksgivingDays)
+
+console.log("WHAT IS ADMIN SETTINGS TRIGGER DAYS --->",adminSettings && Number(adminSettings.triggerDays))
   
 
 
@@ -607,7 +714,7 @@ const independenceDays = getDaysDifference(independenceDay);
             .map((msg, index) => ({ ...msg, index }))
             .filter(msg => msg.messageType === "Email");
         
-          if (emailMessages.length > 0) {
+        
             // Get the last (most recent) email
             const mostRecentEmail = emailMessages[emailMessages.length - 1];
             const msgIndex = mostRecentEmail.index;
@@ -622,7 +729,7 @@ const independenceDays = getDaysDifference(independenceDay);
            
             messageQueue: updatedMessageQueue,
           });
-        }
+        
       }
 
         if( currentBirthdaySendDateNum === 0 && data.eventsAlert !==null && data.eventsAlert ===true  ){
@@ -703,7 +810,7 @@ const independenceDays = getDaysDifference(independenceDay);
             .map((msg, index) => ({ ...msg, index }))
             .filter(msg => msg.messageType === "Birthday");
         
-          if (emailMessages.length > 0) {
+        
             // Get the last (most recent) email
             const mostRecentEmail = emailMessages[emailMessages.length - 1];
             const msgIndex = mostRecentEmail.index;
@@ -718,7 +825,7 @@ const independenceDays = getDaysDifference(independenceDay);
            
             messageQueue: updatedMessageQueue,
           });
-        }
+        
 
         }
         if(  christmasDays === 0 && data.eventsAlert !==null && data.eventsAlert ===true   ){
@@ -1019,7 +1126,7 @@ const independenceDays = getDaysDifference(independenceDay);
         //RELEASING EMAIL WHEN SEND DATE BECOMES ZERO - END
 
 
-    if( currentSendDateNum === (adminSettings && Number(adminSettings.triggerDays))||currentBirthdaySendDateNum === (adminSettings && Number(adminSettings.triggerDays))|| christmasDays === (adminSettings && Number(adminSettings.triggerDays)) || independenceDays===(adminSettings && Number(adminSettings.triggerDays)) ||newYearsDays ===(adminSettings && Number(adminSettings.triggerDays)) ){
+    if( currentSendDateNum === (adminSettings && Number(adminSettings.triggerDays))||currentBirthdaySendDateNum === (adminSettings && Number(adminSettings.triggerDays))|| christmasDays === (adminSettings && Number(adminSettings.triggerDays)) || independenceDays===(adminSettings && Number(adminSettings.triggerDays)) ||newYearsDays ===(adminSettings && Number(adminSettings.triggerDays)) || thanksgivingDays ===(adminSettings && Number(adminSettings.triggerDays)) || laborDays ===(adminSettings && Number(adminSettings.triggerDays)) || memorialDays ===(adminSettings && Number(adminSettings.triggerDays)) ){
       //WHEN ONE OF THESE DATE IS Number(adminSettings.triggerDays), AN AI MESSAGE WILL BE GENERATED FOR SURE
     
       if(aiGeneratedMessage && aiGeneratedMessage.firstParagraph){
@@ -1049,12 +1156,19 @@ let whichHoliday = "";
 if (christmasDays === 0) whichHoliday = "Christmas";
 else if (newYearsDays === 0) whichHoliday = "New Years";
 else if (independenceDays === 0) whichHoliday = "Independence Day";
+else if (laborDays === 0) whichHoliday = "Labor Day";
+else if (thanksgivingDays === 0) whichHoliday = "Thanksgiving Day";
+else if (memorialDays === 0) whichHoliday = "Memorial Day";
 
 const isHolidayAdminSendDate = (
-  christmasDays === Number(adminSettings.triggerDays) ||
-  newYearsDays === Number(adminSettings.triggerDays) ||
-  independenceDays === Number(adminSettings.triggerDays)
+  christmasDays ===adminSettings &&  Number(adminSettings.triggerDays) ||
+  newYearsDays ===adminSettings && Number(adminSettings.triggerDays) ||
+  independenceDays ===adminSettings && Number(adminSettings.triggerDays)||
+  laborDays ===adminSettings && Number(adminSettings.triggerDays)||
+  memorialDays === adminSettings && Number(adminSettings.triggerDays)||
+  thanksgivingDays ===adminSettings && Number(adminSettings.triggerDays)
 );
+
 
 
 /**ADDING TO MY CONTACTS LOG ARRAY  */
