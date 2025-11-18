@@ -238,7 +238,7 @@ export const simulateCronJob =   () => async (dispatch) => {
 
  
 
-const generateAiMessage = async(messageType,Frequency,Name,JobTitle,Company,Industry,Interests,previousMessage) =>  { //do not delete the other argumens they are being called by the query in the eval
+const generateAiMessage = async(messageType,Frequency,Name,JobTitle,Company,Industry,Interests,previousMessage,adminSettingsTriggerDays) =>  { //do not delete the other argumens they are being called by the query in the eval
             
  
 
@@ -423,6 +423,7 @@ const independenceDays = getDaysDifference(independenceDay);
             data.industry,
             data.interests,
             userDoc.data().queryMsg?.find((item) => item.messageType === "Email"),
+            Number(adminSettings.triggerDays)
            // userDoc.data(),
            // data
           );
@@ -438,6 +439,7 @@ const independenceDays = getDaysDifference(independenceDay);
             data.industry,
             data.interests,
             userDoc.data().queryMsg?.find((item) => item.messageType === "Birthday"),
+            Number(adminSettings.triggerDays)
            // userDoc.data(),
            // data
           );
@@ -454,6 +456,7 @@ const independenceDays = getDaysDifference(independenceDay);
             data.industry,
             data.interests,
             userDoc.data().queryMsg?.find((item) => item.messageType === "Holiday"),
+            Number(adminSettings.triggerDays)
            // userDoc.data(),
            // data
           );
@@ -470,6 +473,7 @@ const independenceDays = getDaysDifference(independenceDay);
             data.industry,
             data.interests,
             userDoc.data().queryMsg?.find((item) => item.messageType === "Holiday"),
+            Number(adminSettings.triggerDays)
           //  userDoc.data(),
           //  data
           );
@@ -486,6 +490,7 @@ const independenceDays = getDaysDifference(independenceDay);
             data.industry,
             data.interests,
             userDoc.data().queryMsg?.find((item) => item.messageType === "Holiday"),
+            Number(adminSettings.triggerDays)
           //  userDoc.data(),
           //  data
           );
