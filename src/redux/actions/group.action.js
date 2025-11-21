@@ -191,7 +191,7 @@ export const updateAllContacts = () => async (dispatch) => {
       "https://firebasestorage.googleapis.com/v0/b/bridgetech-advance-project.appspot.com/o/profile_images%2Fprofile.jpg?alt=media&token=b3c94ada-1b08-4834-bbd1-647882c7195a";
 
     // Query contacts that have the old photoUrl
-    const snapshot = await db.collection("contacts").where("photoUrl", "==", oldPhotoUrl).get();
+    const snapshot = await db.collection("contacts")/*.where("photoUrl", "==", oldPhotoUrl)*/.get();
 
     if (snapshot.empty) {
       console.log("No contacts found with the old photo URL.");
@@ -202,7 +202,7 @@ export const updateAllContacts = () => async (dispatch) => {
 
     snapshot.docs.forEach((doc) => {
       const docRef = db.collection("contacts").doc(doc.id);
-      batch.update(docRef, { photoUrl: newPhotoUrl });
+      batch.update(docRef, { messageQueue:[] });
     });
 
     await batch.commit();
@@ -353,15 +353,14 @@ const generateAiMessage = async(messageType,Frequency,Name,JobTitle,Company,Indu
 
 }
  
-    
-  
-    const snapshot = await db.collection("contacts").get();
-  
-    if (snapshot.empty) {
-      console.log("No contacts found.");
-      return;
-    }
-  
+const snapshot = await db
+  .collection("contacts")
+  .get();
+
+if (snapshot.empty) {
+  console.log("No contacts found.");
+  return;
+}
     let batch = db.batch();
     let contactsLog = [];
      let totalUsersAffected = 0;
@@ -443,7 +442,7 @@ const newYearsDays = getDaysDifference(newYearsDay);
 const independenceDays = getDaysDifference(independenceDay);
 const memorialDays = getDaysDifference(memorialDay);
 const laborDays =  getDaysDifference(laborDay);
-const thanksgivingDays = getDaysDifference(thanksgiving);
+const thanksgivingDays = 7/*getDaysDifference(thanksgiving)*/;
 
 console.log("HOW MANY DAYS TILL THANKSGIVING--->",thanksgivingDays)
 
@@ -716,8 +715,8 @@ console.log("WHAT IS ADMIN SETTINGS TRIGGER DAYS --->",adminSettings && Number(a
         
         
             // Get the last (most recent) email
-            const mostRecentEmail = emailMessages[emailMessages.length - 1];
-            const msgIndex = mostRecentEmail.index;
+            const mostRecentEmail = emailMessages ?emailMessages[emailMessages.length - 1]:{index:0};
+            const msgIndex = mostRecentEmail?mostRecentEmail.index:0;
         
             // Update the messageStatus
             updatedMessageQueue[msgIndex] = {
