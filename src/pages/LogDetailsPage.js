@@ -24,19 +24,20 @@ export default function LogDetailsPage() {
 
     dispatch(fetchCronLogDetails(logId));
 
-    // Cleanup when component unmounts
-    return () => {
-      // Clear the log details when leaving the page
-      // Note: This might not be necessary if navigation clears the state
-    };
+    return () => {};
   }, [logId, dispatch, navigate]);
 
   const handleBackToLogs = () => {
     navigate('/dashboard/logs');
   };
 
-  const handleViewUser = (user) => {
-    notifyErrorFxn(`Viewing user: ${user.contactName || user.name}`);
+  const handleViewUser = (contact) => {
+    navigate('/dashboard/contact-message', { 
+      state: { 
+        contact,
+        logId 
+      } 
+    });
   };
 
   if (!logId) {

@@ -75,6 +75,7 @@ import CompanyUsersPage from './pages/CompanyUsersPage';
 import EmployeeContactsPage from './pages/EmployeeContactsPage';
 import LogsPage from './pages/LogsPage';
 import LogDetailsPage from './pages/LogDetailsPage';
+import ContactMessagePage from './pages/ContactMessagePage';
 
 export default function Router() {
   const routes = useRoutes([
@@ -132,6 +133,7 @@ export default function Router() {
         { path: 'employee-contacts', element: <EmployeeContactsPage /> },
         { path: 'logs', element: <LogsPage /> },
         { path: 'log-details', element: <LogDetailsPage /> },
+        { path: 'contact-message', element: <ContactMessagePage /> },
         { path: 'edit-teacher', element: <EditTeacher /> },
         { path: 'orders', element: <OrdersPage /> },
         // { path: 'my-cooler', element: <MyCoolersPage /> },
