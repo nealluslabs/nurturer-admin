@@ -3,6 +3,7 @@ import { Button, Box, Typography, Paper, Table, TableHead, TableBody, TableFoote
 import Skeleton from '@mui/material/Skeleton';
 import StyledTableCell from "../components/StyledTableCell";
 import TablePaginationActions from "../components/TablePaginationActions";
+import StyledTableCellEmail from "./StyledTableCellEmail";
 
 const LogDetailsTable = ({
   logDetails,
@@ -51,8 +52,8 @@ const LogDetailsTable = ({
           <TableRow style={{ backgroundColor: "#20dbe4" }}>
             <StyledTableCell align="left">Email</StyledTableCell>
             <StyledTableCell align="left">Name</StyledTableCell>
-            <StyledTableCell align="left">Birthday</StyledTableCell>
-            <StyledTableCell align="left">Send Date</StyledTableCell>
+            <StyledTableCell align="left">Birthday Today?</StyledTableCell>
+            <StyledTableCell align="left">Send Date Today?</StyledTableCell>
             <StyledTableCell align="left">View</StyledTableCell>
           </TableRow>
         </TableHead>
@@ -65,8 +66,8 @@ const LogDetailsTable = ({
             : logDetails
           ).map((detail) => (
             <TableRow key={detail.contactId || detail.id}>
-              <StyledTableCell component="th" scope="row" align="left">
-                {detail.contactEmail || detail.email}
+              <StyledTableCell component="th" scope="row" align="left" style={{fontSize:"0.8rem"}}>
+                {detail && detail.contactEmail && detail.contactEmail.length > 27?`${detail.contactEmail.slice(0,27)}...` : (detail.contactEmail && detail.contactEmail.length < 27?detail.contactEmail:detail && detail.email && detail.email.length > 27?`${detail.email && detail.email.slice(0,27)}...` : detail.email)}
               </StyledTableCell>
               <StyledTableCell align="left">
                 {detail.contactName || detail.name}
