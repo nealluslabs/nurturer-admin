@@ -30,6 +30,8 @@ const sesClient = new SESClient({
 
 let initialSentInPrompt;
 let sentOut = false;
+let atLeastOneContactwasGeneratedFor = false;
+let generatedContacts = [];
 
 // 🔹 Runs BEFORE any request is sent
 axios.interceptors.request.use(
@@ -191,10 +193,10 @@ export const updateAllContacts = () => async (dispatch) => {
       "https://firebasestorage.googleapis.com/v0/b/bridgetech-advance-project.appspot.com/o/profile_images%2Fprofile.jpg?alt=media&token=b3c94ada-1b08-4834-bbd1-647882c7195a";
 
     // Query contacts that have the old photoUrl
-    const snapshot = await db.collection("contacts")/*.where("photoUrl", "==", oldPhotoUrl)*/.get();
+    const snapshot = await db.collection("contacts").where("frequency", "!=", "None").get();
 
     if (snapshot.empty) {
-      console.log("No contacts found with the old photo URL.");
+      console.log("everyone has a frequency of None.");
       return;
     }
 
@@ -202,7 +204,7 @@ export const updateAllContacts = () => async (dispatch) => {
 
     snapshot.docs.forEach((doc) => {
       const docRef = db.collection("contacts").doc(doc.id);
-      batch.update(docRef, { messageQueue:[] });
+      batch.update(docRef, {sendDate:"20" });
     });
 
     await batch.commit();
@@ -314,7 +316,7 @@ const generateAiMessage = async(messageType,Frequency,Name,JobTitle,Company,Indu
 
       sentOut = true
 
-
+      
     
       console.log("✅ OpenAI API call succeeded:", jobResponse.status, jobResponse.statusText);
 
@@ -453,6 +455,21 @@ console.log("WHAT IS ADMIN SETTINGS TRIGGER DAYS --->",adminSettings && Number(a
   
       if (data.sendDate && data.frequency && data.frequency !=="None" && adminSettings) {
         const currentSendDateNum = Number(data.sendDate);
+        let senderName = "";
+        let sender = "";
+
+        const userDoc = await db.collection('users')
+          .doc(data.contacterId)
+          .get();
+        
+        if (userDoc.exists) {
+          senderName = userDoc.data().name;
+          sender = userDoc.data();
+        } else {
+          senderName = ""; // or fallback values
+          sender = "";
+
+        }
         // currentBirthdaySendDateNum = Number(data.birthdaySendDate && data.birthdaySendDate); //not using this
        // const currentHolidaySendDateNum = Number(data.holidaySendDate && data.holidaySendDate);
   
@@ -477,6 +494,13 @@ console.log("WHAT IS ADMIN SETTINGS TRIGGER DAYS --->",adminSettings && Number(a
            // userDoc.data(),
            // data
           );
+
+           //send email notif to user
+             generatedContacts.push({name:data.name,event:"Touches"})
+             atLeastOneContactwasGeneratedFor =true
+           //send email notif to user end
+
+
         }
   
         if (currentBirthdaySendDateNumInDays === (adminSettings && Number(adminSettings.triggerDays))  && data && data.eventsAlert === true) {
@@ -494,6 +518,15 @@ console.log("WHAT IS ADMIN SETTINGS TRIGGER DAYS --->",adminSettings && Number(a
            // data
           );
           sentOut = true
+
+
+
+           //send email notif to user
+           generatedContacts.push({name:data.name,event:"Birthday"})
+           atLeastOneContactwasGeneratedFor =true
+           //send email notif to user end
+
+
         }
   
         if (christmasDays === (adminSettings && Number(adminSettings.triggerDays)) && data && data.eventsAlert === true  ) {
@@ -512,6 +545,13 @@ console.log("WHAT IS ADMIN SETTINGS TRIGGER DAYS --->",adminSettings && Number(a
           );
 
           sentOut = true
+
+
+           //send email notif to user
+           generatedContacts.push({name:data.name,event:"Christmas"})
+           
+           atLeastOneContactwasGeneratedFor =true
+           //send email notif to user end
         }
         if (newYearsDays === (adminSettings && Number(adminSettings.triggerDays))  && data && data.eventsAlert === true ) {
           aiGeneratedMessage = await generateAiMessage(
@@ -529,6 +569,11 @@ console.log("WHAT IS ADMIN SETTINGS TRIGGER DAYS --->",adminSettings && Number(a
           );
 
           sentOut = true
+
+           //send email notif to user
+           generatedContacts.push({name:data.name,event:"New Years"})
+           atLeastOneContactwasGeneratedFor =true
+           //send email notif to user end
         }
         if ( independenceDays === (adminSettings && Number(adminSettings.triggerDays)) && data && data.eventsAlert === true  ) {
           aiGeneratedMessage = await generateAiMessage(
@@ -546,9 +591,14 @@ console.log("WHAT IS ADMIN SETTINGS TRIGGER DAYS --->",adminSettings && Number(a
           );
 
           sentOut = true
+
+           //send email notif to user
+           generatedContacts.push({name:data.name,event:"Fourth of July"})
+           atLeastOneContactwasGeneratedFor =true
+           //send email notif to user end
         }
 
-        if (thanksgivingDays === (adminSettings && Number(adminSettings.triggerDays))  && data && data.eventsAlert === true ) {
+        if (currentSendDateNum ===thanksgivingDays === (adminSettings && Number(adminSettings.triggerDays))  && data && data.eventsAlert === true ) {
           aiGeneratedMessage = await generateAiMessage(
             "Thanksgiving",
             data.holidayFrequencyInDays,
@@ -564,6 +614,13 @@ console.log("WHAT IS ADMIN SETTINGS TRIGGER DAYS --->",adminSettings && Number(a
           );
 
           sentOut = true
+
+
+           //send email notif to user
+           generatedContacts.push({name:data.name,event:"Thanksgiving"})
+           atLeastOneContactwasGeneratedFor =true
+           //send email notif to user end
+
         }
 
         if (laborDays === (adminSettings && Number(adminSettings.triggerDays))  && data && data.eventsAlert === true ) {
@@ -582,6 +639,11 @@ console.log("WHAT IS ADMIN SETTINGS TRIGGER DAYS --->",adminSettings && Number(a
           );
 
           sentOut = true
+
+           //send email notif to user
+           generatedContacts.push({name:data.name,event:"Labor Day"})
+           atLeastOneContactwasGeneratedFor =true
+           //send email notif to user end
         }
         
         if (memorialDays === (adminSettings && Number(adminSettings.triggerDays))  && data && data.eventsAlert === true ) {
@@ -600,6 +662,15 @@ console.log("WHAT IS ADMIN SETTINGS TRIGGER DAYS --->",adminSettings && Number(a
           );
 
           sentOut = true
+
+           //send email notif to user
+
+           generatedContacts.push({name:data.name,event:"Memorial Day"})
+           atLeastOneContactwasGeneratedFor =true
+
+           //send email notif to user end
+
+
         }
         /*else {
           updatedSendDate = String(currentSendDateNum - 1);
@@ -635,6 +706,106 @@ console.log("WHAT IS ADMIN SETTINGS TRIGGER DAYS --->",adminSettings && Number(a
 
         if( currentSendDateNum === 1 ){
           //RELEASE EMAIL HERE - THE MOST RECENT ONE IN THE ARRAY THAT HAS TYPE EMAIL
+
+          //THANKSGIVING SENDING
+
+
+          if(thanksgivingDays===0  &&  data.eventsAlert !==null && data.eventsAlert ===true  ){
+            //RELEASE EMAIL HERE - THE MOST RECENT ONE IN THE ARRAY THAT HAS TYPE BIRTHDAY
+ 
+          try {
+           const params = {
+             Destination: {
+               ToAddresses: [data.email],
+             },
+             Message: {
+               Body: {
+                 Html: {
+                   Data: `
+                    
+                     <p>Dear <strong>${data.name || ''}</strong>,</p>
+                     <br/>
+           
+                     <p>${data.messageQueue && data.messageQueue[data.messageQueue.length - 1] && data.messageQueue[data.messageQueue.length - 1].firstParagraph || ''}</p>
+                     <br/>
+           
+                     <p>${data.messageQueue && data.messageQueue[data.messageQueue.length - 1] && data.messageQueue[data.messageQueue.length - 1].secondParagraph || ''}</p>
+                     <br/>
+           
+                    
+                     <br/>
+           
+                     <p>${data.messageQueue && data.messageQueue[data.messageQueue.length - 1] && data.messageQueue[data.messageQueue.length - 1].thirdParagraph || ''}</p>
+                     <br/>
+
+                     <p>Warm Regards,</p>
+                     <p>– ${senderName}</p>
+                      
+                     <br/>
+                     
+                     <div style="text-align:left; margin: 20px 0;">
+                     <img src="https://nurturer-newsletter.s3.eu-west-3.amazonaws.com/thanksgiving-image-for-email.png"
+                          alt="Thanksgiving Card"
+                          style="width:300px; height:300px; object-fit:cover;" />
+                   </div>
+           
+                    
+                   `,
+                 },
+                 Text: {
+                   Data: data.messageQueue && data.messageQueue[data.messageQueue.length - 1] && data.messageQueue[data.messageQueue.length - 1].subject || '',
+                 },
+               },
+               Subject: {
+                 Data: data.messageQueue && data.messageQueue[data.messageQueue.length - 1] && data.messageQueue[data.messageQueue.length - 1].subject || '',
+               },
+             },
+             Source: 'info@nurturer.ai', // must be verified in SES
+           };
+           
+           const command = new SendEmailCommand(params);
+            await sesClient.send(command);
+       
+          // console.log("✅ Email sent successfully:", response.MessageId);
+          // return response;
+         } catch (error) {
+           console.error("❌ Error sending email:", error);
+           throw error;
+         }
+   
+         //SEND EMAIL END
+ 
+           const updatedMessageQueue = [...data.messageQueue];
+ 
+           // Find the index of the most recent email (assuming array is in chronological order)
+           // If not, we’ll sort it before finding
+           const emailMessages = updatedMessageQueue
+             .map((msg, index) => ({ ...msg, index }))
+             .filter(msg => msg.messageType === "Holiday");
+         
+           if (emailMessages.length > 0) {
+             // Get the last (most recent) email
+             const mostRecentEmail = emailMessages[emailMessages.length - 1];
+             const msgIndex = mostRecentEmail.index;
+         
+             // Update the messageStatus
+             updatedMessageQueue[msgIndex] = {
+               ...updatedMessageQueue[msgIndex],
+               messageStatus: "Sent",
+             };
+ 
+ 
+ 
+           batch.update(doc.ref, {
+             
+             
+             messageQueue: updatedMessageQueue,
+           });
+         }
+       }
+
+
+          //THANKSGIVING SENDING END
 
        if(data.touchesAlert !==null && data.touchesAlert ===true  ){
           try {
@@ -677,7 +848,7 @@ console.log("WHAT IS ADMIN SETTINGS TRIGGER DAYS --->",adminSettings && Number(a
                       <br/>
             
                       <p>Warm Regards,</p>
-                      <p>– The Nurturer Team</p>
+                      <p>– ${senderName}</p>
                     `,
                   },
                   Text: {
@@ -731,7 +902,7 @@ console.log("WHAT IS ADMIN SETTINGS TRIGGER DAYS --->",adminSettings && Number(a
         
       }
 
-        if( currentBirthdaySendDateNum === 0 && data.eventsAlert !==null && data.eventsAlert ===true  ){
+        if( currentBirthdaySendDateNum === 1 && data.eventsAlert !==null && data.eventsAlert ===true  ){
          //RELEASE EMAIL HERE - THE MOST RECENT ONE IN THE ARRAY THAT HAS TYPE BIRTHDAY
 
          try {
@@ -774,7 +945,7 @@ console.log("WHAT IS ADMIN SETTINGS TRIGGER DAYS --->",adminSettings && Number(a
                     <br/>
           
                     <p>Warm Regards,</p>
-                    <p>– The Nurturer Team</p>
+                    <p>– ${senderName}</p>
                   `,
                 },
                 Text: {
@@ -870,7 +1041,7 @@ console.log("WHAT IS ADMIN SETTINGS TRIGGER DAYS --->",adminSettings && Number(a
                     <br/>
           
                     <p>Warm Regards,</p>
-                    <p>– The Nurturer Team</p>
+                    <p>– ${senderName}</p>
                   `,
                 },
                 Text: {
@@ -968,7 +1139,7 @@ console.log("WHAT IS ADMIN SETTINGS TRIGGER DAYS --->",adminSettings && Number(a
                     <br/>
           
                     <p>Warm Regards,</p>
-                    <p>– The Nurturer Team</p>
+                    <p>– ${senderName}</p>
                   `,
                 },
                 Text: {
@@ -1066,7 +1237,7 @@ console.log("WHAT IS ADMIN SETTINGS TRIGGER DAYS --->",adminSettings && Number(a
                       <br/>
             
                       <p>Warm Regards,</p>
-                      <p>– The Nurturer Team</p>
+                      <p>– ${senderName}</p>
                     `,
                   },
                   Text: {
@@ -1225,6 +1396,78 @@ totalUsersAffected += 1;
       committedBatches++;
       console.log(`Committed final batch #${committedBatches} with ${writeCount} writes`);
     }
+
+
+if(atLeastOneContactwasGeneratedFor){
+    try {
+      const params = {
+        Destination: {
+          ToAddresses: [sender.email],
+        },
+        Message: {
+          Body: {
+            Html: {
+              Data: `
+               
+                <p>Dear <strong>${sender.name || ''}</strong>,</p>
+                <br/>
+
+                <p>Your Scheduled Messages have been successfully generated for the following contacts</p>
+                <br/>
+      
+                <p>${generatedContacts && generatedContacts.map((contact)=>(
+                  <>
+                  <p>{contact.name}- {contact.event}</p>
+                  <br/>
+                  </>
+
+                ))}</p>
+                <br/>
+      
+                <p>You can review or edit these messages from your dashboard</p>
+                <br/>
+      
+               
+                <br/>
+      
+                <p>If you'd like us not to automatically send these messages on your behalf, simply disable your settings, or each contact's settings.</p>
+                <br/>
+
+                <p>Warm Regards,</p>
+                <p>– The Nurturer Team</p>
+                 
+                <br/>
+                
+             
+      
+               
+              `,
+            },
+            Text: {
+              Data:'Your messages have been generated',
+            },
+          },
+          Subject: {
+            Data:'Your messages have been generated',
+          },
+        },
+        Source: 'info@nurturer.ai', // must be verified in SES
+      };
+      
+      const command = new SendEmailCommand(params);
+       await sesClient.send(command);
+  
+     // console.log("✅ Email sent successfully:", response.MessageId);
+     // return response;
+    } catch (error) {
+      console.error("❌ Error sending email:", error);
+      throw error;
+    }
+
+  }
+
+
+
 
     await db.collection("cronlogs").add({
       createdAt: new Date(),
