@@ -712,7 +712,7 @@ console.log("WHAT IS ADMIN SETTINGS TRIGGER DAYS --->",adminSettings && Number(a
 
 
           if(thanksgivingDays===0  &&  data.eventsAlert !==null && data.eventsAlert ===true  ){
-            //RELEASE EMAIL HERE - THE MOST RECENT ONE IN THE ARRAY THAT HAS TYPE BIRTHDAY
+            //RELEASE EMAIL HERE - THE MOST RECENT ONE IN THE ARRAY THAT HAS TYPE HOLIDAY
  
           try {
            const params = {
@@ -903,7 +903,7 @@ console.log("WHAT IS ADMIN SETTINGS TRIGGER DAYS --->",adminSettings && Number(a
         
       }
 
-        if( currentBirthdaySendDateNum === 1 && data.eventsAlert !==null && data.eventsAlert ===true  ){
+        if( currentBirthdaySendDateNum === 0 && data.eventsAlert !==null && data.eventsAlert ===true  ){
          //RELEASE EMAIL HERE - THE MOST RECENT ONE IN THE ARRAY THAT HAS TYPE BIRTHDAY
 
          try {
