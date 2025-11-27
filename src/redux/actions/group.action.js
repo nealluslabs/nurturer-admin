@@ -494,6 +494,7 @@ console.log("WHAT IS ADMIN SETTINGS TRIGGER DAYS --->",adminSettings && Number(a
            // userDoc.data(),
            // data
           );
+          sentOut = true
 
            //send email notif to user
              generatedContacts.push({name:data.name,event:"Touches"})
