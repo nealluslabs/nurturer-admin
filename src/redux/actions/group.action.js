@@ -208,7 +208,8 @@ export const updateAllContacts = () => async (dispatch) => {
     });
 
     await batch.commit();
-    console.log(`✅ Updated ${snapshot.size} contacts with new photo URL successfully.`);
+    //console.log(`✅ Updated ${snapshot.size} contacts with new photo URL successfully.`);
+    console.log(`✅ Updated all contacts to a send date of 20.`);
   } catch (error) {
     console.error("❌ Error updating contacts:", error);
   }
@@ -444,7 +445,7 @@ const newYearsDays = getDaysDifference(newYearsDay);
 const independenceDays = getDaysDifference(independenceDay);
 const memorialDays = getDaysDifference(memorialDay);
 const laborDays =  getDaysDifference(laborDay);
-const thanksgivingDays = 7/*getDaysDifference(thanksgiving)*/;
+const thanksgivingDays = getDaysDifference(thanksgiving);
 
 console.log("HOW MANY DAYS TILL THANKSGIVING--->",thanksgivingDays)
 
