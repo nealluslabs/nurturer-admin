@@ -30,6 +30,7 @@ const sesClient = new SESClient({
 
 let initialSentInPrompt;
 let sentOut = false;
+let emailSendingError = false;
 let atLeastOneContactwasGeneratedFor = false;
 let generatedContacts = [];
 
@@ -204,7 +205,7 @@ export const updateAllContacts = () => async (dispatch) => {
 
     snapshot.docs.forEach((doc) => {
       const docRef = db.collection("contacts").doc(doc.id);
-      batch.update(docRef, {sendDate:"20" });
+      batch.update(docRef, {sendDate:"1" });
     });
 
     await batch.commit();
@@ -772,7 +773,8 @@ console.log("WHAT IS ADMIN SETTINGS TRIGGER DAYS --->",adminSettings && Number(a
           // return response;
          } catch (error) {
            console.error("❌ Error sending email:", error);
-           throw error;
+           //throw error;
+           emailSendingError = true
          }
    
          //SEND EMAIL END
@@ -872,7 +874,8 @@ console.log("WHAT IS ADMIN SETTINGS TRIGGER DAYS --->",adminSettings && Number(a
            // return response;
           } catch (error) {
             console.error("❌ Error sending email:", error);
-            throw error;
+            //throw error;
+            emailSendingError = true
           }
 
           //SEND EMAIL END
@@ -969,7 +972,8 @@ console.log("WHAT IS ADMIN SETTINGS TRIGGER DAYS --->",adminSettings && Number(a
          // return response;
         } catch (error) {
           console.error("❌ Error sending email:", error);
-          throw error;
+          //throw error;
+          emailSendingError = true
         }
   
         //SEND EMAIL END
@@ -1065,7 +1069,8 @@ console.log("WHAT IS ADMIN SETTINGS TRIGGER DAYS --->",adminSettings && Number(a
          // return response;
         } catch (error) {
           console.error("❌ Error sending email:", error);
-          throw error;
+          //throw error;
+          emailSendingError = true
         }
   
         //SEND EMAIL END
@@ -1162,7 +1167,8 @@ console.log("WHAT IS ADMIN SETTINGS TRIGGER DAYS --->",adminSettings && Number(a
          // return response;
         } catch (error) {
           console.error("❌ Error sending email:", error);
-          throw error;
+          //throw error;
+          emailSendingError = true
         }
   
         //SEND EMAIL END
@@ -1260,7 +1266,8 @@ console.log("WHAT IS ADMIN SETTINGS TRIGGER DAYS --->",adminSettings && Number(a
            // return response;
           } catch (error) {
             console.error("❌ Error sending email:", error);
-            throw error;
+            //throw error;
+            emailSendingError = true
           }
     
           //SEND EMAIL END
@@ -1354,8 +1361,9 @@ contactsLog.push({
   contactName: data.name,
   contactEmail: data.email,
   contactId: data.uid,
-  emailSubject:aiGeneratedMessage?aiGeneratedMessage:"no subject generated",
+  emailSubject:aiGeneratedMessage?aiGeneratedMessage.subject:"no subject generated",
   wasEmailSentOutToday:isSendDateOne?"yes":"no",
+  wasThereEmailSendingError:emailSendingError?"yes":"no",
   previousSendDate: data.sendDate,
   generatedMessage:
   {subject:aiGeneratedMessage?aiGeneratedMessage.subject:" ",
@@ -1463,7 +1471,8 @@ if(atLeastOneContactwasGeneratedFor){
      // return response;
     } catch (error) {
       console.error("❌ Error sending email:", error);
-      throw error;
+      //throw error;
+      emailSendingError = true
     }
 
   }
