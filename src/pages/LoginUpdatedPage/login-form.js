@@ -87,7 +87,8 @@ function LoginForm(props) {
 
 
   return (
-    <div  style={{paddingLeft: '15%', paddingRight: '15%', scale:"0.85"}}>
+    // <div  className='md:maxWidth: 30rem flex flex-col items-center justify-center px-[15%] md:maxHeight: 18rem p-4 scale-0.85' >
+    <div  style={{maxWidth: '30rem', flex: 'column', alignItems: 'center', justifyContent: 'center',maxHeight: '18rem', paddingLeft: '15%',paddingRight: '15%', scale:"0.85"}}>
         {error && <div><Alert
         severity="error" color="error"
         action={
@@ -100,7 +101,7 @@ function LoginForm(props) {
       </Alert><br/></div>}
 
       
-      <form className="flex flex-col justify-center w-full" >
+      <form className="flex flex-col m-0 p-10 h-fit min-w-full" >
         <Controller
           name="email"
           control={control}
@@ -121,6 +122,7 @@ function LoginForm(props) {
                   </InputAdornment>
                 ),
               }}
+              fullWidth
               variant="outlined"
             />
           )}
@@ -160,7 +162,7 @@ function LoginForm(props) {
         />
           <br/>
         <Button
-          style={{ borderRadius: '0.5rem',padding:"0.9rem",backgroundColor:"black",color:"white"}}
+          style={{ borderRadius: '1.5rem',padding:"0.9rem",backgroundColor:"black",color:"white"}}
           onClick={submitLogin}
           type="button"
           variant="contained"
