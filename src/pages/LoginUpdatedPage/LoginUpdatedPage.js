@@ -119,9 +119,9 @@ const LoginUpdatedPage = () => {
             <LoginForm />
             {/* </CardContent> */}
 
-            <div className="flex flex-row items-center  pb-32" style={{width:"95%"}}>
+            <div className="flex flex-row items-center  pb-32" style={{width:"100%"}}>
               <div className=" ">
-                <span className="font-normal text-black mr-8">
+                <span className="font-normal text-black mr-6">
                   Don't have an account?
                 </span>
                 <Link
@@ -134,7 +134,7 @@ const LoginUpdatedPage = () => {
               </div>
               {/* { */}
                 <Link
-                  className="font-normal mt-10  md:ml-5"
+                  className="font-normal md:ml-10"
                   to="/forgot-password"
                   style={{
                     // position: "relative",
