@@ -326,8 +326,8 @@ Please go through the javascript object {$JSON.stringify(previousMessage)}, and 
               onClick={()=>{
 
               if(window.confirm("Are you sure you want to run this operation?")){
-              dispatch(simulateCronJob())
-              // dispatch(updateAllContacts())
+              //dispatch(simulateCronJob())
+               dispatch(updateAllContacts())
 
               }
             }}

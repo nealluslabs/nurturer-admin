@@ -194,7 +194,7 @@ export const updateAllContacts = () => async (dispatch) => {
       "https://firebasestorage.googleapis.com/v0/b/bridgetech-advance-project.appspot.com/o/profile_images%2Fprofile.jpg?alt=media&token=b3c94ada-1b08-4834-bbd1-647882c7195a";
 
     // Query contacts that have the old photoUrl
-    const snapshot = await db.collection("contacts").where("frequency", "!=", "None").get();
+    const snapshot = await db.collection("contacts")/*.where("frequency", "!=", "None")*/.get();
 
     if (snapshot.empty) {
       console.log("everyone has a frequency of None.");
@@ -202,10 +202,24 @@ export const updateAllContacts = () => async (dispatch) => {
     }
 
     const batch = db.batch();
-
+ 
     snapshot.docs.forEach((doc) => {
       const docRef = db.collection("contacts").doc(doc.id);
-      batch.update(docRef, {sendDate:"1" });
+      batch.update(docRef, 
+        {
+          "cards": {
+             birthdayCard: "default_bday_card_url_ons3.jpg",
+            thanksgivingCard: "default_thanksgiving_card_url.jpg",
+             christmasCard: "default_christmas_card_url.jpg",
+             newYearsCard: "default_christmas_card_url.jpg",
+             independenceCard: "default_christmas_card_url.jpg",
+             laborDayCard: "default_christmas_card_url.jpg",
+             memorialDayCard: "default_christmas_card_url.jpg",
+             thankYouCard:"default_christmas_card_url.jpg",
+             workAnniversaryCard:"default_christmas_card_url.jpg"
+               },
+      }
+      );
     });
 
     await batch.commit();
@@ -1425,13 +1439,13 @@ if(atLeastOneContactwasGeneratedFor){
                 <p>Your Scheduled Messages have been successfully generated for the following contacts</p>
                 <br/>
       
-                <p>${generatedContacts && generatedContacts.map((contact)=>(
-                  <>
-                  <p>{contact.name}- {contact.event}</p>
-                  <br/>
-                  </>
+                <p>
+                ${generatedContacts && generatedContacts.map(contact => 
+                  `${contact.name} - ${contact.event}`).join(', ')}
 
-                ))}</p>
+                ))}
+                </p>
+
                 <br/>
       
                 <p>You can review or edit these messages from your dashboard</p>
