@@ -4,6 +4,7 @@ import { MdDashboard } from "react-icons/md";
 import { MdEmail } from "react-icons/md";
 import { IoIosSettings } from "react-icons/io";
 import { AiOutlineFileText } from "react-icons/ai";
+import { AiFillInteraction } from "react-icons/ai";
 
 const icon = (name) => <SvgColor src={`/assets/icons/navbar/${name}.svg`} sx={{ width: 1, height: 1 }} />;
 
@@ -12,6 +13,11 @@ const navConfig = [
     title: 'Companies',
     path: '/dashboard/home',
     icon: <FaUser style={{ fontSize: '14px' }} />
+  },
+  {
+    title: 'Interactions',
+    path: '/dashboard/interactions',
+    icon: <AiFillInteraction style={{ fontSize: '14px' }} />
   },
   {
     title: 'Cards',
