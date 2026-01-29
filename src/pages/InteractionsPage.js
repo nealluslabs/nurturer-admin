@@ -118,7 +118,7 @@ if (jobs.length > 0) {
                 <strong>User Email</strong>
               </TableCell>
               <TableCell sx={{ fontWeight: "bold" }}>
-                <strong>Company Email</strong>
+                <strong>Contact Email</strong>
               </TableCell>
               <TableCell sx={{  fontWeight: "bold" }}>
                 <strong>Timestamp</strong>
