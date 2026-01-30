@@ -26,11 +26,15 @@ const InteractionsPage = () => {
   let onlyTouchpointMessagesData = [];
   let onlyEventsMessagesData = [];
 
-if (jobs.length > 0) {
+  if (jobs.length > 0) {
     let allMessages = [];
-    
+
     jobs.forEach((contact) => {
-      if (contact.message && typeof contact.message === 'object' && !Array.isArray(contact.message)) {
+      if (
+        contact.message &&
+        typeof contact.message === "object" &&
+        !Array.isArray(contact.message)
+      ) {
         allMessages.push({
           ...contact.message,
           contactName: contact.name,
@@ -41,7 +45,7 @@ if (jobs.length > 0) {
       }
 
       if (Array.isArray(contact.queryMsg)) {
-        contact.queryMsg.forEach(msg => {
+        contact.queryMsg.forEach((msg) => {
           allMessages.push({
             ...msg,
             contactName: contact.name,
@@ -53,14 +57,16 @@ if (jobs.length > 0) {
       }
     });
 
-    allMessages.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
+    allMessages.sort(
+      (a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0),
+    );
 
     const filteredHistory = allMessages.filter(
       (item) =>
-        item.messageStatus === "Cancelled" || 
+        item.messageStatus === "Cancelled" ||
         item.messageStatus === "Sent" ||
         item.messageStatus === "Failed" ||
-        item.messageStatus === "Pending"
+        item.messageStatus === "Pending",
     );
 
     onlyTouchpointMessagesData = filteredHistory
@@ -97,8 +103,14 @@ if (jobs.length > 0) {
   ];
   console.log("displayData ON interaction PAGE----------->", displayData);
   console.log("jobs ON interaction PAGE----------->", jobs);
-  console.log("onlyTouchpointMessagesData ON interaction PAGE----------->", onlyTouchpointMessagesData);
-    console.log("onlyEventsMessagesData ON interaction PAGE----------->", onlyEventsMessagesData);
+  console.log(
+    "onlyTouchpointMessagesData ON interaction PAGE----------->",
+    onlyTouchpointMessagesData,
+  );
+  console.log(
+    "onlyEventsMessagesData ON interaction PAGE----------->",
+    onlyEventsMessagesData,
+  );
 
   return (
     <Box sx={{ p: 3 }}>
@@ -112,88 +124,97 @@ if (jobs.length > 0) {
         sx={{ borderRadius: 2, fontSize: "4rem" }}
       >
         <Table sx={{ minWidth: 650 }}>
-          <TableHead sx={{ backgroundColor: "#f5f5f5", fontSize: "4rem" }}>
+          <TableHead
+            sx={{
+              "& .MuiTableCell-head": {
+                backgroundColor: "#20dbe4",
+                color: "#ffffff",
+                fontWeight: "bold",
+              },
+            }}
+          >
+            {" "}
             <TableRow>
               <TableCell sx={{ fontWeight: "bold" }}>
                 <strong>User Email</strong>
               </TableCell>
               <TableCell sx={{ fontWeight: "bold" }}>
-                <strong>Contact Email</strong>
+                <strong>Email</strong>
               </TableCell>
-              <TableCell sx={{  fontWeight: "bold" }}>
+              <TableCell sx={{ fontWeight: "bold" }}>
                 <strong>Timestamp</strong>
               </TableCell>
               <TableCell sx={{ fontWeight: "bold" }}>
                 <strong>Type</strong>
               </TableCell>
-              <TableCell sx={{  fontWeight: "bold" }}>
+              {/* <TableCell sx={{ fontWeight: "bold" }}>
                 <strong>Subject</strong>
-              </TableCell>
+              </TableCell> */}
               <TableCell sx={{ fontWeight: "bold" }}>
                 <strong>Status</strong>
               </TableCell>
-              <TableCell
-                align="center"
-                sx={{ fontWeight: "bold" }}
-              >
+              <TableCell align="center" sx={{ fontWeight: "bold" }}>
                 <strong>View</strong>
               </TableCell>
             </TableRow>
           </TableHead>
           <TableBody sx={{ fontSize: 16 }}>
-            {displayData.map((row) => (
-              <TableRow key={row.id} hover>
-                <TableCell>
-                  <Typography variant="body2" >
-                    {row.email}
+            {displayData.length > 0 ? (
+              displayData.map((row) => (
+                <TableRow key={row.id} hover>
+                  <TableCell>
+                    <Typography variant="body2">{row.email}</Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Typography variant="body2">{row.companyEmail}</Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Typography variant="body2">
+                      {row.createdAt && row.createdAt.seconds
+                        ? new Date(
+                            row.createdAt.seconds * 1000,
+                          ).toLocaleString()
+                        : "N/A"}
+                    </Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Typography variant="body2" color="textSecondary">
+                      {row.messageType}
+                    </Typography>
+                  </TableCell>
+                  {/* <TableCell>
+                    <Typography variant="body2">{row.title}</Typography>
+                    <Typography variant="caption" color="textSecondary">
+                      {row.subtitle}
+                    </Typography>
+                  </TableCell> */}
+                  <TableCell>
+                    <Chip
+                      label={row.status}
+                      color={getStatusColor(row.status)}
+                      variant="outlined"
+                      size="medium"
+                    />
+                  </TableCell>
+                  <TableCell align="center">
+                    <IconButton sx={{ color: row.iconColor }} size="medium">
+                      <VisibilityOutlinedIcon fontSize="medium" />
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={7} align="center" sx={{ py: 5 }}>
+                  <Typography variant="h6" color="textSecondary">
+                    No interactions found.
                   </Typography>
-                </TableCell>
-                <TableCell>
-                  <Typography variant="body2" >
-                    {row.companyEmail}
+                  <Typography variant="body2" color="textSecondary">
+                    Interactions that are Sent or Cancelled will appear here.
                   </Typography>
-                </TableCell>
-                <TableCell>
-                  <Typography variant="body2" >
-                    {row.createdAt && row.createdAt.seconds
-                      ? new Date(row.createdAt.seconds * 1000).toLocaleString()
-                      : "N/A"}
-                  </Typography>
-                </TableCell>
-                <TableCell>
-                  <Typography
-                    variant="body2"
-                    color="textSecondary"
-                  >
-                    {row.messageType}
-                  </Typography>
-                </TableCell>
-                <TableCell>
-                  <Typography variant="body2">
-                    {row.title}
-                  </Typography>
-                  <Typography
-                    variant="caption"
-                    color="textSecondary"
-                  >
-                    {row.subtitle}
-                  </Typography>
-                </TableCell>
-                <TableCell>
-                  <Chip
-                    label={row.status}
-                    color={getStatusColor(row.status)}
-                    variant="outlined"
-                    size="medium"
-                  />
-                </TableCell>
-                <TableCell align="center">
-                  <IconButton sx={{ color: row.iconColor }} size="medium">
-                    <VisibilityOutlinedIcon fontSize="medium" />
-                  </IconButton>
                 </TableCell>
               </TableRow>
-            ))}{" "}
+            )}
           </TableBody>
         </Table>
       </TableContainer>
