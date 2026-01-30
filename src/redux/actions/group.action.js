@@ -208,15 +208,24 @@ export const updateAllContacts = () => async (dispatch) => {
       batch.update(docRef, 
         {
           "cards": {
-             birthdayCard: "default_bday_card_url_ons3.jpg",
-            thanksgivingCard: "default_thanksgiving_card_url.jpg",
-             christmasCard: "default_christmas_card_url.jpg",
-             newYearsCard: "default_christmas_card_url.jpg",
-             independenceCard: "default_christmas_card_url.jpg",
-             laborDayCard: "default_christmas_card_url.jpg",
-             memorialDayCard: "default_christmas_card_url.jpg",
-             thankYouCard:"default_christmas_card_url.jpg",
-             workAnniversaryCard:"default_christmas_card_url.jpg"
+             birthdayCard: "https://nurturer-newsletter.s3.eu-west-3.amazonaws.com/Birthday_1.png",
+             birthdayCard2: "https://nurturer-newsletter.s3.eu-west-3.amazonaws.com/Birthday_2.png",
+            thanksgivingCard: "https://nurturer-newsletter.s3.eu-west-3.amazonaws.com/thanksgiving1.png",
+            thanksgivingCard2: "https://nurturer-newsletter.s3.eu-west-3.amazonaws.com/thanksgiving2.png",
+             christmasCard: "https://nurturer-newsletter.s3.eu-west-3.amazonaws.com/thanksgiving1.png",
+             christmasCard2: "https://nurturer-newsletter.s3.eu-west-3.amazonaws.com/thanksgiving1.png",
+             newYearsCard: "https://nurturer-newsletter.s3.eu-west-3.amazonaws.com/thanksgiving1.png",
+             newYearsCard2: "https://nurturer-newsletter.s3.eu-west-3.amazonaws.com/thanksgiving1.png",
+             independenceCard: "https://nurturer-newsletter.s3.eu-west-3.amazonaws.com/thanksgiving1.png",
+             independenceCard2: "https://nurturer-newsletter.s3.eu-west-3.amazonaws.com/thanksgiving1.png",
+             laborDayCard: "https://nurturer-newsletter.s3.eu-west-3.amazonaws.com/thanksgiving1.png",
+             laborDayCard2: "https://nurturer-newsletter.s3.eu-west-3.amazonaws.com/thanksgiving1.png",
+             memorialDayCard: "https://nurturer-newsletter.s3.eu-west-3.amazonaws.com/thanksgiving1.png",
+             memorialDayCard2: "https://nurturer-newsletter.s3.eu-west-3.amazonaws.com/thanksgiving1.png",
+             thankYouCard:"https://nurturer-newsletter.s3.eu-west-3.amazonaws.com/thankyou_1.png",
+             thankYouCard2:"https://nurturer-newsletter.s3.eu-west-3.amazonaws.com/thankyou_2.png",
+             workAnniversaryCard:"https://nurturer-newsletter.s3.eu-west-3.amazonaws.com/Anniversary_1.png",
+             workAnniversaryCard2:"https://nurturer-newsletter.s3.eu-west-3.amazonaws.com/Anniversary_2.png"
                },
       }
       );
@@ -258,7 +267,7 @@ export const simulateCronJob =   () => async (dispatch) => {
 
 const generateAiMessage = async(messageType,Frequency,Name,JobTitle,Company,Industry,Interests,previousMessage,adminSettingsTriggerDays) =>  { //do not delete the other argumens they are being called by the query in the eval
             
- 
+  
 
 
   //AUG 29TH 2025 - USUALLY PROMPTS WILL BE EMAILS, BUT OCCASSIONALLY IF IT'S THE CONTACTS BIRTHDAY, OR A HOLIDAY, THEN A HOLIDAY PROMPT WILL BE SENT OUT
