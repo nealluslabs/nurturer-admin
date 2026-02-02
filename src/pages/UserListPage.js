@@ -9,6 +9,7 @@ import CJobList from "../components/home/c-job-list";
 import { getJobs, getOrders } from "../redux/actions/job.action";
 import {Skeleton} from '@mui/material';
 import ReactApexChart from 'react-apexcharts';
+import { fetchAllContactForOneUser } from 'src/redux/actions/user.action';
 
 // Firestor DB
 import { db } from "src/config/firebase";
@@ -23,7 +24,10 @@ export default function CJobs() {
   const [jobArr, setJobArr] = useState(jobs);
   const [testData, setTestData] = useState();
   const navigate = useNavigate()
-
+  const { user } = useSelector((state) => state.auth);
+  const { filteredUsers } = useSelector(
+    (state) => state.users || {},
+  );
   //const { userDetails, error,message, isLoading } = useSelector((state) => state.loggedIn);
     
    /* useEffect(() => {
@@ -140,6 +144,12 @@ export default function CJobs() {
      }, [jobs])
 
   console.log('cmc user data is: ', jobArr);
+
+    useEffect(() => {
+      if (user && user.uid && !filteredUsers) {
+        dispatch(fetchAllContactForOneUser(user.uid));
+      }
+    }, [dispatch, user]);
 
   return (
       

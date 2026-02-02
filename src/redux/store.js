@@ -11,6 +11,7 @@ import candidateReducer from './reducers/candidate.slice';
 import transactionReducer from './reducers/transactions.slice';
 import contactsReducer from './reducers/contacts.slice';
 import cronlogsReducer from './reducers/cronlogs.slice';
+import userReducer from './reducers/user.slice';
 // import chatReducer from '../chat-src/redux/slices/chat';
 
 
@@ -25,6 +26,7 @@ const reducers = combineReducers({
   candidates:candidateReducer,
   contacts: contactsReducer,
   cronlogs: cronlogsReducer,
+  user: userReducer,  
 });
 
 const persistConfig = {

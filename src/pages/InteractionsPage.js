@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect} from "react";
 import {
   Table,
   TableBody,
@@ -14,103 +14,84 @@ import {
 } from "@mui/material";
 import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
 import { useDispatch, useSelector } from "react-redux";
+import { fetchAllContactForOneUser } from 'src/redux/actions/user.action';
 
 const InteractionsPage = () => {
   const getStatusColor = (status) => {
     return status === "Sent" ? "success" : "error";
   };
-  const { jobs } = useSelector((state) => state.jobs);
+  // const { jobs } = useSelector((state) => state.jobs);
 
-  let touchpointData = [];
+  const { allContacts = [], candidateInFocus, filteredContacts } = useSelector(
+    (state) => state.user ,
+  );
+
 
   let onlyTouchpointMessagesData = [];
   let onlyEventsMessagesData = [];
+// console.log("filteredContacts ON interaction PAGE----------->", filteredContacts);
+  //   console.log("ALL CONTACTS IN INTERACTIONS PAGE ---------->", allContacts);
+    if (allContacts.length > 0) {
+      let allMessages = [];
+      allContacts.forEach((contact) => {
+        if (Array.isArray(contact.messageQueue)) {
+          allMessages = allMessages.concat(
+            contact.messageQueue.map((msg) => ({
+              ...msg,
+              contactName: contact.name,
+              contactId: contact.id || contact.uid,
+              uid: contact.uid,
+              email: contact.email,
+            })),
+          );
+        }
+      });
+  
+      allMessages.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+      console.log("allMessages ON interaction PAGE----------->", allMessages);
+  
+      const filteredHistory = allMessages.filter(
+        (item) =>
+          item.messageStatus === "Cancelled" || item.messageStatus === "Sent",
+      );
+  
+      onlyTouchpointMessagesData = filteredHistory
+        .filter((item) => item.messageType !== "Event")
+        .map((msg, idx) => ({
+          id: msg.id || idx,
+          title: msg.title || msg.subject || "No Title",
+          email: msg.email,
+          subtitle: msg.contactName
+            ? `${msg.contactName}${msg.to ? " - " + msg.to : ""}`
+            : msg.to || "",
+          status: msg.messageStatus || "",
+          messageType: msg.messageType,
+          createdAt: msg.createdAt,
+          iconColor: "#1976d2",
+        }));
+  
+      onlyEventsMessagesData = filteredHistory
+        .filter((item) => item.messageType === "Events")
+        .map((msg, idx) => ({
+          id: msg.id || idx,
+          title: msg.title || msg.subject || "No Title",
+          email: msg.email,
+          subtitle: msg.contactName
+            ? `${msg.contactName}${msg.to ? " - " + msg.to : ""}`
+            : msg.to || "",
+          status: msg.messageStatus || "",
+          messageType: msg.messageType,
+          createdAt: msg.createdAt,
+          iconColor: "#1976d2",
+        }));
+    }
 
-  if (jobs.length > 0) {
-    let allMessages = [];
-
-    jobs.forEach((contact) => {
-      if (
-        contact.message &&
-        typeof contact.message === "object" &&
-        !Array.isArray(contact.message)
-      ) {
-        allMessages.push({
-          ...contact.message,
-          contactName: contact.name,
-          contactId: contact.id || contact.uid,
-          email: contact.email,
-          contactEmail: contact.companyEmail,
-        });
-      }
-
-      if (Array.isArray(contact.queryMsg)) {
-        contact.queryMsg.forEach((msg) => {
-          allMessages.push({
-            ...msg,
-            contactName: contact.name,
-            contactId: contact.id || contact.uid,
-            email: contact.email,
-            contactEmail: contact.companyEmail,
-          });
-        });
-      }
-    });
-
-    allMessages.sort(
-      (a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0),
-    );
-
-    const filteredHistory = allMessages.filter(
-      (item) =>
-        item.messageStatus === "Cancelled" ||
-        item.messageStatus === "Sent" ||
-        item.messageStatus === "Failed" ||
-        item.messageStatus === "Pending",
-    );
-
-    onlyTouchpointMessagesData = filteredHistory
-      .filter((item) => item.messageType)
-      .map((msg, idx) => ({
-        id: msg.id || idx,
-        title: msg.subject || msg.title || "No Title",
-        email: msg.email,
-        companyEmail: msg.companyEmail || "N/A",
-        subtitle: msg.contactName || "",
-        status: msg.messageStatus || "",
-        messageType: msg.messageType || "",
-        createdAt: msg.createdAt,
-        iconColor: "#1976d2",
-      }));
-
-    // onlyEventsMessagesData = filteredHistory
-    //   .filter((item) => item.messageType === "Events" )
-    //   .map((msg, idx) => ({
-    //     id: msg.id || idx,
-    //     title: msg.subject || msg.title || "No Title",
-    //     email: msg.email,
-    //     companyEmail: msg.companyEmail || "N/A",
-    //     subtitle: msg.contactName || "",
-    //     status: msg.messageStatus || "",
-    //     messageType: msg.messageType,
-    //     createdAt: msg.createdAt,
-    //     iconColor: "#1976d2",
-    //   }));
-  }
   const displayData = [
     ...onlyTouchpointMessagesData,
-    // ...onlyEventsMessagesData,
+    ...onlyEventsMessagesData,
   ];
-  console.log("displayData ON interaction PAGE----------->", displayData);
-  console.log("jobs ON interaction PAGE----------->", jobs);
-  console.log(
-    "onlyTouchpointMessagesData ON interaction PAGE----------->",
-    onlyTouchpointMessagesData,
-  );
-  console.log(
-    "onlyEventsMessagesData ON interaction PAGE----------->",
-    onlyEventsMessagesData,
-  );
+  // console.log("displayData ON interaction PAGE----------->", displayData);
+  // console.log("allContacts ON interaction PAGE----------->", allContacts);
 
   return (
     <Box sx={{ p: 3 }}>
@@ -165,9 +146,9 @@ const InteractionsPage = () => {
                   <TableCell>
                     <Typography variant="body2">{row.email}</Typography>
                   </TableCell>
-                  <TableCell>
+                  {/* <TableCell>
                     <Typography variant="body2">{row.companyEmail}</Typography>
-                  </TableCell>
+                  </TableCell> */}
                   <TableCell>
                     <Typography variant="body2">
                       {row.createdAt && row.createdAt.seconds
@@ -182,13 +163,13 @@ const InteractionsPage = () => {
                       {row.messageType}
                     </Typography>
                   </TableCell>
-                  {/* <TableCell>
+                <TableCell>
                     <Typography variant="body2">{row.title}</Typography>
                     <Typography variant="caption" color="textSecondary">
                       {row.subtitle}
                     </Typography>
-                  </TableCell> */}
-                  <TableCell>
+                  </TableCell>
+            <TableCell>
                     <Chip
                       label={row.status}
                       color={getStatusColor(row.status)}
