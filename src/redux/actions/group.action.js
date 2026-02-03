@@ -267,7 +267,7 @@ export const simulateCronJob =   () => async (dispatch) => {
 
 const generateAiMessage = async(messageType,Frequency,Name,JobTitle,Company,Industry,Interests,previousMessage,adminSettingsTriggerDays) =>  { //do not delete the other argumens they are being called by the query in the eval
             
-  
+   
 
 
   //AUG 29TH 2025 - USUALLY PROMPTS WILL BE EMAILS, BUT OCCASSIONALLY IF IT'S THE CONTACTS BIRTHDAY, OR A HOLIDAY, THEN A HOLIDAY PROMPT WILL BE SENT OUT
