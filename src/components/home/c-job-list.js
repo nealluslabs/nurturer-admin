@@ -18,10 +18,10 @@ import KeyboardArrowRight from "@mui/icons-material/KeyboardArrowRight";
 import LastPageIcon from "@mui/icons-material/LastPage";
 import { styled } from "@mui/styles";
 import { Button } from "@material-ui/core";
-import { useNavigate} from "react-router-dom";
-import Skeleton from '@mui/material/Skeleton';
+import { useNavigate } from "react-router-dom";
+import Skeleton from "@mui/material/Skeleton";
 
-import { notifyErrorFxn } from 'src/utils/toast-fxn';
+import { notifyErrorFxn } from "src/utils/toast-fxn";
 
 import { useDispatch } from "react-redux";
 
@@ -93,13 +93,13 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
     backgroundColor: "#20dbe4",
     color: theme.palette.common.white,
-    width: 'auto',
-    textAlign: 'left',
+    width: "auto",
+    textAlign: "left",
   },
   [`&.${tableCellClasses.body}`]: {
     fontSize: 14,
-    width: 'auto',
-    textAlign: 'left',
+    width: "auto",
+    textAlign: "left",
   },
 }));
 
@@ -112,20 +112,19 @@ TablePaginationActions.propTypes = {
 
 const originalJobList = [
   { id: 1, title: "Java Developer", fulldate: "01/01/2022" },
-  { id: 2, title: "MERN Stack Developer", fulldate: "01/01/2022"},
-  { id: 3, title: "Flutter Developer", fulldate: "01/01/2022"},
+  { id: 2, title: "MERN Stack Developer", fulldate: "01/01/2022" },
+  { id: 3, title: "Flutter Developer", fulldate: "01/01/2022" },
 ].sort((a, b) => (a.title < b.title ? -1 : 1));
 
 export default function CJobList() {
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
-  
+
   const [companiesData, setCompaniesData] = useState([]);
   const [companiesLoading, setCompaniesLoading] = useState(true);
-  
+
   const [companyPage, setCompanyPage] = React.useState(0);
   const [companyRowsPerPage, setCompanyRowsPerPage] = React.useState(5);
-
 
   useEffect(() => {
     const fetchCompaniesData = async () => {
@@ -161,53 +160,57 @@ export default function CJobList() {
 
   const viewContactFxn = (company) => {
     const companyIdForMatching = company.companyID;
-    
+
     if (!companyIdForMatching) {
       notifyErrorFxn("Company ID not found in company record");
       return;
     }
-    
-    navigate('/dashboard/company-users', { 
-      state: { 
+
+    navigate("/dashboard/company-users", {
+      state: {
         companyId: companyIdForMatching,
-        companyName: company.companyName || company.name
-      } 
+        companyName: company.companyName || company.name,
+      },
     });
   };
 
   const handleAddCompany = () => {
-    navigate('/dashboard/add-company');
+    navigate("/dashboard/add-company");
   };
-  
-
-
 
   return (
     <>
-      <br/>
-      <p 
+      <br />
+      <p
         style={{
-          fontSize: '26px', marginLeft: '5px',marginBottom:"1rem", color: 'black',display:"flex",justifyContent:"space-between"
+          fontSize: "26px",
+          marginLeft: "5px",
+          marginBottom: "1rem",
+          color: "black",
+          display: "flex",
+          justifyContent: "space-between",
         }}
       >
-        <b>COMPANIES</b>   
-      
-      <Button
-        type="button"
-        variant="contained"
-        style={{
-          background: "#20dbe4",
-          color: "white",
-          width: "17%",
-          fontSize: "15px",
-        }}
-        sx={{ mt: 7, mb: 2 }}
-        onClick={handleAddCompany}
-      >
-        ADD COMPANY
-      </Button></p><br/>
+        <b>COMPANIES</b>
+
+        <Button
+          type="button"
+          variant="contained"
+          style={{
+            background: "#20dbe4",
+            color: "white",
+            width: "17%",
+            fontSize: "15px",
+          }}
+          sx={{ mt: 7, mb: 2 }}
+          onClick={handleAddCompany}
+        >
+          ADD COMPANY
+        </Button>
+      </p>
+      <br />
       <hr />
-      
+
       {companiesLoading ? (
         <center>
           <Box sx={{ width: 300 }}>
@@ -218,7 +221,10 @@ export default function CJobList() {
         </center>
       ) : (
         <TableContainer component={Paper}>
-          <Table sx={{ maxWidth: 1500,tableLayout:"fixed" }} aria-label="companies pagination table">
+          <Table
+            sx={{ maxWidth: 1500, tableLayout: "fixed" }}
+            aria-label="companies pagination table"
+          >
             <TableHead>
               <TableRow style={{ backgroundColor: "#20dbe4" }}>
                 <StyledTableCell>Company Name</StyledTableCell>
@@ -232,19 +238,31 @@ export default function CJobList() {
               {(companyRowsPerPage > 0
                 ? companiesData.slice(
                     companyPage * companyRowsPerPage,
-                    companyPage * companyRowsPerPage + companyRowsPerPage
+                    companyPage * companyRowsPerPage + companyRowsPerPage,
                   )
                 : companiesData
               ).map((company) => (
                 <TableRow key={company.id || Math.random()}>
-                  <StyledTableCell component="th" scope="row" align="left">
-                    {company.companyName 
-                      || company.name 
-                      || company.firstName && company.lastName && `${company.firstName} ${company.lastName}`
-                      || company.fullName
-                      || company.displayName
-                      || company.email
-                      || "-"}
+                  <StyledTableCell
+                    style={{
+                      whiteSpace: "nowrap",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      maxWidth: 200,
+                    }}
+                    component="th"
+                    scope="row"
+                    align="left"
+                  >
+                    {company.companyName ||
+                      company.name ||
+                      (company.firstName &&
+                        company.lastName &&
+                        `${company.firstName} ${company.lastName}`) ||
+                      company.fullName ||
+                      company.displayName ||
+                      company.email ||
+                      "-"}
                   </StyledTableCell>
                   <StyledTableCell align="left">
                     {company.email || company.companyContact || "-"}
@@ -254,11 +272,18 @@ export default function CJobList() {
                   </StyledTableCell>
                   <StyledTableCell align="left">
                     {company.createdAt && typeof company.createdAt !== "string"
-                      ? new Date(company.createdAt.seconds * 1000).toDateString()
-                      : (company.dateCreated && typeof company.dateCreated !== "string"
-                          ? new Date(company.dateCreated.seconds * 1000).toDateString()
-                          : (typeof company.dateCreated === "string" && company.dateCreated)
-                        ) || company.date || "-"}
+                      ? new Date(
+                          company.createdAt.seconds * 1000,
+                        ).toDateString()
+                      : (company.dateCreated &&
+                        typeof company.dateCreated !== "string"
+                          ? new Date(
+                              company.dateCreated.seconds * 1000,
+                            ).toDateString()
+                          : typeof company.dateCreated === "string" &&
+                            company.dateCreated) ||
+                        company.date ||
+                        "-"}
                   </StyledTableCell>
                   <StyledTableCell align="left">
                     <Button
