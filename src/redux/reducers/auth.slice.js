@@ -14,7 +14,7 @@ const loginSlice = createSlice({
   reducers: {
     loginSuccess: (state, action) => {
         state.user = action.payload;
-        state.error = '';
+        state.error = ''; 
         state.message = '';
       },
     loginFailed: (state, action) => {
