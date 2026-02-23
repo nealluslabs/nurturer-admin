@@ -245,6 +245,30 @@ export const fetchAllContactForOneUser = (uid) => async (dispatch) => {
   }
 };
 
+export const fetchAllContacts = () => async (dispatch) => {
+  dispatch(fetchUsersPending());
+
+  try {
+    const contactsSnapshot = await db.collection("contacts").get();
+
+    if (contactsSnapshot.empty) {
+      dispatch(fetchContactsSuccess([]));
+      return;
+    }
+
+    const contacts = contactsSnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+
+    dispatch(fetchContactsSuccess(contacts));
+  } catch (error) {
+    const errorMessage = error.message;
+    console.log("Error fetching all contacts:", errorMessage);
+    dispatch(fetchContactsFailed({ errorMessage }));
+  }
+};
+
 export const fetchRealTimeConnections2 = (uid) => async (dispatch) => {
   const unsubscribe = db
     .collection("connections")
