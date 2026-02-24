@@ -241,6 +241,58 @@ export const updateAllContacts = () => async (dispatch) => {
 
 
 
+
+export const updateHolidayMessagesToSent = () => async (dispatch) => {
+  try {
+    const snapshot = await db.collection("contacts").get();
+
+    if (snapshot.empty) {
+      console.log("No contacts found.");
+      return;
+    }
+
+    const batch = db.batch();
+    let operationCount = 0;
+
+    snapshot.docs.forEach((doc) => {
+      const data = doc.data();
+      const messageQueue = data.messageQueue;
+
+      if (!Array.isArray(messageQueue)) return;
+
+      let updated = false;
+
+      const updatedQueue = messageQueue.map((message) => {
+        if (message.messageType === "Holiday") {
+          updated = true;
+          return {
+            ...message,
+            messageStatus: "Sent",
+          };
+        }
+        return message;
+      });
+
+      if (updated) {
+        const docRef = db.collection("contacts").doc(doc.id);
+        batch.update(docRef, { messageQueue: updatedQueue });
+        operationCount++;
+      }
+    });
+
+    if (operationCount > 0) {
+      await batch.commit();
+      console.log(`✅ Updated ${operationCount} contacts.`);
+    } else {
+      console.log("No Holiday messages found to update.");
+    }
+  } catch (error) {
+    console.error("❌ Error updating contacts:", error);
+  }
+};
+
+
+
 export const simulateCronJob =   () => async (dispatch) => {
   try {
 
