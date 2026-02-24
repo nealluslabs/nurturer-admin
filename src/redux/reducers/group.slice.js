@@ -6,6 +6,14 @@ const initialState = {
        allCategories:[],
        allPacks:[],
        saveAllSongs: [],
+       templatesByCategory:{},
+       defaultCardsByCategory:{},
+       cardsLoading:false,
+       cardsUpdating:false,
+       cardsUpdatingCategory:null,
+       cardsError:"",
+       cardsLastUpdated:null,
+       cardsCategoryFilter:"all",
        singlePack:{},
        allSectionVideos:[],
        categoryVideos:[],
@@ -215,6 +223,47 @@ savePacks: (state, action) => {
 saveAllSongs: (state, action) => {
   state.allSongs = action.payload;
 },
+cardsFetchPending: (state) => {
+  state.cardsLoading = true;
+  state.cardsError = "";
+},
+cardsFetchSuccess: (state, action) => {
+  state.cardsLoading = false;
+  state.cardsError = "";
+  state.templatesByCategory =
+    action.payload.templatesByCategory || state.templatesByCategory;
+  state.defaultCardsByCategory =
+    action.payload.defaultCardsByCategory || state.defaultCardsByCategory;
+  state.cardsLastUpdated = action.payload.lastUpdated || Date.now();
+},
+cardsFetchFailed: (state, action) => {
+  state.cardsLoading = false;
+  state.cardsError = action.payload || "Unable to load cards.";
+},
+cardsUpdatePending: (state, action) => {
+  state.cardsUpdating = true;
+  state.cardsUpdatingCategory = action.payload || null;
+  state.cardsError = "";
+},
+cardsUpdateSuccess: (state, action) => {
+  state.cardsUpdating = false;
+  state.cardsUpdatingCategory = null;
+  state.cardsError = "";
+  state.defaultCardsByCategory =
+    action.payload.defaultCardsByCategory || state.defaultCardsByCategory;
+  state.cardsLastUpdated = action.payload.lastUpdated || Date.now();
+},
+cardsUpdateFailed: (state, action) => {
+  state.cardsUpdating = false;
+  state.cardsUpdatingCategory = null;
+  state.cardsError = action.payload || "Unable to update default card.";
+},
+setCardsCategoryFilter: (state, action) => {
+  state.cardsCategoryFilter = action.payload || "all";
+},
+clearCardsError: (state) => {
+  state.cardsError = "";
+},
 
 saveSubjectInfo: (state, action) => {
   state.subjectInfo = action.payload;
@@ -281,6 +330,14 @@ export const {
  saveCategories,
  savePacks,
  saveAllSongs,
+ cardsFetchPending,
+ cardsFetchSuccess,
+ cardsFetchFailed,
+ cardsUpdatePending,
+ cardsUpdateSuccess,
+ cardsUpdateFailed,
+ setCardsCategoryFilter,
+ clearCardsError,
  saveSubjectInfo,
  saveChapterInfo,
  saveTeacherInfo,
@@ -295,5 +352,4 @@ export const {
 } = actions;
 
 export default reducer;
-
 

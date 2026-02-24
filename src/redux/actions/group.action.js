@@ -42,6 +42,12 @@ import {
   saveSubjectPastExams,
   savePastExamInfo,
   saveAllSongs,
+  cardsFetchPending,
+  cardsFetchSuccess,
+  cardsFetchFailed,
+  cardsUpdatePending,
+  cardsUpdateSuccess,
+  cardsUpdateFailed,
 } from "../reducers/group.slice";
 import firebase from "firebase/app";
 import axios from "axios";
@@ -62,6 +68,152 @@ let sentOut = false;
 let emailSendingError = false;
 let atLeastOneContactwasGeneratedFor = false;
 let generatedContacts = [];
+
+const CARD_CATEGORY_CONFIG = [
+  {
+    id: "birthday",
+    label: "Birthday",
+    primaryKey: "birthdayCard",
+    secondaryKey: "birthdayCard2",
+    templates: [
+      {
+        slot: "first",
+        id: "birthday-1",
+        imageUrl:
+          "https://nurturer-newsletter.s3.eu-west-3.amazonaws.com/Birthday_1.png",
+      },
+      {
+        slot: "second",
+        id: "birthday-2",
+        imageUrl:
+          "https://nurturer-newsletter.s3.eu-west-3.amazonaws.com/Birthday_2.png",
+      },
+    ],
+  },
+  {
+    id: "workAnniversary",
+    label: "Work Anniversary",
+    primaryKey: "workAnniversaryCard",
+    secondaryKey: "workAnniversaryCard2",
+    templates: [
+      {
+        slot: "first",
+        id: "work-anniversary-1",
+        imageUrl:
+          "https://nurturer-newsletter.s3.eu-west-3.amazonaws.com/Anniversary_1.png",
+      },
+      {
+        slot: "second",
+        id: "work-anniversary-2",
+        imageUrl:
+          "https://nurturer-newsletter.s3.eu-west-3.amazonaws.com/Anniversary_2.png",
+      },
+    ],
+  },
+  {
+    id: "thanksgiving",
+    label: "Thanksgiving/Holiday",
+    primaryKey: "thanksgivingCard",
+    secondaryKey: "thanksgivingCard2",
+    templates: [
+      {
+        slot: "first",
+        id: "thanksgiving-1",
+        imageUrl:
+          "https://nurturer-newsletter.s3.eu-west-3.amazonaws.com/thanksgiving1.png",
+      },
+      {
+        slot: "second",
+        id: "thanksgiving-2",
+        imageUrl:
+          "https://nurturer-newsletter.s3.eu-west-3.amazonaws.com/thanksgiving2.png",
+      },
+    ],
+  },
+  {
+    id: "thankYou",
+    label: "Thank You",
+    primaryKey: "thankYouCard",
+    secondaryKey: "thankYouCard2",
+    templates: [
+      {
+        slot: "first",
+        id: "thank-you-1",
+        imageUrl:
+          "https://nurturer-newsletter.s3.eu-west-3.amazonaws.com/thankyou_1.png",
+      },
+      {
+        slot: "second",
+        id: "thank-you-2",
+        imageUrl:
+          "https://nurturer-newsletter.s3.eu-west-3.amazonaws.com/thankyou_2.png",
+      },
+    ],
+  },
+];
+
+export const CARD_TEMPLATE_IDS = CARD_CATEGORY_CONFIG.reduce((acc, category) => {
+  const firstTemplate = category.templates.find(
+    (template) => template.slot === "first",
+  );
+  const secondTemplate = category.templates.find(
+    (template) => template.slot === "second",
+  );
+
+  acc[category.id] = {
+    first: firstTemplate?.id || "",
+    second: secondTemplate?.id || "",
+  };
+
+  return acc;
+}, {});
+
+const TEMPLATES_BY_CATEGORY = CARD_CATEGORY_CONFIG.reduce((acc, category) => {
+  acc[category.id] = category.templates.map((template) => ({
+    id: template.id,
+    imageUrl: template.imageUrl,
+  }));
+
+  return acc;
+}, {});
+
+const getCardCategoryConfig = (categoryId) =>
+  CARD_CATEGORY_CONFIG.find((category) => category.id === categoryId);
+
+const getDefaultCardsByCategory = (cards = {}) =>
+  CARD_CATEGORY_CONFIG.reduce((acc, category) => {
+    const firstTemplate =
+      category.templates.find((template) => template.slot === "first") ||
+      category.templates[0];
+    const secondTemplate =
+      category.templates.find((template) => template.slot === "second") ||
+      category.templates[1] ||
+      firstTemplate;
+    const primaryUrl = cards[category.primaryKey] || firstTemplate.imageUrl;
+    const secondaryUrl =
+      cards[category.secondaryKey] ||
+      (primaryUrl === secondTemplate.imageUrl
+        ? firstTemplate.imageUrl
+        : secondTemplate.imageUrl);
+    const activeTemplateId =
+      primaryUrl === secondTemplate.imageUrl
+        ? secondTemplate.id
+        : firstTemplate.id;
+
+    acc[category.id] = {
+      categoryId: category.id,
+      primaryKey: category.primaryKey,
+      secondaryKey: category.secondaryKey,
+      primaryUrl,
+      secondaryUrl,
+      activeTemplateId,
+    };
+
+    return acc;
+  }, {});
+
+const getResolvedUserId = (explicitUserId, stateUser) =>
+  explicitUserId || stateUser?.uid || stateUser?.user_id || null;
 
 // 🔹 Runs BEFORE any request is sent
 axios.interceptors.request.use(
@@ -302,6 +454,116 @@ export const updateAllContacts = () => async (dispatch) => {
     console.error("❌ Error updating contacts:", error);
   }
 };
+
+export const fetchUserCardTemplates =
+  (explicitUserId = null) =>
+  async (dispatch, getState) => {
+    dispatch(cardsFetchPending());
+
+    try {
+      const stateUser = getState()?.auth?.user;
+      const userId = getResolvedUserId(explicitUserId, stateUser);
+
+      if (!userId) {
+        throw new Error("No signed-in user found for cards.");
+      }
+
+      const userDoc = await db.collection("users").doc(userId).get();
+      if (!userDoc.exists) {
+        throw new Error("User account was not found.");
+      }
+
+      const userData = userDoc.data() || {};
+      const userCards = userData.cards || {};
+
+      dispatch(
+        cardsFetchSuccess({
+          templatesByCategory: TEMPLATES_BY_CATEGORY,
+          defaultCardsByCategory: getDefaultCardsByCategory(userCards),
+          lastUpdated: Date.now(),
+        }),
+      );
+
+      dispatch(
+        storeUserData({
+          ...stateUser,
+          ...userData,
+          uid: userId,
+          user_id: userData.user_id || userId,
+          cards: userCards,
+        }),
+      );
+
+      return true;
+    } catch (error) {
+      dispatch(cardsFetchFailed(error?.message || "Unable to fetch cards."));
+      return false;
+    }
+  };
+
+export const setUserDefaultCardTemplate =
+  (categoryId, templateId, explicitUserId = null) =>
+  async (dispatch, getState) => {
+    dispatch(cardsUpdatePending(categoryId));
+
+    try {
+      const stateUser = getState()?.auth?.user;
+      const userId = getResolvedUserId(explicitUserId, stateUser);
+
+      if (!userId) {
+        throw new Error("No signed-in user found for cards.");
+      }
+
+      const category = getCardCategoryConfig(categoryId);
+      if (!category) {
+        throw new Error("Unknown card category.");
+      }
+
+      const selectedTemplate = category.templates.find(
+        (template) => template.id === templateId,
+      );
+      if (!selectedTemplate) {
+        throw new Error("Unknown card template.");
+      }
+
+      const secondaryTemplate =
+        category.templates.find((template) => template.id !== selectedTemplate.id) ||
+        selectedTemplate;
+
+      const nextCards = { ...(stateUser?.cards || {}) };
+      nextCards[category.primaryKey] = selectedTemplate.imageUrl;
+      nextCards[category.secondaryKey] = secondaryTemplate.imageUrl;
+
+      await db.collection("users").doc(userId).set(
+        {
+          cards: nextCards,
+        },
+        { merge: true },
+      );
+
+      dispatch(
+        cardsUpdateSuccess({
+          defaultCardsByCategory: getDefaultCardsByCategory(nextCards),
+          lastUpdated: Date.now(),
+        }),
+      );
+
+      dispatch(
+        storeUserData({
+          ...stateUser,
+          cards: nextCards,
+        }),
+      );
+
+      notifySuccessFxn(`${category.label} default updated.`);
+      return true;
+    } catch (error) {
+      const message = error?.message || "Unable to set default card.";
+      dispatch(cardsUpdateFailed(message));
+      notifyErrorFxn(message);
+      return false;
+    }
+  };
 
 export const simulateCronJob = () => async (dispatch) => {
   try {
