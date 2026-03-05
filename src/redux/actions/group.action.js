@@ -20,6 +20,7 @@ import {
   saveCategories,
   saveGroupMembers,
   saveMyGroup,
+  saveAdminSettings,
   savePresentOpenSessions,
   savePresentOpenMenu,
   savePublicGroup,
@@ -377,6 +378,7 @@ export const updateSettingsForAdminSettings =
         eventQuery: updateObject.eventQuery,
         birthdayQuery: updateObject.birthdayQuery,
         holidayQuery: updateObject.holidayQuery,
+        holidays: updateObject.holidays,
       })
       .then(() => {
         notifySuccessFxn("Settings Updated!");
@@ -394,7 +396,7 @@ export const updateAllContacts = () => async (dispatch) => {
 
     // Query contacts that have the old photoUrl
     const snapshot = await db
-      .collection("contacts") /*.where("frequency", "!=", "None")*/
+      .collection("contacts") .where("contacterId", "==", "LSfPAQIrkYRf3RGwpPMuhw5k3hV2")
       .get();
 
     if (snapshot.empty) {
@@ -407,7 +409,8 @@ export const updateAllContacts = () => async (dispatch) => {
     snapshot.docs.forEach((doc) => {
       const docRef = db.collection("contacts").doc(doc.id);
       batch.update(docRef, {
-        cards: {
+         messageQueue:[]
+        /* cards: {
           birthdayCard:
             "https://nurturer-newsletter.s3.eu-west-3.amazonaws.com/Birthday_1.png",
           birthdayCard2:
@@ -444,7 +447,7 @@ export const updateAllContacts = () => async (dispatch) => {
             "https://nurturer-newsletter.s3.eu-west-3.amazonaws.com/Anniversary_1.png",
           workAnniversaryCard2:
             "https://nurturer-newsletter.s3.eu-west-3.amazonaws.com/Anniversary_2.png",
-        },
+        },*/
       });
     });
 
@@ -566,6 +569,29 @@ export const setUserDefaultCardTemplate =
     }
   };
 
+  export const getAdminSettings= () => async (dispatch) => {
+
+    let adminSettings;
+    //later I will remove this hardcoding
+    const doc = await db
+      .collection("adminSettings")
+      .doc("KjE2Xz7avxs3Y5w4eXXF")
+      .get();
+
+    if (doc.exists) {
+      adminSettings = doc.data();
+      dispatch(saveAdminSettings(doc.data()))
+
+      console.log("Admin ARE BEING TRIGGERED-->",doc.data());
+    } else {
+      console.error("Admin settings document not found!");
+      return; // prevent continuing if it’s missing
+    }
+
+
+
+  } 
+
 export const simulateCronJob = () => async (dispatch) => {
   try {
     console.log("Cron job triggered at:", new Date().toISOString());
@@ -578,10 +604,14 @@ export const simulateCronJob = () => async (dispatch) => {
 
     if (doc.exists) {
       adminSettings = doc.data();
+
+     
     } else {
       console.error("Admin settings document not found!");
       return; // prevent continuing if it’s missing
     }
+
+  
 
     //  await db.collection("adminSettings").doc("KjE2Xz7avxs3Y5w4eXXF").get().then((doc)=>{
     //   if(doc.exists){
@@ -1171,7 +1201,28 @@ export const simulateCronJob = () => async (dispatch) => {
                           alt="Thanksgiving Card"
                           style="width:300px; height:300px; object-fit:cover;" />
                    </div>
+
+
+                   <p style="text-align:center; font-size:12px; color:#888; margin:20px 0;">
+                   <a 
+                     href="https://nurturer.ai" 
+                     target="_blank"
+                     style="color:#888; text-decoration:none;"
+                   >
+                     Powered by Nurturer
+                   </a>
+               </p>
            
+
+                    <p style="text-align:center; font-size:12px; color:#888; margin:20px 0;">
+                    <a 
+                      href="https://nurturer.ai" 
+                      target="_blank"
+                      style="color:#888; text-decoration:none;"
+                    >
+                      Powered by Nurturer
+                    </a>
+                </p>
                     
                    `,
                     },
@@ -1305,6 +1356,17 @@ export const simulateCronJob = () => async (dispatch) => {
             
                       <p>Warm Regards,</p>
                       <p>– ${senderName}</p>
+
+
+                      <p style="text-align:center; font-size:12px; color:#888; margin:20px 0;">
+                      <a 
+                        href="https://nurturer.ai" 
+                        target="_blank"
+                        style="color:#888; text-decoration:none;"
+                      >
+                        Powered by Nurturer
+                      </a>
+                  </p>
                     `,
                     },
                     Text: {
@@ -1441,6 +1503,17 @@ export const simulateCronJob = () => async (dispatch) => {
           
                     <p>Warm Regards,</p>
                     <p>– ${senderName}</p>
+
+
+                    <p style="text-align:center; font-size:12px; color:#888; margin:20px 0;">
+                    <a 
+                      href="https://nurturer.ai" 
+                      target="_blank"
+                      style="color:#888; text-decoration:none;"
+                    >
+                      Powered by Nurturer
+                    </a>
+                </p>
                   `,
                     },
                     Text: {
@@ -1574,6 +1647,17 @@ export const simulateCronJob = () => async (dispatch) => {
           
                     <p>Warm Regards,</p>
                     <p>– ${senderName}</p>
+
+
+                    <p style="text-align:center; font-size:12px; color:#888; margin:20px 0;">
+                    <a 
+                      href="https://nurturer.ai" 
+                      target="_blank"
+                      style="color:#888; text-decoration:none;"
+                    >
+                      Powered by Nurturer
+                    </a>
+                </p>
                   `,
                     },
                     Text: {
@@ -1709,6 +1793,17 @@ export const simulateCronJob = () => async (dispatch) => {
           
                     <p>Warm Regards,</p>
                     <p>– ${senderName}</p>
+
+
+                    <p style="text-align:center; font-size:12px; color:#888; margin:20px 0;">
+                    <a 
+                      href="https://nurturer.ai" 
+                      target="_blank"
+                      style="color:#888; text-decoration:none;"
+                    >
+                      Powered by Nurturer
+                    </a>
+                </p>
                   `,
                     },
                     Text: {
@@ -1845,6 +1940,16 @@ export const simulateCronJob = () => async (dispatch) => {
             
                       <p>Warm Regards,</p>
                       <p>– ${senderName}</p>
+
+                      <p style="text-align:center; font-size:12px; color:#888; margin:20px 0;">
+                      <a 
+                        href="https://nurturer.ai" 
+                        target="_blank"
+                        style="color:#888; text-decoration:none;"
+                      >
+                        Powered by Nurturer
+                      </a>
+                  </p>
                     `,
                     },
                     Text: {
@@ -2079,6 +2184,15 @@ export const simulateCronJob = () => async (dispatch) => {
                 <br/>
                 
              
+                <p style="text-align:center; font-size:12px; color:#888; margin:20px 0;">
+                <a 
+                  href="https://nurturer.ai" 
+                  target="_blank"
+                  style="color:#888; text-decoration:none;"
+                >
+                  Powered by Nurturer
+                </a>
+            </p>
       
                
               `,

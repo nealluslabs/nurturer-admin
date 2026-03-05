@@ -27,6 +27,7 @@ const initialState = {
        presentOpenChapter:null,
        presentOpenSession:null,
        requestedSection:null,
+       adminSettings:{},
        subjectInfo:{},
        chapterInfo:{},
        teacherInfo:{},
@@ -264,7 +265,9 @@ setCardsCategoryFilter: (state, action) => {
 clearCardsError: (state) => {
   state.cardsError = "";
 },
-
+saveAdminSettings: (state, action) => {
+  state.adminSettings = action.payload;
+},
 saveSubjectInfo: (state, action) => {
   state.subjectInfo = action.payload;
 },
@@ -325,6 +328,7 @@ export const {
  saveChapterSessions,
  saveChapterQuizzes,
  saveQuizInfo,
+ saveAdminSettings,
  savePublicGroup,
  saveSinglePack,
  saveCategories,

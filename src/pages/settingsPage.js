@@ -1,15 +1,37 @@
-import React, { useState } from "react";
-import { Box, Typography } from "@mui/material";
-import { useDispatch } from "react-redux";
-import { simulateCronJob, updateAllContacts, /*updateHolidayMessagesToSent,*/ updateSettingsForAdminSettings, updateTriggerDaysForAllContacts } from "src/redux/actions/group.action";
+import React, { useState,useEffect } from "react";
+
+import { useDispatch, useSelector } from "react-redux";
+import { getAdminSettings, simulateCronJob, updateAllContacts, /*updateHolidayMessagesToSent,*/ updateSettingsForAdminSettings, updateTriggerDaysForAllContacts } from "src/redux/actions/group.action";
+import { Box, Typography, TextField, Chip } from "@mui/material";
+
+
+
 
 export default function SettingsPage() {
 
   const dispatch = useDispatch()
+  const { adminSettings } = useSelector((state) => state.group);
 
+  const [holidayInput, setHolidayInput] = useState("");
+  const [holidays, setHolidays] = useState([]);
 
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter" && holidayInput.trim() !== "") {
+      e.preventDefault();
+
+      if (!holidays.includes(holidayInput.trim())) {
+        setHolidays([...holidays, holidayInput.trim()]);
+      }
+
+      setHolidayInput("");
+    }
+  };
+
+  const handleDelete = (holidayToDelete) => {
+    setHolidays(holidays.filter((h) => h !== holidayToDelete));
+  };
  
-
+ 
 
   const [emailQuery, setEmailQuery] = useState(`I want to send five articles to a business contact. Search the internet for five legitimate,real articles that were written in 2025
   along with a url to that article that can be publicly accessed from these websites - PWC, Deloitte, McKinsey,
@@ -175,8 +197,29 @@ Please go through the javascript object {$JSON.stringify(previousMessage)}, and 
     birthdayQuery:birthdayQuery,
     emailQuery,
     eventQuery,
-    holidayQuery
+    holidayQuery,
+    holidays
   }
+
+
+
+  useEffect(()=>{
+dispatch(getAdminSettings())
+
+  },[])
+
+
+  useEffect(()=>{
+
+    setHolidays(adminSettings && adminSettings.holidays)
+    setEmailQuery(adminSettings && adminSettings.emailQuery)
+    setEventQuery(adminSettings && adminSettings.eventQuery)
+    setHolidayQuery(adminSettings && adminSettings.holidayQuery)
+    setBirthdayQuery(adminSettings && adminSettings.birthdayQuery)
+
+
+  },[adminSettings])
+
 
   return (
     <>
@@ -290,6 +333,49 @@ Please go through the javascript object {$JSON.stringify(previousMessage)}, and 
                 style={{ outline: "none", width: "100%", border: "1px solid #000000", padding: "7px 8px", fontSize: "14px" }}
               />
             </Box>
+
+
+
+            <Box sx={{ display: "flex", alignItems: "flex-start", marginBottom: "21px" }}>
+      
+      <Typography sx={{ minWidth: 120, fontSize: "15px", fontWeight: 500 }}>
+        Holidays:
+      </Typography>
+
+      <Box sx={{ width: "100%" }}>
+        
+        <TextField
+          fullWidth
+          placeholder="Type a holiday and press Enter"
+          value={holidayInput}
+          onChange={(e) => setHolidayInput(e.target.value)}
+          onKeyDown={handleKeyDown}
+          size="small"
+        />
+
+        <Box
+          sx={{
+            marginTop: "10px",
+            display: "flex",
+            flexWrap: "wrap",
+            gap: "8px",
+            border:"1px solid black",
+            padding:"1rem"
+          }}
+        >
+          {holidays && holidays.map((holiday, index) => (
+            <Chip
+              key={index}
+              label={holiday}
+              onDelete={() => handleDelete(holiday)}
+              color="primary"
+              variant="outlined"
+            />
+          ))}
+        </Box>
+
+      </Box>
+    </Box>
 
 
 
