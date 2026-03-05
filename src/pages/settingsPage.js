@@ -2,7 +2,7 @@ import React, { useState,useEffect } from "react";
 
 import { useDispatch, useSelector } from "react-redux";
 import { getAdminSettings, simulateCronJob, updateAllContacts, /*updateHolidayMessagesToSent,*/ updateSettingsForAdminSettings, updateTriggerDaysForAllContacts } from "src/redux/actions/group.action";
-import { Box, Typography, TextField, Chip } from "@mui/material";
+import { Box, Typography, TextField, Chip, Button } from "@mui/material";
 
 
 
@@ -14,6 +14,8 @@ export default function SettingsPage() {
 
   const [holidayInput, setHolidayInput] = useState("");
   const [holidays, setHolidays] = useState([]);
+
+
 
   const handleKeyDown = (e) => {
     if (e.key === "Enter" && holidayInput.trim() !== "") {
@@ -30,7 +32,42 @@ export default function SettingsPage() {
   const handleDelete = (holidayToDelete) => {
     setHolidays(holidays.filter((h) => h !== holidayToDelete));
   };
+
+
+
+  const [articleName, setArticleName] = useState("");
+  const [articleUrl, setArticleUrl] = useState("");
+  const [articleSource, setArticleSource] = useState("");
+  const [articles, setArticles] = useState([]);
+  
  
+
+useEffect(() => {
+  if (adminSettings?.articles) {
+    setArticles(adminSettings.articles);
+  }
+}, [adminSettings]);
+
+const handleAddArticle = () => {
+  if (!articleName.trim() || !articleUrl.trim() || !articleSource.trim()) return;
+
+  const newArticle = {
+    bulletPointBold: articleName.trim(),
+    bulletPointRest: articleSource.trim(),
+    link: articleUrl.trim(),
+    id: Math.random().toString(36).substring(2, 9),
+  };
+
+  setArticles((prev) => [...prev, newArticle]);
+
+  setArticleName("");
+  setArticleUrl("");
+  setArticleSource("");
+};
+
+const handleArticleDelete = (id) => {
+  setArticles((prev) => prev.filter((a) => a.id !== id));
+};
  
 
   const [emailQuery, setEmailQuery] = useState(`I want to send five articles to a business contact. Search the internet for five legitimate,real articles that were written in 2025
@@ -198,7 +235,8 @@ Please go through the javascript object {$JSON.stringify(previousMessage)}, and 
     emailQuery,
     eventQuery,
     holidayQuery,
-    holidays
+    holidays,
+    articles
   }
 
 
@@ -376,6 +414,80 @@ dispatch(getAdminSettings())
 
       </Box>
     </Box>
+
+
+       
+    <Box sx={{ display: "flex", alignItems: "flex-start", marginBottom: "21px" }}>
+  <Typography sx={{ minWidth: 120, fontSize: "15px", fontWeight: 500 }}>
+    Articles:
+  </Typography>
+
+  <Box sx={{ width: "100%" }}>
+
+    <TextField
+      fullWidth
+      size="small"
+      placeholder="e.g AI's impact on the aviation sector..."
+      value={articleName}
+      onChange={(e) => setArticleName(e.target.value)}
+      sx={{ marginBottom: "8px" }}
+    />
+
+    <TextField
+      fullWidth
+      size="small"
+      placeholder="e.g https://forbes.com/article-ai-impact"
+      value={articleUrl}
+      onChange={(e) => setArticleUrl(e.target.value)}
+      sx={{ marginBottom: "8px" }}
+    />
+
+    <TextField
+      fullWidth
+      size="small"
+      placeholder="e.g Forbes, August 2023"
+      value={articleSource}
+      onChange={(e) => setArticleSource(e.target.value)}
+      sx={{ marginBottom: "10px" }}
+    />
+
+    <Button
+      variant="contained"
+      size="small"
+      onClick={handleAddArticle}
+      disabled={!articleName || !articleUrl || !articleSource}
+      sx={{ marginBottom: "12px" }}
+    >
+      Add Article
+    </Button>
+
+    <Box
+      sx={{
+        marginTop: "10px",
+        display: "flex",
+        flexWrap: "wrap",
+        gap: "8px",
+        border: "1px solid black",
+        padding: "1rem",
+      }}
+    >
+      {articles?.map((article) => (
+        <Chip
+          key={article.id}
+          label={
+            article.bulletPointBold.length > 35
+              ? article.bulletPointBold.slice(0, 35) + "..."
+              : article.bulletPointBold
+          }
+          onDelete={() => handleArticleDelete(article.id)}
+          color="primary"
+          variant="outlined"
+        />
+      ))}
+    </Box>
+
+  </Box>
+</Box>
 
 
 

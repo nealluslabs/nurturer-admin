@@ -379,6 +379,7 @@ export const updateSettingsForAdminSettings =
         birthdayQuery: updateObject.birthdayQuery,
         holidayQuery: updateObject.holidayQuery,
         holidays: updateObject.holidays,
+        articles: updateObject.articles
       })
       .then(() => {
         notifySuccessFxn("Settings Updated!");
